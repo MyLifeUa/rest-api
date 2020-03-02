@@ -15,3 +15,10 @@ class Doctor(models.Model):
     user = models.OneToOneField(
         CustomUser, on_delete=models.CASCADE, unique=True, primary_key=True
     )
+
+
+class Client(models.Model):
+    user = models.OneToOneField(
+        CustomUser, on_delete=models.CASCADE, unique=True, primary_key=True
+    )
+    height = models.FloatField(null=True, blank=True)
