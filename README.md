@@ -38,19 +38,19 @@ To start the project, just do the next step (2. MySQL Database), and if a messag
 | Get inside of the venv directory                        | `pipenv shell`                                                                                                                                                                   |
 | Dependencies Installed (No need to install them again!) | `pipenv install "djangorestframework>=3.10.3"` ; `pipenv install django-rest-swagger` ; `pipenv install requests` ; `pipenv install "django>=3.0.3"` ; `pipenv install psycopg2` |
 
-### 2. MySQL Database
+### 2. PostgreSQL Database
 
 On Ubuntu:
 
 | Action                                      | Command                                                                                    |
 | ------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| Install MySQL                               | `apt-get install postgresql postgresql-contribr` ; `apt-get install libpq-dev python3-dev` |
-| Access MySQL as admin                       | `sudo -u postgres -i`                                                                      |
-| Login in Postgres Database                  | `psql`                                                                                     |
+| Install PostgreSQL                               | `apt-get install postgresql postgresql-contribr` ; `apt-get install libpq-dev python3-dev` |
+| Access PostgreSQL as admin                       | `sudo -u postgres -i`                                                                      |
+| Login in PostgreSQL Database                  | `psql`                                                                                     |
 | Create a new user and set it's password     | `CREATE USER 'mylife' WITH PASSWORD 'mylife-restapi-2020';`                                |
 | Create the database                         | `CREATE DATABASE mylife WITH OWNER mylife;`                                                |
 | Grant priviliges to the new user            | `GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO mylife;`                           |
-| Find out the port where Postgres is running | `SELECT setting AS port FROM pg_settings WHERE name = 'port';`                             |
+| Find out the port where PostgreSQL is running | `SELECT setting AS port FROM pg_settings WHERE name = 'port';`                             |
 
 After this steps, we will need to configure our REST API to access the new database we just created. For doing so, in `settings.py`file of the REST API Django Project we need to add the following code:
 
