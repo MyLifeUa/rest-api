@@ -6,8 +6,12 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-django = "==3.0.3"
+django = ">=3.0.3"
 psycopg2 = "*"
+djangorestframework = ">=3.10.3"
+django-rest-swagger = "*"
+requests = "*"
+python3-docutils = "*"
 
 [requires]
 python_version = "3.7"
