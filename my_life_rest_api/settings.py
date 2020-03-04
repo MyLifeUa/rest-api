@@ -71,6 +71,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "my_life_rest_api.wsgi.application"
 
+# Rest Properties
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_api.authentication.ExpiringTokenAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',)
+}
+
+
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
@@ -118,3 +128,5 @@ STATIC_URL = "/static/"
 CORS_ORIGIN_ALLOW_ALL = True
 
 STATIC_URL = '/static/'
+
+TOKEN_EXPIRED_AFTER_SECONDS = 300

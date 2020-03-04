@@ -6,7 +6,9 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.status import *
 
+from rest_api.authentication import token_expire_handler
 from rest_api.models import *
+from rest_api.serializers import UserSerializer, UserLoginSerializer
 
 
 def get_user_type(username, request=None):
@@ -60,7 +62,6 @@ def login(request):
     :return: Response 200 with user_type, data and token, if everything goes smoothly.
     Or Response 404 for not found error.
     """
-    """
     login_serializer = UserLoginSerializer(data=request.data)
     if not login_serializer.is_valid():
         return Response(login_serializer.errors, status=HTTP_400_BAD_REQUEST)
@@ -90,9 +91,6 @@ def login(request):
         },
         status=HTTP_200_OK,
     )
-    """
-
-    return Response(status=HTTP_200_OK)
 
 
 @csrf_exempt
