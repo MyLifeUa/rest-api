@@ -95,6 +95,11 @@ Ex:
 - Email: _admin@admin.com_
 - Password: _admin_
 
+To access the database from command line, execute the following:
+```bash
+psql -U mylife -h 127.0.0.1 mylife
+```
+
 <!--We are almost ready to deploy this REST API, we are only missing a minor detail. We should configure in which port this API will be accessible.
 To do this, in `manage.py` we need to add the following lines:
 
