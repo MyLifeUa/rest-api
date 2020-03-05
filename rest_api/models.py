@@ -65,5 +65,3 @@ class Workout(models.Model):
         models.DurationField()
     )  # https://docs.djangoproject.com/en/3.0/ref/models/fields/#durationfield
     difficulty = models.IntegerField()
-
-
