@@ -45,7 +45,7 @@ test:
     DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/$POSTGRES_DB"
   <<: *build
   script:
-    - ./set_env_vars_ci.sh
+    - source set_env_vars_ci.sh
     - python manage.py test
 
 
