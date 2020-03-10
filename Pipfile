@@ -11,6 +11,8 @@ psycopg2 = "*"
 djangorestframework = ">=3.10.3"
 django-rest-swagger = "*"
 requests = "*"
+pylint = "*"
+pylint-django = "*"
 
 [requires]
 python_version = "3.7"
