@@ -121,6 +121,8 @@ class ClientRegistrationTest(APITestCase):
 
 
 class AdminRegistrationTest(APITestCase):
+    def login(self):
+        return self.client.post("/login", {"username": "vasco", "password": "pwd"})
 
     def test_new_admin_missing_authentication(self):
         response = self.client.post("/admins", {"email": "vr@ua.pt", "password": "pwd", "first_name": "Vasco",
@@ -131,7 +133,7 @@ class AdminRegistrationTest(APITestCase):
         user = User.objects.create_user("vasco", "vr@ua.pt", "pwd")
         clients_group = Group.objects.get_or_create(name="clients_group")[0]
         clients_group.user_set.add(user)
-        response = self.client.post("/login", {"username": "vasco", "password": "pwd"})
+        response = self.login()
         token = response.data["token"]
         self.client.credentials(HTTP_AUTHORIZATION=f"Token {token}")
         response = self.client.post("/admins", {"email": "vr@ua.pt", "password": "pwd", "first_name": "Vasco",
@@ -140,7 +142,7 @@ class AdminRegistrationTest(APITestCase):
 
     def test_new_admin_missing_parameters(self):
         User.objects.create_superuser("vasco", "vr@ua.pt", "pwd")
-        response = self.client.post("/login", {"username": "vasco", "password": "pwd"})
+        response = self.login()
         token = response.data["token"]
         self.client.credentials(HTTP_AUTHORIZATION=f"Token {token}")
         response = self.client.post("/admins", {"email": "vr@ua.pt", "password": "pwd", "first_name": "Vasco",
@@ -149,7 +151,7 @@ class AdminRegistrationTest(APITestCase):
 
     def test_new_admin_right_parameters(self):
         User.objects.create_superuser("vasco", "vr@ua.pt", "pwd")
-        response = self.client.post("/login", {"username": "vasco", "password": "pwd"})
+        response = self.login()
         token = response.data["token"]
         self.client.credentials(HTTP_AUTHORIZATION=f"Token {token}")
         response = self.client.post("/admins", {"email": "vr@ua.pt", "password": "pwd", "first_name": "Vasco",
