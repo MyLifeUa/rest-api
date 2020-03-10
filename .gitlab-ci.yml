@@ -37,8 +37,7 @@ lint:
   script:
     - pip install pylint
     - pip install pylint_django
-    - pylint --load-plugins pylint_django rest_api/
-    - exit 0
+    - pylint --exit-zero --load-plugins pylint_django rest_api/
 
 test:
   stage: Test
