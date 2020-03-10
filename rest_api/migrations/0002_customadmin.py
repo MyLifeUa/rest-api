@@ -8,16 +8,24 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('auth', '0011_update_proxy_permissions'),
-        ('rest_api', '0001_initial'),
+        ("auth", "0011_update_proxy_permissions"),
+        ("rest_api", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='CustomAdmin',
+            name="CustomAdmin",
             fields=[
-                ('auth_user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False, to=settings.AUTH_USER_MODEL)),
-                ('hospital', models.CharField(max_length=100)),
+                (
+                    "auth_user",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        primary_key=True,
+                        serialize=False,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                ("hospital", models.CharField(max_length=100)),
             ],
         ),
     ]

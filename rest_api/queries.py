@@ -24,11 +24,20 @@ def add_client(data):
 
     try:
         # create a user
-        user = User.objects.create_user(username=email, email=email, first_name=first_name, last_name=last_name,
-                                        password=password)
+        user = User.objects.create_user(
+            username=email,
+            email=email,
+            first_name=first_name,
+            last_name=last_name,
+            password=password,
+        )
         # create custom user
-        custom_user = CustomUser.objects.create(auth_user=user, phone_number=phone_number, photo=photo,
-                                                birth_date=birth_date)
+        custom_user = CustomUser.objects.create(
+            auth_user=user,
+            phone_number=phone_number,
+            photo=photo,
+            birth_date=birth_date,
+        )
 
     except Error as e:
         error_message = "Error while creating new user!"
@@ -73,8 +82,13 @@ def add_admin(data):
 
     try:
         # create a user
-        user = User.objects.create_superuser(username=email, email=email, first_name=first_name, last_name=last_name,
-                                             password=password)
+        user = User.objects.create_superuser(
+            username=email,
+            email=email,
+            first_name=first_name,
+            last_name=last_name,
+            password=password,
+        )
 
     except Error as e:
         error_message = "Error while creating new user!"

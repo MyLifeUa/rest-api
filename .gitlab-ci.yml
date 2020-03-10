@@ -1,0 +1,51 @@
+
+stages:
+  - Lint
+  - Test
+  # - Deploy
+
+# This folder is cached between builds
+# http://docs.gitlab.com/ce/ci/yaml/README.html#cache
+cache:
+  paths:
+    - ~/.cache/pip/
+
+.template: &build
+  image: python:latest
+  before_script:
+    - python -V
+    - pip install -r requirements.txt
+  variables:
+    # Connecting to testDB
+    POSTGRES_DB: postgres
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: 'postgres'
+    POLLSAPI_PG_HOST: postgres
+  services:
+    - postgres:9.6-alpine
+
+format:
+  stage: Lint
+  image: python:latest
+  script:
+    - pip install black
+    - black .
+  
+lint:
+  stage: Lint
+  <<: *build
+  script:
+    - pip install pylint
+    - pip install pylint_django
+    - pylint --exit-zero --load-plugins pylint_django rest_api/
+
+test:
+  stage: Test
+  # variables:
+  #   DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/$POSTGRES_DB"
+  <<: *build
+  script:
+    - source set_env_vars_ci.sh
+    - python manage.py test
+
+
