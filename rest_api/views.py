@@ -94,6 +94,22 @@ def new_admin(request):
         )
 
     data = request.data
+
+    if not (
+            "email" in data
+            and "first_name" in data
+            and "last_name" in data
+            and "password" in data
+            and "hospital" in data
+    ):
+        state = "Error"
+        message = "Missing parameters"
+        status = HTTP_400_BAD_REQUEST
+        return Response(
+            {"role": role, "state": state, "message": message, "token": token},
+            status=status,
+        )
+
     state, message, username = queries.add_admin(data)
     state, status = (
         ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
