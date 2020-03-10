@@ -10,23 +10,7 @@ cache:
   paths:
     - ~/.cache/pip/
 
-format:
-  stage: Lint
-  image: python:latest
-  script:
-    - pip install black
-    - black .
-  
-lint:
-  stage: Lint
-  image: python:latest
-  script:
-    - pip install pylint
-    - pip install pylint_django
-    - pylint --load-plugins pylint_django rest_api/
-
-test:
-  stage: Test
+.template: &build
   image: python:latest
   before_script:
     - python -V
@@ -39,6 +23,25 @@ test:
     POLLSAPI_PG_HOST: postgres
   services:
     - postgres:9.6-alpine
+
+format:
+  stage: Lint
+  image: python:latest
+  script:
+    - pip install black
+    - black .
+  
+lint:
+  stage: Lint
+  <<: *build
+  script:
+    - pip install pylint
+    - pip install pylint_django
+    - pylint --load-plugins pylint_django rest_api/
+
+test:
+  stage: Test
+  <<: *build
   variables:
     DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/$POSTGRES_DB"
   script:
