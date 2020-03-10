@@ -1,3 +1,10 @@
+
+stages:
+  - Lint
+  - Test
+  - Docker
+  - Deploy
+
 # This file is a template, and might need editing before it works on your project.
 # Official framework image. Look for the different tagged releases at:
 # https://hub.docker.com/r/library/python
@@ -42,7 +49,13 @@ before_script:
 #
 # and then adding `--settings app.settings.ci` (or similar) to the test command
 
-test:
+Lint:
+  image: python:latest
+  script:
+    - pip install django-lint
+    - django-lint .
+
+Test:
   variables:
     DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/$POSTGRES_DB"
   script:
