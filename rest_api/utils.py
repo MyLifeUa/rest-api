@@ -3,21 +3,22 @@ from rest_framework.authtoken.models import Token
 
 
 def get_role(username, request=None):
+    role = None
     try:
         if username is None:
             username = request.user.username
 
         if User.objects.get(username=username).is_superuser:
-            return "admin"
+            role = "admin"
         elif User.objects.get(username=username).groups.all()[0].name in ["clients_group"]:
-            return "client"
+            role = "client"
         elif User.objects.get(username=username).groups.all()[0].name in ["doctors_group"]:
-            return "doctor"
-        else:
-            return None
+            role = "doctor"
 
     except User.DoesNotExist:
-        return None
+        role = None
+
+    return role
 
 
 def who_am_i(request):

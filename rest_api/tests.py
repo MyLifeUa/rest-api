@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User, Group
-from rest_framework.status import *
+from rest_framework.status import HTTP_401_UNAUTHORIZED, HTTP_200_OK, HTTP_400_BAD_REQUEST
 from rest_framework.test import APITestCase
 
 
@@ -55,7 +55,7 @@ class AuthenticationTest(APITestCase):
         self.assertEqual(response.status_code, HTTP_401_UNAUTHORIZED)
 
 
-class RegistrationTest(APITestCase):
+class ClientRegistrationTest(APITestCase):
     def tearDown(self):
         # Clean up run after every test method.
         pass
@@ -82,3 +82,41 @@ class RegistrationTest(APITestCase):
         response = self.client.post("/clients", {"email": "vr@ua.pt", "password": "pwd", "first_name": "Vasco",
                                                  "last_name": "Ramos", "height": 1.60, "weight_goal": 65})
         self.assertEqual(response.status_code, HTTP_200_OK)
+
+
+class AdminRegistrationTest(APITestCase):
+    def tearDown(self):
+        # Clean up run after every test method.
+        pass
+
+    def test_new_admin_missing_authentication(self):
+        response = self.client.post("/admins", {"email": "vr@ua.pt", "password": "pwd", "first_name": "Vasco",
+                                                "last_name": "Ramos", "hospital": "Centro Hospitalar de São João"})
+        self.assertEqual(response.status_code, HTTP_401_UNAUTHORIZED)
+
+    """
+    def test_new_admin_missing_authorization(self):
+
+    def test_new_admin_missing_parameters(self):
+        response = self.client.post("/clients", {"email": "vr@ua.pt"})
+        self.assertEqual(response.status_code, HTTP_400_BAD_REQUEST)
+
+        response = self.client.post("/clients", {"email": "vr@ua.pt", "password": "pwd"})
+        self.assertEqual(response.status_code, HTTP_400_BAD_REQUEST)
+
+        response = self.client.post("/clients", {"email": "vr@ua.pt", "password": "pwd", "first_name": "Vasco"})
+        self.assertEqual(response.status_code, HTTP_400_BAD_REQUEST)
+
+        response = self.client.post("/clients", {"email": "vr@ua.pt", "password": "pwd", "first_name": "Vasco",
+                                                 "last_name": "Ramos"})
+        self.assertEqual(response.status_code, HTTP_400_BAD_REQUEST)
+
+        response = self.client.post("/clients", {"email": "vr@ua.pt", "password": "pwd", "first_name": "Vasco",
+                                                 "last_name": "Ramos", "height": 111})
+        self.assertEqual(response.status_code, HTTP_400_BAD_REQUEST)
+
+    def test_new_admin_right_parameters(self):
+        response = self.client.post("/clients", {"email": "vr@ua.pt", "password": "pwd", "first_name": "Vasco",
+                                                 "last_name": "Ramos", "height": 1.60, "weight_goal": 65})
+        self.assertEqual(response.status_code, HTTP_200_OK)
+    """
