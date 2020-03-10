@@ -10,7 +10,7 @@ cache:
   paths:
     - ~/.cache/pip/
 
-.template: @build
+.template: &build
   image: python:latest
   before_script:
     - python -V
