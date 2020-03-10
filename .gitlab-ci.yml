@@ -29,8 +29,8 @@ lint:
   stage: Lint
   <<: *build
   script:
-    - pip install django-lint
-    - django-lint .
+    - pip install black
+    - black .
 
 test:
   stage: Test

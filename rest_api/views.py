@@ -61,12 +61,21 @@ def logout(request):
 def new_client(request):
     data = request.data
     if not (
-            "email" in data and "first_name" in data and "last_name" in data and "password" in data
-            and "height" in data and "weight_goal" in data
+        "email" in data
+        and "first_name" in data
+        and "last_name" in data
+        and "password" in data
+        and "height" in data
+        and "weight_goal" in data
     ):
-        return Response({"state": "Error", "message": "Missing parameters"}, status=HTTP_400_BAD_REQUEST)
+        return Response(
+            {"state": "Error", "message": "Missing parameters"},
+            status=HTTP_400_BAD_REQUEST,
+        )
     state, message, username = queries.add_client(data)
-    state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+    state, status = (
+        ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+    )
 
     return Response({"state": state, "message": message}, status=status)
 
@@ -80,12 +89,18 @@ def new_admin(request):
         state = "Error"
         message = "You do not have permissions to add a new admin"
         status = HTTP_403_FORBIDDEN
-        return Response({"role": role, "state": state, "message": message, "token": token},
-                        status=status)
+        return Response(
+            {"role": role, "state": state, "message": message, "token": token},
+            status=status,
+        )
 
     data = request.data
     state, message, username = queries.add_admin(data)
-    state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+    state, status = (
+        ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+    )
 
-    return Response({"role": role, "state": state, "message": message, "token": token},
-                    status=status)
+    return Response(
+        {"role": role, "state": state, "message": message, "token": token},
+        status=status,
+    )

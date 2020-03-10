@@ -9,9 +9,13 @@ def get_role(username, request=None):
 
         if User.objects.get(username=username).is_superuser:
             return "admin"
-        elif User.objects.get(username=username).groups.all()[0].name in ["clients_group"]:
+        elif User.objects.get(username=username).groups.all()[0].name in [
+            "clients_group"
+        ]:
             return "client"
-        elif User.objects.get(username=username).groups.all()[0].name in ["doctors_group"]:
+        elif User.objects.get(username=username).groups.all()[0].name in [
+            "doctors_group"
+        ]:
             return "doctor"
         else:
             return None
