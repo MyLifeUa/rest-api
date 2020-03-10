@@ -21,7 +21,6 @@ cache:
     POSTGRES_USER: postgres
     POSTGRES_PASSWORD: ''
     POLLSAPI_PG_HOST: postgres
-    DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/$POSTGRES_DB"
   services:
     - postgres:9.6-alpine
 
@@ -35,6 +34,8 @@ lint:
 test:
   stage: Test
   <<: *build
+  variables:
+    DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/$POSTGRES_DB"
   script:
     - python manage.py test
 
