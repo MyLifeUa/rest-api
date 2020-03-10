@@ -2,6 +2,13 @@ from django.contrib.auth.models import User
 from django.db import models
 
 
+class CustomAdmin(models.Model):
+    auth_user = models.OneToOneField(
+        User, on_delete=models.CASCADE, unique=True, primary_key=True
+    )
+    hospital = models.CharField(max_length=100)
+
+
 class CustomUser(models.Model):
     auth_user = models.OneToOneField(
         User, on_delete=models.CASCADE, unique=True, primary_key=True

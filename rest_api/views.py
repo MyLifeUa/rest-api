@@ -1,6 +1,5 @@
 from django.contrib.auth import authenticate
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -8,34 +7,8 @@ from rest_framework.status import *
 
 from rest_api import queries
 from rest_api.authentication import token_expire_handler
-from rest_api.models import *
 from rest_api.serializers import UserSerializer, UserLoginSerializer
-
-
-def get_user_type(username, request=None):
-    try:
-        if username is None:
-            username = request.user.username
-
-        if User.objects.get(username=username).is_superuser:
-            return "admin"
-        elif User.objects.get(username=username).groups.all()[0].name in ["clients_group"]:
-            return "client"
-        elif User.objects.get(username=username).groups.all()[0].name in ["doctors_group"]:
-            return "doctor"
-        else:
-            return None
-
-    except User.DoesNotExist:
-        return None
-
-
-def who_am_i(request):
-    token = Token.objects.get(user=request.user).key
-    username = request.user.username
-    user_type = get_user_type(username)
-
-    return token, username, user_type
+from .utils import *
 
 
 @api_view(["POST"])
@@ -64,7 +37,7 @@ def login(request):
 
     return Response(
         {
-            "user_type": get_user_type(user.username),
+            "role": get_role(user.username),
             "data": user_serialized.data,
             "token": token.key,
         },
@@ -83,7 +56,6 @@ def logout(request):
     return Response(status=HTTP_200_OK)
 
 
-@csrf_exempt
 @api_view(["POST"])
 @permission_classes((AllowAny,))
 def new_client(request):
@@ -94,7 +66,26 @@ def new_client(request):
     ):
         return Response({"state": "Error", "message": "Missing parameters"}, status=HTTP_400_BAD_REQUEST)
     state, message, username = queries.add_client(data)
-
     state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"state": state, "message": message}, status=status)
+
+
+@api_view(["POST"])
+@permission_classes(())
+def new_admin(request):
+    token, username, role = who_am_i(request)
+
+    if not verify_authorization(role, "admin"):
+        state = "Error"
+        message = "You do not have permissions to add a new admin"
+        status = HTTP_403_FORBIDDEN
+        return Response({"role": role, "state": state, "message": message, "token": token},
+                        status=status)
+
+    data = request.data
+    state, message, username = queries.add_admin(data)
+    state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+    return Response({"role": role, "state": state, "message": message, "token": token},
+                    status=status)

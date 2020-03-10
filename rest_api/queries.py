@@ -1,8 +1,8 @@
 from django.contrib.auth.models import Group
 from django.db import Error
 
-from .constants import *
 from .models import *
+from .constants import *
 
 
 def add_client(data):
@@ -31,7 +31,6 @@ def add_client(data):
                                                 birth_date=birth_date)
 
     except Error as e:
-        print(e)
         error_message = "Error while creating new user!"
         return False, error_message, email
     try:
@@ -58,4 +57,36 @@ def add_client(data):
         return False, error_message, email
 
     state_message = "Client was registered successfully!"
+    return True, state_message, email
+
+
+def add_admin(data):
+    email = data.get("email")
+    first_name = data.get("first_name")
+    last_name = data.get("last_name")
+    password = data.get("password")
+    hospital = data.get("hospital")
+
+    if User.objects.filter(username=email).exists():
+        error_message = "There's already a user with the specified email! User was not added to the db."
+        return False, error_message, email
+
+    try:
+        # create a user
+        user = User.objects.create_superuser(username=email, email=email, first_name=first_name, last_name=last_name,
+                                             password=password)
+
+    except Error as e:
+        error_message = "Error while creating new user!"
+        return False, error_message, email
+    try:
+        # link the user to an admin
+        CustomAdmin.objects.create(auth_user=user, hospital=hospital)
+
+    except Exception:
+        user.delete()
+        error_message = "Error while creating new admin!"
+        return False, error_message, email
+
+    state_message = "Admin registered successfully!"
     return True, state_message, email
