@@ -20,6 +20,14 @@ sudo -H pip install -U pipenv
 sudo -H pip3 install -U pipenv
 ```
 
+The database and system secrets are stored in local bash variables, so you will need to set those variables before you run the project.  
+You can do that by running:
+```bash
+source set_env_vars.sh
+```
+If needed, change the file to your local data.
+In the future, we will be using a docker image to run the Django server, so this will be done automatically by that.
+
 Before starting the project, first check if the pipenv environment is default and is configured on the PyCharm IDE. For that, follow these steps:
 
 Firstly open the settings, executing the keyboard shortcut CTRL+ALT+S or through the menu File and then Settings. Your settings should be like this:
