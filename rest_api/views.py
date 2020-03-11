@@ -12,6 +12,7 @@ from rest_framework.status import (
 from rest_api import queries
 from rest_api.authentication import token_expire_handler
 from rest_api.serializers import UserSerializer, UserLoginSerializer
+from .models import CustomAdmin
 from .utils import *
 
 
@@ -53,6 +54,38 @@ def logout(request):
     except Token.DoesNotExist:
         pass
     return Response(status=HTTP_200_OK)
+
+
+@api_view(["POST"])
+def new_doctor(request):
+    token, username, role = who_am_i(request)
+
+    if not verify_authorization(role, "admin"):
+        state = "Error"
+        message = "You do not have permissions to add a new doctor"
+        status = HTTP_403_FORBIDDEN
+        return Response({"role": role, "state": state, "message": message, "token": token},
+                        status=status)
+
+    data = request.data
+    if not (
+            "email" in data
+            and "first_name" in data
+            and "last_name" in data
+            and "password" in data
+    ):
+        state = "Error"
+        message = "Missing parameters"
+        status = HTTP_400_BAD_REQUEST
+        return Response(
+            {"role": role, "state": state, "message": message, "token": token},
+            status=status,
+        )
+    admin_hospital = CustomAdmin.objects.get(auth_user__username=username).hospital
+    state, message = queries.add_doctor(data, admin_hospital)
+    state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+    return Response({"state": state, "message": message}, status=status)
 
 
 @api_view(["POST"])

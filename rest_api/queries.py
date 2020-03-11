@@ -171,3 +171,39 @@ def add_admin(data):
 
     state_message = "Admin registered successfully!"
     return True, state_message
+
+
+def add_doctor(data, hospital):
+    email = data.get("email")
+    first_name = data.get("first_name")
+    last_name = data.get("last_name")
+    password = data.get("password")
+
+    if User.objects.filter(username=email).exists():
+        error_message = "Email already taken. User was not added to the db."
+        return False, error_message
+
+    try:
+        # create a user
+        user = User.objects.create_user(
+            username=email,
+            email=email,
+            first_name=first_name,
+            last_name=last_name,
+            password=password,
+        )
+
+    except Error:
+        error_message = "Error while creating new user!"
+        return False, error_message
+    try:
+        # link the user to an admin
+        Doctor.objects.create(auth_user=user, hospital=hospital)
+
+    except Exception:
+        user.delete()
+        error_message = "Error while creating new doctor!"
+        return False, error_message
+
+    state_message = "Doctor registered successfully!"
+    return True, state_message

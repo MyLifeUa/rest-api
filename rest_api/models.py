@@ -22,6 +22,7 @@ class Doctor(models.Model):
     user = models.OneToOneField(
         CustomUser, on_delete=models.CASCADE, unique=True, primary_key=True
     )
+    hospital = models.CharField(max_length=100)
 
 
 class Client(models.Model):
@@ -30,6 +31,8 @@ class Client(models.Model):
     )
     height = models.FloatField(null=True, blank=True)
     weight_goal = models.FloatField(null=True, blank=True)
+    patients = models.ForeignKey(Doctor, on_delete=models.CASCADE)
+
 
 
 class Item(models.Model):
