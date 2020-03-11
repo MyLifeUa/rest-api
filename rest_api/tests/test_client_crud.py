@@ -1,7 +1,8 @@
+from django.contrib.auth.models import User
 from rest_framework.status import (
     HTTP_200_OK,
     HTTP_400_BAD_REQUEST,
-)
+    HTTP_403_FORBIDDEN)
 from rest_framework.test import APITestCase
 
 
@@ -56,4 +57,32 @@ class ClientUpdateTest(APITestCase):
 
     def test_correct_update(self):
         response = self.client.put("/clients/vr@ua.pt", {"height": 2})
+        self.assertEqual(response.status_code, HTTP_200_OK)
+
+
+class ClientDeleteTest(APITestCase):
+    def setUp(self):
+        self.client.post("/clients", {"email": "v@ua.pt", "password": "pwd", "first_name": "Vasco",
+                                      "last_name": "Ramos", "height": 1.60, "weight_goal": 65})
+        response = self.client.post("/login", {"username": "v@ua.pt", "password": "pwd"})
+        token = response.data["token"]
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {token}")
+
+    def test_delete_non_existent_user(self):
+        response = self.client.delete("/clients/vr@ua.pt")
+        self.assertEqual(response.status_code, HTTP_400_BAD_REQUEST)
+
+    def test_delete_non_client_account(self):
+        User.objects.create_superuser("admin", "admin@ua.pt", "pwd")
+        response = self.client.delete("/clients/admin")
+        self.assertEqual(response.status_code, HTTP_400_BAD_REQUEST)
+
+    def test_delete_other_client_account(self):
+        self.client.post("/clients", {"email": "ze@ua.pt", "password": "pwd", "first_name": "Ze",
+                                      "last_name": "Costa", "height": 1.60, "weight_goal": 65})
+        response = self.client.delete("/clients/ze@ua.pt")
+        self.assertEqual(response.status_code, HTTP_403_FORBIDDEN)
+
+    def test_delete_self(self):
+        response = self.client.delete("/clients/v@ua.pt")
         self.assertEqual(response.status_code, HTTP_200_OK)
