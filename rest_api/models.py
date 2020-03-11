@@ -15,43 +15,51 @@ class CustomUser(models.Model):
     )
     phone_number = models.CharField(max_length=20, null=True, blank=True)
     photo = models.TextField(null=True, blank=True)
-    birth_date = models.DateField(null=True, blank=True)
+    birth_date = models.DateField()
 
 
 class Doctor(models.Model):
     user = models.OneToOneField(
         CustomUser, on_delete=models.CASCADE, unique=True, primary_key=True
     )
+    hospital = models.CharField(max_length=100)
 
 
 class Client(models.Model):
     user = models.OneToOneField(
         CustomUser, on_delete=models.CASCADE, unique=True, primary_key=True
     )
-    height = models.FloatField(null=True, blank=True)
-    weight_goal = models.FloatField(null=True, blank=True)
+    height = models.FloatField()
+    weight_goal = models.FloatField()
+    doctor = models.ForeignKey(Doctor, on_delete=models.SET_NULL, null=True, blank=True)
 
 
-class Item(models.Model):
-    name = models.CharField(max_length=20)
+class Ingredient(models.Model):
     calories = models.FloatField()
     proteins = models.FloatField()
     fat = models.FloatField()
     carbs = models.FloatField()
-    number_of_servings = models.FloatField()
+    name = models.CharField(max_length=30)
 
 
-class Ingredient(models.Model):
-    item = models.OneToOneField(
-        Item, on_delete=models.CASCADE, unique=True, primary_key=True
-    )
+class MealCatalog(models.Model):
+    name = models.CharField(max_length=30)
+    type_of_meal = models.CharField(max_length=30)
+    ingredients = models.ManyToManyField(Ingredient)
 
 
 class Meal(models.Model):
-    item = models.OneToOneField(
-        Item, on_delete=models.CASCADE, unique=True, primary_key=True
-    )
+    name = models.CharField(max_length=30)
+    number_of_servings = models.FloatField()
+    type_of_meal = models.CharField(max_length=30)
     ingredients = models.ManyToManyField(Ingredient)
+    meal_from_catalog = models.ForeignKey(MealCatalog, on_delete=models.SET_NULL, null=True,
+                                          blank=True)
+
+
+class MealHistory(models.Model):
+    day = models.DateField()
+    meals = models.ManyToManyField(Meal)
 
 
 class Exercise(models.Model):
