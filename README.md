@@ -52,7 +52,7 @@ On Ubuntu:
 
 | Action                                      | Command                                                                                    |
 | ------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| Install PostgreSQL                               | `apt-get install postgresql postgresql-contribr` ; `apt-get install libpq-dev python3-dev` |
+| Install PostgreSQL                               | `apt-get install postgresql postgresql-contrib` ; `apt-get install libpq-dev python3-dev` |
 | Access PostgreSQL as admin                       | `sudo -u postgres -i`                                                                      |
 | Login in PostgreSQL Database                  | `psql`                                                                                     |
 | Create a new user and set it's password     | `CREATE USER 'mylife' WITH PASSWORD 'mylife-restapi-2020';`                                |
