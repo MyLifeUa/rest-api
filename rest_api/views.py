@@ -80,6 +80,10 @@ def new_client(request):
 def client_rud(request, email):
     if request.method == "PUT":
         return update_client(request, email)
+    elif request.method == "DELETE":
+        return delete_client(request, email)
+    elif request.method == "GET":
+        return None
 
 
 def update_client(request, email):
@@ -94,6 +98,36 @@ def update_client(request, email):
     state, message = queries.update_client(request, email)
     status = HTTP_200_OK if state else HTTP_400_BAD_REQUEST
     return Response({"role": role, "state": state, "message": message, 'token': token},
+                    status=status)
+
+
+def delete_client(request, email):
+    token, username, role = who_am_i(request)
+    try:
+        user = User.objects.get(username=email)
+    except User.DoesNotExist:
+        state = "Error"
+        message = "User does not exist!"
+        status = HTTP_400_BAD_REQUEST
+        return Response({"role": role, "state": state, "message": message, "token": token},
+                        status=status)
+
+    if verify_authorization(get_role(email), "client"):
+        if username == email:
+            state, message = queries.delete_user(user)
+            state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+        else:
+            state = "Error"
+            message = "You do not have permissions to delete this account"
+            status = HTTP_403_FORBIDDEN
+
+    else:
+        state = "Error"
+        message = "The user is not a client"
+        status = HTTP_400_BAD_REQUEST
+
+    return Response({"role": role, "state": state, "message": message, "token": token},
                     status=status)
 
 

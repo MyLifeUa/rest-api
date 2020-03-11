@@ -171,3 +171,14 @@ def add_admin(data):
 
     state_message = "Admin registered successfully!"
     return True, state_message
+
+
+def delete_user(user):
+    try:
+        user.delete()
+        state, message = True, "User successfully deleted"
+    except Error:
+        state, message = False, "Error while deleting user"
+
+    finally:
+        return state, message
