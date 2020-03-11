@@ -31,7 +31,7 @@ class Client(models.Model):
     )
     height = models.FloatField(null=True, blank=True)
     weight_goal = models.FloatField(null=True, blank=True)
-    doctor = models.ForeignKey(Doctor, on_delete=models.SET_NULL)
+    doctor = models.ForeignKey(Doctor, on_delete=models.SET_NULL, null=True, blank=True)
 
 
 class Ingredient(models.Model):
@@ -53,7 +53,8 @@ class Meal(models.Model):
     number_of_servings = models.FloatField()
     type_of_meal = models.CharField(max_length=30)
     ingredients = models.ManyToManyField(Ingredient)
-    meal_from_catalog = models.ForeignKey(MealCatalog, on_delete=models.SET_NULL)
+    meal_from_catalog = models.ForeignKey(MealCatalog, on_delete=models.SET_NULL, null=True,
+                                          blank=True)
 
 
 class MealHistory(models.Model):
