@@ -1,5 +1,5 @@
 from django.contrib.auth.models import Group
-from django.db import Error
+from django.db import Error, transaction
 
 from .models import *
 from .constants import *
@@ -19,8 +19,8 @@ def add_client(data):
     birth_date = data.get("birth_date") if "birth_date" in data else None
 
     if User.objects.filter(username=email).exists():
-        error_message = "There's already a user with the specified email! User was not added to the db."
-        return False, error_message, email
+        error_message = "Email already taken. User was not added to the db."
+        return False, error_message
 
     try:
         # create a user
@@ -39,9 +39,9 @@ def add_client(data):
             birth_date=birth_date,
         )
 
-    except Error as e:
+    except Error:
         error_message = "Error while creating new user!"
-        return False, error_message, email
+        return False, error_message
     try:
         # link the user to a client
         Client.objects.create(user=custom_user, height=height, weight_goal=weight_goal)
@@ -49,7 +49,7 @@ def add_client(data):
     except Exception:
         user.delete()
         error_message = "Error while creating new client!"
-        return False, error_message, email
+        return False, error_message
 
     # check if the client group exists, else create it
     # finally add client to group
@@ -63,10 +63,77 @@ def add_client(data):
     except Exception:
         user.delete()
         error_message = "Error while creating new client!"
-        return False, error_message, email
+        return False, error_message
 
     state_message = "Client was registered successfully!"
-    return True, state_message, email
+    return True, state_message
+
+
+def update_client(request, email):
+    data, state, message = request.data, None, None
+
+    auth_user = User.objects.filter(username=email)
+    if not auth_user.exists():
+        state, message = False, "User does not exist!"
+        return state, message
+
+    user = CustomUser.objects.filter(auth_user=auth_user[0])
+    if not user.exists():
+        state, message = False, "User does not exist!"
+        return state, message
+
+    client = Client.objects.filter(user=user[0])
+    if not client.exists():
+        state, message = False, "User is not a client!"
+        return state, message
+
+    try:
+        if "email" in data:
+            email = data.get("email")
+            auth_user.update(email=email)
+            auth_user.update(username=email)
+
+        if "first_name" in data:
+            first_name = data.get("first_name")
+            auth_user.update(first_name=first_name)
+
+        if "last_name" in data:
+            last_name = data.get("last_name")
+            auth_user.update(last_name=last_name)
+
+        if "password" in data:
+            user = User.objects.get(username=email)
+            auth_user.set_password(data.get("password"))
+            auth_user.save()
+
+        if "phone_number" in data:
+            phone_number = data.get("phone_number")
+            user.update(phone_number=phone_number)
+
+        if "photo" in data:
+            photo = data.get("photo")
+            user.update(photo=photo)
+
+        if "birth_date" in data:
+            birth_date = data.get("birth_date")
+            user.update(birth_date=birth_date)
+
+        if "height" in data:
+            height = data.get("height")
+            client.update(height=height)
+
+        if "weight_goal" in data:
+            weight_goal = data.get("weight_goal")
+            client.update(weight_goal=weight_goal)
+
+        if state is None:
+            state = True
+            message = "Client successfully updated!"
+
+    except Exception:
+        state, message = False, "Error while updating client!"
+
+    return state, message
 
 
 def add_admin(data):
@@ -77,8 +144,8 @@ def add_admin(data):
     hospital = data.get("hospital")
 
     if User.objects.filter(username=email).exists():
-        error_message = "There's already a user with the specified email! User was not added to the db."
-        return False, error_message, email
+        error_message = "Email already taken. User was not added to the db."
+        return False, error_message
 
     try:
         # create a user
@@ -90,9 +157,9 @@ def add_admin(data):
             password=password,
         )
 
-    except Error as e:
+    except Error:
         error_message = "Error while creating new user!"
-        return False, error_message, email
+        return False, error_message
     try:
         # link the user to an admin
         CustomAdmin.objects.create(auth_user=user, hospital=hospital)
@@ -100,7 +167,7 @@ def add_admin(data):
     except Exception:
         user.delete()
         error_message = "Error while creating new admin!"
-        return False, error_message, email
+        return False, error_message
 
     state_message = "Admin registered successfully!"
-    return True, state_message, email
+    return True, state_message
