@@ -1,6 +1,10 @@
 from django.contrib.auth.models import User, Group
-from rest_framework.status import HTTP_401_UNAUTHORIZED, HTTP_200_OK, HTTP_400_BAD_REQUEST, \
-    HTTP_403_FORBIDDEN
+from rest_framework.status import (
+    HTTP_401_UNAUTHORIZED,
+    HTTP_200_OK,
+    HTTP_400_BAD_REQUEST,
+    HTTP_403_FORBIDDEN,
+)
 from rest_framework.test import APITestCase
 
 

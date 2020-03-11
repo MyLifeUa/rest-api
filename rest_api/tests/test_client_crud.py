@@ -1,5 +1,7 @@
-from django.contrib.auth.models import User, Group
-from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
+from rest_framework.status import (
+    HTTP_200_OK,
+    HTTP_400_BAD_REQUEST,
+)
 from rest_framework.test import APITestCase
 
 
