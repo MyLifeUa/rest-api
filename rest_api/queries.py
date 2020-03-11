@@ -19,8 +19,8 @@ def add_client(data):
     birth_date = data.get("birth_date") if "birth_date" in data else None
 
     if User.objects.filter(username=email).exists():
-        error_message = "There's already a user with the specified email! User was not added to the db."
-        return False, error_message, email
+        error_message = "Email already taken. User was not added to the db."
+        return False, error_message
 
     try:
         # create a user
@@ -39,9 +39,9 @@ def add_client(data):
             birth_date=birth_date,
         )
 
-    except Error as e:
+    except Error:
         error_message = "Error while creating new user!"
-        return False, error_message, email
+        return False, error_message
     try:
         # link the user to a client
         Client.objects.create(user=custom_user, height=height, weight_goal=weight_goal)
@@ -49,7 +49,7 @@ def add_client(data):
     except Exception:
         user.delete()
         error_message = "Error while creating new client!"
-        return False, error_message, email
+        return False, error_message
 
     # check if the client group exists, else create it
     # finally add client to group
@@ -63,10 +63,10 @@ def add_client(data):
     except Exception:
         user.delete()
         error_message = "Error while creating new client!"
-        return False, error_message, email
+        return False, error_message
 
     state_message = "Client was registered successfully!"
-    return True, state_message, email
+    return True, state_message
 
 
 def add_admin(data):
@@ -77,8 +77,8 @@ def add_admin(data):
     hospital = data.get("hospital")
 
     if User.objects.filter(username=email).exists():
-        error_message = "There's already a user with the specified email! User was not added to the db."
-        return False, error_message, email
+        error_message = "Email already taken. User was not added to the db."
+        return False, error_message
 
     try:
         # create a user
@@ -90,9 +90,9 @@ def add_admin(data):
             password=password,
         )
 
-    except Error as e:
+    except Error:
         error_message = "Error while creating new user!"
-        return False, error_message, email
+        return False, error_message
     try:
         # link the user to an admin
         CustomAdmin.objects.create(auth_user=user, hospital=hospital)
@@ -100,7 +100,7 @@ def add_admin(data):
     except Exception:
         user.delete()
         error_message = "Error while creating new admin!"
-        return False, error_message, email
+        return False, error_message
 
     state_message = "Admin registered successfully!"
-    return True, state_message, email
+    return True, state_message
