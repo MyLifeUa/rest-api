@@ -70,8 +70,6 @@ def add_client(data):
 
 
 def update_client(request, email):
-    transaction.set_autocommit(False)
-
     data, state, message = request.data, None, None
 
     auth_user = User.objects.filter(username=email)
@@ -131,16 +129,10 @@ def update_client(request, email):
         if state is None:
             state = True
             message = "Client successfully updated!"
-            transaction.commit()
 
-        if not state:
-            transaction.rollback()
-
-    except Error:
+    except Exception:
         state, message = False, "Error while updating client!"
-        transaction.rollback()
 
-    transaction.set_autocommit(True)
     return state, message
 
 

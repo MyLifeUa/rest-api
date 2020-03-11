@@ -1,3 +1,4 @@
+from django.conf.urls import url
 from django.urls import path
 
 from .views import *
@@ -10,5 +11,5 @@ urlpatterns = [
     path("admins", new_admin, name="new-admin"),
 
     path("clients", new_client, name="new-client"),
-    path("clients", update_client, name="update-client"),
+    url("^clients/(?P<email>.+)", client_rud, name="client-rud"),
 ]

@@ -73,7 +73,12 @@ def new_client(request):
     return Response({"state": state, "message": message}, status=status)
 
 
-@api_view(["PUT"])
+@api_view(["GET", "PUT", "DELETE"])
+def client_rud(request, email):
+    if request.method == "PUT":
+        return update_client(request, email)
+
+
 def update_client(request, email):
     token, username, role = who_am_i(request)
     if username != email:
