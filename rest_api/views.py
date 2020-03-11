@@ -78,7 +78,7 @@ def update_client(request, email):
     token, username, role = who_am_i(request)
     if username != email:
         state = "Error"
-        message = "You do not have permissions to add a new admin"
+        message = "You do not have permissions to update this account"
         status = HTTP_403_FORBIDDEN
         return Response({"role": role, "state": state, "message": message, "token": token},
                         status=status)
