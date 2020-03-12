@@ -70,5 +70,3 @@ docker:
 deploy:
   stage: Deploy
   trigger: my-life-ua/compose
-  script:
-    - echo "Deploying app. Triggering pipeline on compose repository"
