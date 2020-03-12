@@ -68,7 +68,6 @@ def add_client(data):
     state_message = "Client was registered successfully!"
     return True, state_message
 
-
 def update_client(request, email):
     data, state, message = request.data, None, None
 
@@ -134,6 +133,67 @@ def update_client(request, email):
         state, message = False, "Error while updating client!"
 
     return state, message
+
+def update_doctor(request, email):
+    data, state, message = request.data, None, None
+
+    auth_user = User.objects.filter(username=email)
+    if not auth_user.exists():
+        state, message = False, "User does not exist!"
+        return state, message
+
+    user = CustomUser.objects.filter(auth_user=auth_user[0])
+    if not user.exists():
+        state, message = False, "User does not exist!"
+        return state, message
+
+    doctor = Doctor.objects.filter(user=user[0])
+    if not doctor.exists():
+        state, message = False, "User is not a doctor!"
+        return state, message
+
+    try:
+        if "email" in data:
+            email = data.get("email")
+            auth_user.update(email=email)
+            auth_user.update(username=email)
+
+        if "first_name" in data:
+            first_name = data.get("first_name")
+            auth_user.update(first_name=first_name)
+
+        if "last_name" in data:
+            last_name = data.get("last_name")
+            auth_user.update(last_name=last_name)
+
+        if "password" in data:
+            user = User.objects.get(username=email)
+            auth_user.set_password(data.get("password"))
+            auth_user.save()
+
+        if "phone_number" in data:
+            phone_number = data.get("phone_number")
+            user.update(phone_number=phone_number)
+
+        if "photo" in data:
+            photo = data.get("photo")
+            user.update(photo=photo)
+
+        if "birth_date" in data:
+            birth_date = data.get("birth_date")
+            user.update(birth_date=birth_date)
+
+
+
+        if state is None:
+            state = True
+            message = "Doctor successfully updated!"
+
+    except Exception:
+        state, message = False, "Error while updating client!"
+
+    return state, message
+
 
 
 def add_admin(data):

@@ -108,6 +108,57 @@ def new_client(request):
 
     return Response({"state": state, "message": message}, status=status)
 
+@api_view(["GET", "PUT", "DELETE"])
+def doctor_rud(request, email):
+    if request.method == "PUT":
+        return update_doctor(request, email)
+    elif request.method == "DELETE":
+        return delete_doctor(request, email)
+    elif request.method == "GET":
+        return None
+
+def update_doctor(request, email):
+    token, username, role = who_am_i(request)
+    if username != email:
+        state = "Error"
+        message = "You do not have permissions to update this account"
+        status = HTTP_403_FORBIDDEN
+        return Response({"role": role, "state": state, "message": message, "token": token},
+                        status=status)
+
+    state, message = queries.update_doctor(request, email)
+    status = HTTP_200_OK if state else HTTP_400_BAD_REQUEST
+    return Response({"role": role, "state": state, "message": message, 'token': token},
+                    status=status)
+
+def delete_doctor(request, email):
+    token, username, role = who_am_i(request)
+    try:
+        user = User.objects.get(username=email)
+    except User.DoesNotExist:
+        state = "Error"
+        message = "User does not exist!"
+        status = HTTP_400_BAD_REQUEST
+        return Response({"role": role, "state": state, "message": message, "token": token},
+                        status=status)
+
+    if verify_authorization(get_role(email), "doctor"):
+        if username == email:
+            state, message = queries.delete_user(user)
+            state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+        else:
+            state = "Error"
+            message = "You do not have permissions to delete this account"
+            status = HTTP_403_FORBIDDEN
+
+    else:
+        state = "Error"
+        message = "The user is not a doctor"
+        status = HTTP_400_BAD_REQUEST
+
+    return Response({"role": role, "state": state, "message": message, "token": token},
+                    status=status)
 
 @api_view(["GET", "PUT", "DELETE"])
 def client_rud(request, email):
