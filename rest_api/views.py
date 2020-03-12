@@ -75,6 +75,7 @@ def new_doctor(request):
             and "password" in data
     ):
         state = "Error"
+        print("wrong")
         message = "Missing parameters"
         status = HTTP_400_BAD_REQUEST
         return Response(
