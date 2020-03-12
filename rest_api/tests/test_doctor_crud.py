@@ -57,7 +57,7 @@ class DoctorRegistrationTest(APITestCase):
         self.create_user_and_login("custom_admin", "vasco", "vr@ua.pt", "pwd")
         response = self.client.post("/doctors",
                                     {"email": "j.vasconcelos99@ua.pt", "password": "pwd", "first_name": "Vasco",
-                                     "last_name": "Ramos","birth_date":"2020-03-04"})
+                                     "last_name": "Ramos", "birth_date": "2020-03-04"})
         self.assertEqual(response.status_code, HTTP_200_OK)
 
 
@@ -84,9 +84,9 @@ class DoctorUpdateTest(APITestCase):
     def setUp(self):
         self.create_user_and_login("custom_admin", "vasco", "vr@ua.pt", "pwd")
 
-        response = self.client.post("/doctors",
-                                    {"email": "vr@ua.pt", "password": "pwd", "first_name": "Vasco",
-                                     "last_name": "Ramos","birth_date":"2020-03-04"})
+        self.client.post("/doctors",
+                         {"email": "vr@ua.pt", "password": "pwd", "first_name": "Vasco", "last_name": "Ramos",
+                          "birth_date": "2020-03-04"})
         response = self.client.post("/login", {"username": "vr@ua.pt", "password": "pwd"})
         token = response.data["token"]
         self.client.credentials(HTTP_AUTHORIZATION=f"Token {token}")
@@ -131,9 +131,9 @@ class DoctorDeleteTest(APITestCase):
     def setUp(self):
         self.create_user_and_login("custom_admin", "vasco", "vr@ua.pt", "pwd")
 
-        response = self.client.post("/doctors",
-                                    {"email": "v@ua.pt", "password": "pwd", "first_name": "Vasco",
-                                     "last_name": "Ramos","birth_date":"2020-03-04"})
+        self.client.post("/doctors",
+                         {"email": "v@ua.pt", "password": "pwd", "first_name": "Vasco", "last_name": "Ramos",
+                          "birth_date": "2020-03-04"})
         response = self.client.post("/login", {"username": "v@ua.pt", "password": "pwd"})
         token = response.data["token"]
         self.client.credentials(HTTP_AUTHORIZATION=f"Token {token}")
@@ -142,15 +142,15 @@ class DoctorDeleteTest(APITestCase):
         response = self.client.delete("/doctors/vr99@ua.pt")
         self.assertEqual(response.status_code, HTTP_400_BAD_REQUEST)
 
-    def test_delete_non_client_account(self):
+    def test_delete_non_doctor_account(self):
         User.objects.create_superuser("admin", "admin@ua.pt", "pwd")
         response = self.client.delete("/doctors/admin")
-        self.assertEqual(response.status_code, HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, HTTP_403_FORBIDDEN)
 
-    def test_delete_other_client_account(self):
+    def test_delete_other_doctor_account(self):
         self.create_user_and_login("custom_admin", "vasco99", "vr@ua.pt", "pwd")
         self.client.post("/doctors", {"email": "ze@ua.pt", "password": "pwd", "first_name": "Ze",
-                                      "last_name": "Costa","birth_date":"2020-03-04"})
+                                      "last_name": "Costa", "birth_date": "2020-03-04"})
         response = self.client.post("/login", {"username": "v@ua.pt", "password": "pwd"})
         token = response.data["token"]
         self.client.credentials(HTTP_AUTHORIZATION=f"Token {token}")
