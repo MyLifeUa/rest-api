@@ -6,7 +6,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -17,14 +16,18 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='CustomAdmin',
             fields=[
-                ('auth_user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False, to=settings.AUTH_USER_MODEL)),
+                ('auth_user',
+                 models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False,
+                                      to=settings.AUTH_USER_MODEL)),
                 ('hospital', models.CharField(max_length=100)),
             ],
         ),
         migrations.CreateModel(
             name='CustomUser',
             fields=[
-                ('auth_user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False, to=settings.AUTH_USER_MODEL)),
+                ('auth_user',
+                 models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False,
+                                      to=settings.AUTH_USER_MODEL)),
                 ('phone_number', models.CharField(blank=True, max_length=20, null=True)),
                 ('photo', models.TextField(blank=True, null=True)),
                 ('birth_date', models.DateField(blank=True, null=True)),
@@ -72,7 +75,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Doctor',
             fields=[
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False, to='rest_api.CustomUser')),
+                ('user',
+                 models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False,
+                                      to='rest_api.CustomUser')),
                 ('hospital', models.CharField(max_length=100)),
             ],
         ),
@@ -105,15 +110,19 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='meal',
             name='meal_from_catalog',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='rest_api.MealCatalog'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL,
+                                    to='rest_api.MealCatalog'),
         ),
         migrations.CreateModel(
             name='Client',
             fields=[
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False, to='rest_api.CustomUser')),
+                ('user',
+                 models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False,
+                                      to='rest_api.CustomUser')),
                 ('height', models.FloatField(blank=True, null=True)),
                 ('weight_goal', models.FloatField(blank=True, null=True)),
-                ('doctor', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='rest_api.Doctor')),
+                ('doctor', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL,
+                                             to='rest_api.Doctor')),
             ],
         ),
     ]
