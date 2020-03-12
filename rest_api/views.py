@@ -75,7 +75,6 @@ def new_doctor(request):
             and "password" in data
     ):
         state = "Error"
-        print("wrong")
         message = "Missing parameters"
         status = HTTP_400_BAD_REQUEST
         return Response(
@@ -136,7 +135,7 @@ def delete_doctor(request, email):
     token, username, role = who_am_i(request)
     try:
         user = User.objects.get(username=email)
-    except User.DoesNotExist:
+    except User.DoesNotExist as e:
         state = "Error"
         message = "User does not exist!"
         status = HTTP_400_BAD_REQUEST

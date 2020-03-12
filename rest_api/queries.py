@@ -201,6 +201,11 @@ def add_doctor(data,hospital):
     first_name = data.get("first_name")
     last_name = data.get("last_name")
     password = data.get("password")
+    birth_date= data.get("birth_date")
+
+    # treat nullable fields
+    phone_number = data.get("phone_number") if "phone_number" in data else None
+    photo = data.get("photo") if "photo" in data else DEFAULT_USER_IMAGE
 
     if User.objects.filter(username=email).exists():
         error_message = "Email already taken. User was not added to the db."
@@ -216,12 +221,48 @@ def add_doctor(data,hospital):
             password=password,
         )
 
+
+
+
     except Error:
         error_message = "Error while creating new user!"
         return False, error_message
+
+    try:
+        print(user)
+        print(phone_number)
+        print(photo)
+        print(birth_date)
+        custom_user = CustomUser.objects.create(
+            auth_user=user,
+            phone_number=phone_number,
+            photo=photo,
+            birth_date=birth_date,
+        )
+
+
+    except Error as e:
+        print(e)
+        error_message = "Error while creating new custom_user!"
+        return False, error_message
+
     try:
         # link the user to a doctor
-        Doctor.objects.create(auth_user=user, hospital=hospital)
+        Doctor.objects.create(user=custom_user, hospital=hospital)
+
+    except Exception:
+        user.delete()
+        error_message = "Error while creating new doctor!"
+        return False, error_message
+
+    # check if the doctor group exists, else create it
+    # finally add client to group
+    try:
+        if not Group.objects.filter(name="doctors_group").exists():
+            Group.objects.create(name="doctors_group")
+
+        doctors_group = Group.objects.get(name="doctors_group")
+        doctors_group.user_set.add(user)
 
     except Exception:
         user.delete()
