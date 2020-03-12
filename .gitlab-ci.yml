@@ -67,4 +67,8 @@ docker:
     - docker build -t $CI_REGISTRY/$CI_PROJECT_PATH .
     - docker push $CI_REGISTRY/$CI_PROJECT_PATH
 
-
+deploy:
+  stage: Deploy
+  trigger: my-life-ua/compose
+  script:
+    - echo "Deploying app. Triggering pipeline on compose repository"
