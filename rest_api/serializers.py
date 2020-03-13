@@ -14,6 +14,7 @@ class UserLoginSerializer(serializers.Serializer):
 
 
 class ClientSerializer(serializers.Serializer):
+    id = serializers.SerializerMethodField()
     email = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
     phone_number = serializers.SerializerMethodField()
@@ -38,6 +39,7 @@ class ClientSerializer(serializers.Serializer):
 
 
 class DoctorSerializer(serializers.Serializer):
+    id = serializers.SerializerMethodField()
     email = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
     phone_number = serializers.SerializerMethodField()
