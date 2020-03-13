@@ -70,3 +70,5 @@ docker:
 deploy:
   stage: Deploy
   trigger: my-life-ua/compose
+  only:
+    - master
