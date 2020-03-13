@@ -52,6 +52,101 @@ def logout(request):
 
 
 @api_view(["POST"])
+def new_admin(request):
+    token, username, role = who_am_i(request)
+
+    if not verify_authorization(role, "admin"):
+        state = "Error"
+        message = "You do not have permissions to add a new admin"
+        status = HTTP_403_FORBIDDEN
+        return Response({"role": role, "state": state, "message": message, "token": token},
+                        status=status)
+
+    data = request.data
+
+    if not (
+            "email" in data
+            and "first_name" in data
+            and "last_name" in data
+            and "password" in data
+            and "hospital" in data
+    ):
+        state = "Error"
+        message = "Missing parameters"
+        status = HTTP_400_BAD_REQUEST
+        return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+    state, message = queries.add_admin(data)
+    state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+
+@api_view(["GET", "PUT", "DELETE"])
+def admin_rud(request, email):
+    if request.method == "PUT":
+        return update_admin(request, email)
+    elif request.method == "DELETE":
+        return delete_admin(request, email)
+    elif request.method == "GET":
+        return get_admin(request, email)
+
+
+def update_admin(request, email):
+    token, username, role = who_am_i(request)
+
+    # default possibility
+    state = "Error"
+    message = "You do not have permissions to update this account"
+    status = HTTP_403_FORBIDDEN
+
+    if is_self(role, "admin", username, email):
+        state, message = queries.update_admin(request, email)
+        status = HTTP_200_OK if state else HTTP_400_BAD_REQUEST
+
+    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+
+def delete_admin(request, email):
+    token, username, role = who_am_i(request)
+
+    try:
+        user = User.objects.get(username=email)
+    except User.DoesNotExist:
+        state = "Error"
+        message = "User does not exist!"
+        status = HTTP_400_BAD_REQUEST
+        return Response({"role": role, "state": state, "message": message, "token": token},
+                        status=status)
+
+    # default possibility
+    state = "Error"
+    message = "You don't have permissions to delete this account"
+    status = HTTP_403_FORBIDDEN
+
+    if is_self(role, "admin", username, email):
+        state, message = queries.delete_user(user)
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+
+def get_admin(request, email):
+    token, username, role = who_am_i(request)
+
+    # default possibility
+    state = "Error"
+    message = "You don't have permissions to access this account info"
+    status = HTTP_403_FORBIDDEN
+
+    if is_self(role, "admin", username, email):
+        state, message = queries.get_admin(username)
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+
+@api_view(["POST"])
 @permission_classes((AllowAny,))
 def new_client(request):
     data = request.data
@@ -134,37 +229,6 @@ def get_client(request, email):
     elif verify_authorization(role, "doctor") and is_client_doctor(username, email):
         state, message = queries.get_client(email)
         state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
-
-    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
-
-
-@api_view(["POST"])
-def new_admin(request):
-    token, username, role = who_am_i(request)
-
-    if not verify_authorization(role, "admin"):
-        state = "Error"
-        message = "You do not have permissions to add a new admin"
-        status = HTTP_403_FORBIDDEN
-        return Response({"role": role, "state": state, "message": message, "token": token},
-                        status=status)
-
-    data = request.data
-
-    if not (
-            "email" in data
-            and "first_name" in data
-            and "last_name" in data
-            and "password" in data
-            and "hospital" in data
-    ):
-        state = "Error"
-        message = "Missing parameters"
-        status = HTTP_400_BAD_REQUEST
-        return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
-
-    state, message = queries.add_admin(data)
-    state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 

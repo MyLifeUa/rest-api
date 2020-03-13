@@ -3,7 +3,7 @@ from django.db import Error, transaction
 
 from .models import *
 from .constants import *
-from .serializers import ClientSerializer, DoctorSerializer
+from .serializers import ClientSerializer, DoctorSerializer, AdminSerializer
 
 
 def add_user(data, is_superuser=False):
@@ -45,7 +45,7 @@ def add_user(data, is_superuser=False):
     return True, user
 
 
-def update_user(data, auth_user, user):
+def update_user(data, auth_user, user=None):
     if "email" in data:
         email = data.get("email")
         auth_user.update(email=email)
@@ -64,15 +64,15 @@ def update_user(data, auth_user, user):
         auth_user.set_password(data.get("password"))
         auth_user.save()
 
-    if "phone_number" in data:
+    if "phone_number" in data and user is not None:
         phone_number = data.get("phone_number")
         user.update(phone_number=phone_number)
 
-    if "photo" in data:
+    if "photo" in data and user is not None:
         photo = data.get("photo")
         user.update(photo=photo)
 
-    if "birth_date" in data:
+    if "birth_date" in data and user is not None:
         birth_date = data.get("birth_date")
         user.update(birth_date=birth_date)
 
@@ -87,6 +87,59 @@ def delete_user(user):
 
     finally:
         return state, message
+
+
+def add_admin(data):
+    hospital = data.get("hospital")
+
+    state, content = add_user(data, is_superuser=True)
+    if not state:
+        return state, content
+
+    user = content
+
+    try:
+        # link the user to an admin
+        CustomAdmin.objects.create(auth_user=user, hospital=hospital)
+
+    except Exception:
+        user.delete()
+        error_message = "Error while creating new admin!"
+        return False, error_message
+
+    state_message = "Admin registered successfully!"
+    return True, state_message
+
+
+def update_admin(request, username):
+    data = request.data
+    state = True
+    message = "Admin successfully updated!"
+
+    admin = CustomAdmin.objects.filter(auth_user__username=username)
+    if not admin.exists():
+        state, message = False, "User does not exist or user is not a admin!"
+        return state, message
+
+    try:
+        auth_user = User.objects.filter(username=username)
+
+        update_user(data, auth_user)
+
+    except Exception:
+        state, message = False, "Error while updating client!"
+
+    return state, message
+
+
+def get_admin(username):
+    admin = CustomAdmin.objects.filter(auth_user__username=username)
+    if not admin.exists():
+        state, message = False, "User does not exist or user is not a admin!"
+        return state, message
+
+    state, message = True, AdminSerializer(admin[0]).data
+    return state, message
 
 
 def add_client(data):
@@ -162,28 +215,6 @@ def get_client(email):
 
     state, message = True, ClientSerializer(client[0]).data
     return state, message
-
-
-def add_admin(data):
-    hospital = data.get("hospital")
-
-    state, content = add_user(data, is_superuser=True)
-    if not state:
-        return state, content
-
-    user = content
-
-    try:
-        # link the user to an admin
-        CustomAdmin.objects.create(auth_user=user, hospital=hospital)
-
-    except Exception:
-        user.delete()
-        error_message = "Error while creating new admin!"
-        return False, error_message
-
-    state_message = "Admin registered successfully!"
-    return True, state_message
 
 
 def add_doctor(data, hospital):
