@@ -3,7 +3,7 @@ from django.db import Error, transaction
 
 from .models import *
 from .constants import *
-from .serializers import ClientSerializer,DoctorSerializer
+from .serializers import ClientSerializer, DoctorSerializer
 
 
 def add_client(data):
@@ -25,24 +25,17 @@ def add_client(data):
 
     try:
         # create a user
-        user = User.objects.create_user(
-            username=email,
-            email=email,
-            first_name=first_name,
-            last_name=last_name,
-            password=password,
-        )
+        user = User.objects.create_user(username=email, email=email, first_name=first_name, last_name=last_name,
+                                        password=password)
+
         # create custom user
-        custom_user = CustomUser.objects.create(
-            auth_user=user,
-            phone_number=phone_number,
-            photo=photo,
-            birth_date=birth_date,
-        )
+        custom_user = CustomUser.objects.create(auth_user=user, phone_number=phone_number, photo=photo,
+                                                birth_date=birth_date)
 
     except Error:
         error_message = "Error while creating new user!"
         return False, error_message
+
     try:
         # link the user to a client
         Client.objects.create(user=custom_user, height=height, weight_goal=weight_goal)
@@ -55,10 +48,7 @@ def add_client(data):
     # check if the client group exists, else create it
     # finally add client to group
     try:
-        if not Group.objects.filter(name="clients_group").exists():
-            Group.objects.create(name="clients_group")
-
-        clients_group = Group.objects.get(name="clients_group")
+        clients_group, created = Group.objects.get_or_create(name="clients_group")
         clients_group.user_set.add(user)
 
     except Exception:
@@ -71,7 +61,8 @@ def add_client(data):
 
 
 def update_client(request, email):
-    data, state, message = request.data, None, None
+    data = request.data
+    state, message = None, None
 
     auth_user = User.objects.filter(username=email)
     if not auth_user.exists():
@@ -136,9 +127,8 @@ def update_client(request, email):
 
     return state, message
 
-def get_client(email):
-    state, message = None, None
 
+def get_client(email):
     user = CustomUser.objects.filter(auth_user__username=email)
     if not user.exists():
         state, message = False, "User does not exist!"
@@ -177,6 +167,7 @@ def add_admin(data):
     except Error:
         error_message = "Error while creating new user!"
         return False, error_message
+
     try:
         # link the user to an admin
         CustomAdmin.objects.create(auth_user=user, hospital=hospital)
@@ -194,6 +185,7 @@ def delete_user(user):
     try:
         user.delete()
         state, message = True, "User successfully deleted"
+
     except Error:
         state, message = False, "Error while deleting user"
 
@@ -218,25 +210,16 @@ def add_doctor(data, hospital):
 
     try:
         # create a user
-        user = User.objects.create_user(
-            username=email,
-            email=email,
-            first_name=first_name,
-            last_name=last_name,
-            password=password,
-        )
+        user = User.objects.create_user(username=email, email=email, first_name=first_name, last_name=last_name,
+                                        password=password)
 
     except Error:
         error_message = "Error while creating new user!"
         return False, error_message
 
     try:
-        custom_user = CustomUser.objects.create(
-            auth_user=user,
-            phone_number=phone_number,
-            photo=photo,
-            birth_date=birth_date,
-        )
+        custom_user = CustomUser.objects.create(auth_user=user, phone_number=phone_number, photo=photo,
+                                                birth_date=birth_date)
 
     except Error:
         error_message = "Error while creating new custom_user!"
@@ -254,10 +237,7 @@ def add_doctor(data, hospital):
     # check if the doctor group exists, else create it
     # finally add client to group
     try:
-        if not Group.objects.filter(name="doctors_group").exists():
-            Group.objects.create(name="doctors_group")
-
-        doctors_group = Group.objects.get(name="doctors_group")
+        doctors_group, created = Group.objects.get_or_create(name="doctors_group")
         doctors_group.user_set.add(user)
 
     except Exception:
@@ -270,7 +250,8 @@ def add_doctor(data, hospital):
 
 
 def update_doctor(request, email):
-    data, state, message = request.data, None, None
+    data = request.data
+    state, message = None, None
 
     auth_user = User.objects.filter(username=email)
     if not auth_user.exists():
@@ -327,16 +308,14 @@ def update_doctor(request, email):
 
     return state, message
 
-def get_doctor(email):
-    state, message = None, None
 
+def get_doctor(email):
     user = CustomUser.objects.filter(auth_user__username=email)
     if not user.exists():
         state, message = False, "User does not exist!"
         return state, message
 
     doctor = Doctor.objects.filter(user=user[0])
-    
 
-    state, message = True, DoctorSerializer(Doctor.objects.get(user=user[0])).data
+    state, message = True, DoctorSerializer(doctor[0]).data
     return state, message

@@ -11,7 +11,6 @@ from rest_api.tests.utils import create_user_and_login
 
 class AdminRegistrationTest(APITestCase):
 
-
     def test_new_admin_missing_authentication(self):
         response = self.client.post("/admins", {"email": "vr@ua.pt", "password": "pwd", "first_name": "Vasco",
                                                 "last_name": "Ramos", "hospital": "Centro Hospitalar de São João"})

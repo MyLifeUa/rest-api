@@ -53,8 +53,7 @@ class Meal(models.Model):
     number_of_servings = models.FloatField()
     type_of_meal = models.CharField(max_length=30)
     ingredients = models.ManyToManyField(Ingredient)
-    meal_from_catalog = models.ForeignKey(MealCatalog, on_delete=models.SET_NULL, null=True,
-                                          blank=True)
+    meal_from_catalog = models.ForeignKey(MealCatalog, on_delete=models.SET_NULL, null=True, blank=True)
 
 
 class MealHistory(models.Model):
@@ -76,7 +75,5 @@ class Set(models.Model):
 
 class Workout(models.Model):
     workout_sets = models.ManyToManyField(Set)
-    rest_time = (
-        models.DurationField()
-    )  # https://docs.djangoproject.com/en/3.0/ref/models/fields/#durationfield
+    rest_time = models.DurationField()  # https://docs.djangoproject.com/en/3.0/ref/models/fields/#durationfield
     difficulty = models.IntegerField()

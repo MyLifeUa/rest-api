@@ -12,7 +12,6 @@ from .utils import login, create_user_and_login
 from ..models import CustomAdmin, Client, CustomUser, Doctor
 
 
-
 class DoctorRegistrationTest(APITestCase):
     def test_new_doctor_missing_authentication(self):
         response = self.client.post("/doctors", {"email": "vr@ua.pt", "password": "pwd", "first_name": "Vasco",

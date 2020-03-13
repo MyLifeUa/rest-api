@@ -36,6 +36,7 @@ class ClientSerializer(serializers.Serializer):
     def get_photo(self, obj):
         return obj.user.photo
 
+
 class DoctorSerializer(serializers.Serializer):
     email = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
