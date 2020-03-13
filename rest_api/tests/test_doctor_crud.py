@@ -9,7 +9,7 @@ from rest_framework.status import (
 from rest_framework.test import APITestCase
 
 from .utils import login, create_user_and_login
-from ..models import CustomAdmin, Client, CustomUser, Doctor
+from ..models import Client, CustomUser, Doctor
 
 
 class DoctorRegistrationTest(APITestCase):
@@ -132,11 +132,12 @@ class GetDoctorTest(APITestCase):
                                                  "birth_date": "2020-03-04"})
         self.assertEqual(response.status_code, HTTP_200_OK)
 
-        auth_user = User.objects.create_user("ana@ua.pt", "ana@ua.pt", "pwd")
-        user = CustomUser.objects.create(auth_user=auth_user, birth_date=date(2020, 12, 31))
-        self.doctor = Doctor.objects.create(user=user, hospital="Hospital")
-        doctors_group = Group.objects.get_or_create(name="doctors_group")[0]
-        doctors_group.user_set.add(auth_user)  # Doctor
+        create_user_and_login(self.client, "custom_admin", "vasco", "vr@ua.pt", "pwd")
+
+        response = self.client.post("/doctors", {"email": "ana@ua.pt", "password": "pwd", "first_name": "Vasco",
+                                                 "last_name": "Ramos", "birth_date": "2020-03-04"})
+        self.assertEqual(response.status_code, HTTP_200_OK)
+        self.doctor = Doctor.objects.get(user__auth_user__username="ana@ua.pt")
 
         # Client with doctor
         self.client.post("/clients",
