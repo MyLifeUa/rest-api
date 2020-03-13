@@ -96,7 +96,7 @@ class GetClientTest(APITestCase):
     def setUp(self):
         self.client.post("/clients",
                          {"email": "tos@ua.pt", "password": "pwd", "first_name": "Tomas",
-                          "last_name": "Ramos", "height": 1.60, "weight_goal": 65})
+                          "last_name": "Ramos", "height": 1.60, "weight_goal": 65,"birth_date":"2020-03-04"})
         auth_user = User.objects.create_user("ana@ua.pt", "ana@ua.pt", "pwd")
         user = CustomUser.objects.create(auth_user=auth_user, birth_date=date(2020, 12, 31))
         self.doctor = Doctor.objects.create(user=user, hospital="Hospital")
@@ -111,7 +111,7 @@ class GetClientTest(APITestCase):
     def test_get_client_info_other_client(self):
         self.client.post("/clients",
                          {"email": "vr@ua.pt", "password": "pwd", "first_name": "Tomas",
-                          "last_name": "Ramos", "height": 1.60, "weight_goal": 65})
+                          "last_name": "Ramos", "height": 1.60, "weight_goal": 65,"birth_date":"2020-03-04"})
         self.login("vr@ua.pt", "pwd")
         response = self.client.get("/clients/tos@ua.pt")
         self.assertEqual(response.status_code, HTTP_403_FORBIDDEN)

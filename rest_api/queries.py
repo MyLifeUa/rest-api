@@ -3,7 +3,7 @@ from django.db import Error, transaction
 
 from .models import *
 from .constants import *
-from .serializers import ClientSerializer
+from .serializers import ClientSerializer,DoctorSerializer
 
 
 def add_client(data):
@@ -325,4 +325,18 @@ def update_doctor(request, email):
     except Exception:
         state, message = False, "Error while updating client!"
 
+    return state, message
+
+def get_doctor(email):
+    state, message = None, None
+
+    user = CustomUser.objects.filter(auth_user__username=email)
+    if not user.exists():
+        state, message = False, "User does not exist!"
+        return state, message
+
+    doctor = Doctor.objects.filter(user=user[0])
+    
+
+    state, message = True, DoctorSerializer(Doctor.objects.get(user=user[0])).data
     return state, message

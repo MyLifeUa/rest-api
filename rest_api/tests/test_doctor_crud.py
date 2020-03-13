@@ -1,11 +1,13 @@
 from django.contrib.auth.models import User, Group
+from datetime import date
+
 from rest_framework.status import (
     HTTP_200_OK,
     HTTP_400_BAD_REQUEST,
     HTTP_401_UNAUTHORIZED,
     HTTP_403_FORBIDDEN)
 from rest_framework.test import APITestCase
-from ..models import CustomAdmin
+from ..models import CustomAdmin, Client, CustomUser, Doctor
 
 
 class DoctorRegistrationTest(APITestCase):
@@ -168,4 +170,44 @@ class DoctorDeleteTest(APITestCase):
 
     def test_delete_self(self):
         response = self.client.delete("/doctors/v@ua.pt")
+        self.assertEqual(response.status_code, HTTP_200_OK)
+
+
+class GetDoctorTest(APITestCase):
+    def setUp(self):
+        self.client.post("/clients",
+                         {"email": "tos@ua.pt", "password": "pwd", "first_name": "Tomas",
+                          "last_name": "Ramos", "height": 1.60, "weight_goal": 65,"birth_date":"2020-03-04"})  # Client without a doctor
+
+        auth_user = User.objects.create_user("ana@ua.pt", "ana@ua.pt", "pwd")
+        user = CustomUser.objects.create(auth_user=auth_user, birth_date=date(2020, 12, 31))
+        self.doctor = Doctor.objects.create(user=user, hospital="Hospital")
+        doctors_group = Group.objects.get_or_create(name="doctors_group")[0]
+        doctors_group.user_set.add(auth_user)  # Doctor
+
+        self.client.post("/clients",
+                         {"email": "ana99@ua.pt", "password": "pwd", "first_name": "Tomas",
+                          "last_name": "Ramos", "height": 1.60, "weight_goal": 65,"birth_date":"2020-03-04"})  # Client with doctor
+
+    def login(self, username, pwd):
+        response = self.client.post("/login", {"username": username, "password": pwd})
+        token = response.data["token"]
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {token}")
+
+    def test_get_doctor_info_other_client(self):
+        self.login("tos@ua.pt", "pwd")
+        response = self.client.get("/doctors/ana@ua.pt")
+        self.assertEqual(response.status_code, HTTP_403_FORBIDDEN)
+
+
+
+    def test_get_doctor_self_info(self):
+        self.login("ana@ua.pt", "pwd")
+        response = self.client.get("/doctors/ana@ua.pt")
+        self.assertEqual(response.status_code, HTTP_200_OK)
+
+    def test_get_doctor_info_client_doctor(self):
+        Client.objects.filter(user__auth_user__username="ana99@ua.pt").update(doctor=self.doctor)
+        self.login("ana99@ua.pt", "pwd")
+        response = self.client.get("/doctors/ana@ua.pt")
         self.assertEqual(response.status_code, HTTP_200_OK)
