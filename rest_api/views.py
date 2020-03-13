@@ -85,18 +85,12 @@ def update_client(request, email):
 
     # default possibility
     state = "Error"
-    message = "You don't have permissions to perform this operation"
+    message = "You do not have permissions to update this account"
     status = HTTP_403_FORBIDDEN
 
-    if verify_authorization(role, "client"):
-        if username == email:
-            state, message = queries.update_client(request, email)
-            status = HTTP_200_OK if state else HTTP_400_BAD_REQUEST
-
-        else:
-            state = "Error"
-            message = "You do not have permissions to update this account"
-            status = HTTP_403_FORBIDDEN
+    if is_self(role, "client", username, email):
+        state, message = queries.update_client(request, email)
+        status = HTTP_200_OK if state else HTTP_400_BAD_REQUEST
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
@@ -115,18 +109,12 @@ def delete_client(request, email):
 
     # default possibility
     state = "Error"
-    message = "The user is not a client"
-    status = HTTP_400_BAD_REQUEST
+    message = "You don't have permissions to delete this account"
+    status = HTTP_403_FORBIDDEN
 
-    if verify_authorization(role, "client"):
-        if username == email:
-            state, message = queries.delete_user(user)
-            state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
-
-        else:
-            state = "Error"
-            message = "You do not have permissions to delete this account"
-            status = HTTP_403_FORBIDDEN
+    if is_self(role, "client", username, email):
+        state, message = queries.delete_user(user)
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
@@ -139,31 +127,15 @@ def get_client(request, email):
     message = "You don't have permissions to access this account info"
     status = HTTP_403_FORBIDDEN
 
-    if verify_authorization(role, "client"):
-        if username == email:
-            state, message = queries.get_client(username)
-            state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+    if is_self(role, "client", username, email):
+        state, message = queries.get_client(username)
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
 
-        else:
-            state = "Error"
-            message = "You don't have permissions to access this account info"
-            status = HTTP_403_FORBIDDEN
+    elif verify_authorization(role, "doctor") and is_client_doctor(username, email):
+        state, message = queries.get_client(email)
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
 
-    elif verify_authorization(role, "doctor"):
-        doctor = Doctor.objects.get(user__auth_user__username=username)
-        client = Client.objects.get(user__auth_user__username=email)
-
-        if client.doctor == doctor:
-            state, message = queries.get_client(email)
-            state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
-
-        else:
-            state = "Error"
-            message = "You don't have permissions to access this account info"
-            status = HTTP_403_FORBIDDEN
-
-    return Response({"role": role, "state": state, "message": message, "token": token},
-                    status=status)
+    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
 
 @api_view(["POST"])
@@ -244,18 +216,12 @@ def update_doctor(request, email):
 
     # default possibility
     state = "Error"
-    message = "You don't have permissions to perform this operation"
+    message = "You do not have permissions to update this account"
     status = HTTP_403_FORBIDDEN
 
-    if verify_authorization(role, "doctor"):
-        if username == email:
-            state, message = queries.update_doctor(request, email)
-            status = HTTP_200_OK if state else HTTP_400_BAD_REQUEST
-
-        else:
-            state = "Error"
-            message = "You do not have permissions to update this account"
-            status = HTTP_403_FORBIDDEN
+    if is_self(role, "doctor", username, email):
+        state, message = queries.update_doctor(request, email)
+        status = HTTP_200_OK if state else HTTP_400_BAD_REQUEST
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
@@ -271,31 +237,16 @@ def delete_doctor(request, email):
         return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
     state = "Error"
-    message = "You don't have permissions to access this operation"
+    message = "You do not have permissions to delete this account"
     status = HTTP_403_FORBIDDEN
 
-    if verify_authorization(role, "doctor"):
-        if username == email:
-            state, message = queries.delete_user(user)
-            state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+    if is_self(role, "doctor", username, email):
+        state, message = queries.delete_user(user)
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
 
-        else:
-            state = "Error"
-            message = "You do not have permissions to delete this account"
-            status = HTTP_403_FORBIDDEN
-
-    elif verify_authorization(role, "admin"):
-        admin_hospital = CustomAdmin.objects.get(auth_user__username=username).hospital
-        doctor_hospital = Doctor.objects.get(user__auth_user__username=email).hospital
-
-        if doctor_hospital == admin_hospital:
-            state, message = queries.delete_user(user)
-            state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
-
-        else:
-            state = "Error"
-            message = "You do not have permissions to delete this account"
-            status = HTTP_403_FORBIDDEN
+    elif verify_authorization(role, "admin") and is_doctor_admin(email, username):
+        state, message = queries.delete_user(user)
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
@@ -308,24 +259,16 @@ def get_doctor(request, email):
     message = "You don't have permissions to access this account info"
     status = HTTP_403_FORBIDDEN
 
-    if verify_authorization(role, "doctor") and username == email:
+    if is_self(role, "doctor", username, email):
         state, message = queries.get_doctor(username)
         state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
 
-    elif verify_authorization(role, "client"):
-        doctor = Doctor.objects.get(user__auth_user__username=email)
-        client = Client.objects.get(user__auth_user__username=username)
+    elif verify_authorization(role, "client") and is_client_doctor(email, username):
+        state, message = queries.get_doctor(email)
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
 
-        if client.doctor == doctor:
-            state, message = queries.get_doctor(email)
-            state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
-
-    elif verify_authorization(role, "admin"):
-        doctor_hospital = Doctor.objects.get(user__auth_user__username=email).hospital
-        admin_hospital = CustomAdmin.objects.get(user__auth_user__username=username).hospital
-
-        if admin_hospital == doctor_hospital:
-            state, message = queries.get_doctor(email)
-            state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+    elif verify_authorization(role, "admin") and is_doctor_admin(email, username):
+        state, message = queries.get_doctor(email)
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)

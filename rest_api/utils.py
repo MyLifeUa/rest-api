@@ -1,6 +1,8 @@
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 
+from rest_api.models import Doctor, CustomAdmin, Client
+
 
 def get_role(username, request=None):
     role = None
@@ -31,3 +33,19 @@ def who_am_i(request):
 
 def verify_authorization(role, group):
     return role == group
+
+
+def is_self(role, group, username, email):
+    return verify_authorization(role, group) and username == email
+
+
+def is_doctor_admin(doctor_username, admin_username):
+    doctor_hospital = Doctor.objects.get(user__auth_user__username=doctor_username).hospital
+    admin_hospital = CustomAdmin.objects.get(auth_user__username=admin_username).hospital
+    return admin_hospital == doctor_hospital
+
+
+def is_client_doctor(doctor_username, client_username):
+    doctor = Doctor.objects.get(user__auth_user__username=doctor_username)
+    client = Client.objects.get(user__auth_user__username=client_username)
+    return client.doctor == doctor
