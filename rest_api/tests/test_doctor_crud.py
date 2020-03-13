@@ -1,5 +1,4 @@
-from django.contrib.auth.models import User, Group
-from datetime import date
+from django.contrib.auth.models import User
 
 from rest_framework.status import (
     HTTP_200_OK,
@@ -9,7 +8,7 @@ from rest_framework.status import (
 from rest_framework.test import APITestCase
 
 from .utils import login, create_user_and_login
-from ..models import Client, CustomUser, Doctor
+from ..models import Client, Doctor
 
 
 class DoctorRegistrationTest(APITestCase):
