@@ -19,4 +19,4 @@ def create_user_and_login(client, role, username, email, password):
     elif role == "custom_admin":
         auth_user = User.objects.create_superuser(username, email, password)
         CustomAdmin.objects.create(auth_user=auth_user, hospital="Hospital de São João")
-    login(client, "vasco", "pwd")
+    login(client, username, password)
