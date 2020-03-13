@@ -135,6 +135,12 @@ def delete_client(request, email):
 
 def get_client(request, email):
     token, username, role = who_am_i(request)
+
+    # default possibility
+    state = "Error"
+    message = "You don't have permissions to access this account info"
+    status = HTTP_403_FORBIDDEN
+
     if verify_authorization(role, "client"):
         if username == email:
             state, message = queries.get_client(username)
@@ -151,35 +157,6 @@ def get_client(request, email):
 
         if client.doctor == doctor:
             state, message = queries.get_client(email)
-            state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
-
-        else:
-            state = "Error"
-            message = "You don't have permissions to access this account info"
-            status = HTTP_403_FORBIDDEN
-
-    return Response({"role": role, "state": state, "message": message, "token": token},
-                    status=status)
-
-
-def get_doctor(request, email):
-    token, username, role = who_am_i(request)
-
-    if verify_authorization(role, "doctor"):
-        if username == email:
-            state, message = queries.get_doctor(username)
-            state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
-
-        else:
-            state = "Error"
-            message = "You don't have permissions to access this account info"
-            status = HTTP_403_FORBIDDEN
-
-    elif verify_authorization(role, "client"):
-        doctor = Doctor.objects.get(user__auth_user__username=email)
-        client = Client.objects.get(user__auth_user__username=username)
-        if client.doctor == doctor:
-            state, message = queries.get_doctor(email)
             state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
 
         else:
@@ -326,6 +303,40 @@ def delete_doctor(request, email):
         state = "Error"
         message = "The user is not a doctor or an admin"
         status = HTTP_400_BAD_REQUEST
+
+    return Response({"role": role, "state": state, "message": message, "token": token},
+                    status=status)
+
+
+def get_doctor(request, email):
+    token, username, role = who_am_i(request)
+
+    # default possibility
+    state = "Error"
+    message = "You don't have permissions to access this account info"
+    status = HTTP_403_FORBIDDEN
+
+    if verify_authorization(role, "doctor"):
+        if username == email:
+            state, message = queries.get_doctor(username)
+            state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+        else:
+            state = "Error"
+            message = "You don't have permissions to access this account info"
+            status = HTTP_403_FORBIDDEN
+
+    elif verify_authorization(role, "client"):
+        doctor = Doctor.objects.get(user__auth_user__username=email)
+        client = Client.objects.get(user__auth_user__username=username)
+        if client.doctor == doctor:
+            state, message = queries.get_doctor(email)
+            state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+        else:
+            state = "Error"
+            message = "You don't have permissions to access this account info"
+            status = HTTP_403_FORBIDDEN
 
     return Response({"role": role, "state": state, "message": message, "token": token},
                     status=status)
