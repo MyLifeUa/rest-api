@@ -8,6 +8,7 @@ from rest_framework.status import (
 from rest_framework.test import APITestCase
 
 from rest_api.models import CustomUser, Doctor, Client
+from rest_api.tests.utils import login
 
 
 class ClientRegistrationTest(APITestCase):
@@ -46,9 +47,7 @@ class ClientUpdateTest(APITestCase):
                                                  "last_name": "Ramos", "height": 1.60, "weight_goal": 65,
                                                  "birth_date": "2020-03-04"})
         self.assertEqual(response.status_code, HTTP_200_OK)
-        response = self.client.post("/login", {"username": "vr@ua.pt", "password": "pwd"})
-        token = response.data["token"]
-        self.client.credentials(HTTP_AUTHORIZATION=f"Token {token}")
+        login(self.client, "vr@ua.pt", "pwd")
 
     def test_update_nothing(self):
         response = self.client.put("/clients/vr@ua.pt", {})
@@ -73,9 +72,7 @@ class ClientDeleteTest(APITestCase):
                                     {"email": "v@ua.pt", "password": "pwd", "first_name": "Vasco", "last_name": "Ramos",
                                      "height": 1.60, "weight_goal": 65, "birth_date": "2020-03-04"})
         self.assertEqual(response.status_code, HTTP_200_OK)
-        response = self.client.post("/login", {"username": "v@ua.pt", "password": "pwd"})
-        token = response.data["token"]
-        self.client.credentials(HTTP_AUTHORIZATION=f"Token {token}")
+        login(self.client, "v@ua.pt", "pwd")
 
     def test_delete_non_existent_user(self):
         response = self.client.delete("/clients/vr@ua.pt")
@@ -113,32 +110,27 @@ class GetClientTest(APITestCase):
         doctors_group = Group.objects.get_or_create(name="doctors_group")[0]
         doctors_group.user_set.add(auth_user)
 
-    def login(self, username, pwd):
-        response = self.client.post("/login", {"username": username, "password": pwd})
-        token = response.data["token"]
-        self.client.credentials(HTTP_AUTHORIZATION=f"Token {token}")
-
     def test_get_client_info_other_client(self):
         response = self.client.post("/clients", {"email": "vr@ua.pt", "password": "pwd", "first_name": "Tomas",
                                                  "last_name": "Ramos", "height": 1.60, "weight_goal": 65,
                                                  "birth_date": "2020-03-04"})
         self.assertEqual(response.status_code, HTTP_200_OK)
-        self.login("vr@ua.pt", "pwd")
+        login(self.client, "vr@ua.pt", "pwd")
         response = self.client.get("/clients/tos@ua.pt")
         self.assertEqual(response.status_code, HTTP_403_FORBIDDEN)
 
     def test_get_client_info_client_no_doctor(self):
-        self.login("ana@ua.pt", "pwd")
+        login(self.client, "ana@ua.pt", "pwd")
         response = self.client.get("/clients/tos@ua.pt")
         self.assertEqual(response.status_code, HTTP_403_FORBIDDEN)
 
     def test_get_client_self_info(self):
-        self.login("tos@ua.pt", "pwd")
+        login(self.client, "tos@ua.pt", "pwd")
         response = self.client.get("/clients/tos@ua.pt")
         self.assertEqual(response.status_code, HTTP_200_OK)
 
     def test_get_client_info_client_doctor(self):
         Client.objects.filter(user__auth_user__username="tos@ua.pt").update(doctor=self.doctor)
-        self.login("ana@ua.pt", "pwd")
+        login(self.client, "ana@ua.pt", "pwd")
         response = self.client.get("/clients/tos@ua.pt")
         self.assertEqual(response.status_code, HTTP_200_OK)

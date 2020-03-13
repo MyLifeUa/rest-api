@@ -7,43 +7,27 @@ from rest_framework.status import (
     HTTP_401_UNAUTHORIZED,
     HTTP_403_FORBIDDEN)
 from rest_framework.test import APITestCase
+
+from .utils import login, create_user_and_login
 from ..models import CustomAdmin, Client, CustomUser, Doctor
 
 
+
 class DoctorRegistrationTest(APITestCase):
-
-    def login(self, username, password):
-        return self.client.post("/login", {"username": username, "password": password})
-
-    def create_user_and_login(self, role, username, email, password):
-        if role == "client":
-            user = User.objects.create_user(username, email, password)
-            clients_group = Group.objects.get_or_create(name="clients_group")[0]
-            clients_group.user_set.add(user)
-        elif role == "admin":
-            User.objects.create_superuser(username, email, password)
-        elif role == "custom_admin":
-            auth_user = User.objects.create_superuser(username, email, password)
-            CustomAdmin.objects.create(auth_user=auth_user, hospital="Hospital de São João")
-
-        response = self.login("vasco", "pwd")
-        token = response.data["token"]
-        self.client.credentials(HTTP_AUTHORIZATION=f"Token {token}")
-
     def test_new_doctor_missing_authentication(self):
         response = self.client.post("/doctors", {"email": "vr@ua.pt", "password": "pwd", "first_name": "Vasco",
                                                  "last_name": "Ramos"})
         self.assertEqual(response.status_code, HTTP_401_UNAUTHORIZED)
 
     def test_new_doctor_missing_authorization(self):
-        self.create_user_and_login("client", "vasco", "vr@ua.pt", "pwd")
+        create_user_and_login(self.client, "client", "vasco", "vr@ua.pt", "pwd")
         response = self.client.post("/doctors",
                                     {"email": "vr@ua.pt", "password": "pwd", "first_name": "Vasco",
                                      "last_name": "Ramos"})
         self.assertEqual(response.status_code, HTTP_403_FORBIDDEN)
 
     def test_new_doctor_missing_parameters(self):
-        self.create_user_and_login("custom_admin", "vasco", "vr@ua.pt", "pwd")
+        create_user_and_login(self.client, "custom_admin", "vasco", "vr@ua.pt", "pwd")
         response = self.client.post("/doctors", {"email": "vr@ua.pt"})
         self.assertEqual(response.status_code, HTTP_400_BAD_REQUEST)
 
@@ -55,7 +39,7 @@ class DoctorRegistrationTest(APITestCase):
         self.assertEqual(response.status_code, HTTP_400_BAD_REQUEST)
 
     def test_new_doctor_right_parameters(self):
-        self.create_user_and_login("custom_admin", "vasco", "vr@ua.pt", "pwd")
+        create_user_and_login(self.client, "custom_admin", "vasco", "vr@ua.pt", "pwd")
         response = self.client.post("/doctors",
                                     {"email": "j.vasconcelos99@ua.pt", "password": "pwd", "first_name": "Vasco",
                                      "last_name": "Ramos", "birth_date": "2020-03-04"})
@@ -63,33 +47,14 @@ class DoctorRegistrationTest(APITestCase):
 
 
 class DoctorUpdateTest(APITestCase):
-
-    def login(self, username, password):
-        response = self.client.post("/login", {"username": username, "password": password})
-        self.assertEqual(response.status_code, HTTP_200_OK)
-        token = response.data["token"]
-        self.client.credentials(HTTP_AUTHORIZATION=f"Token {token}")
-
-    def create_user_and_login(self, role, username, email, password):
-        if role == "client":
-            user = User.objects.create_user(username, email, password)
-            clients_group = Group.objects.get_or_create(name="clients_group")[0]
-            clients_group.user_set.add(user)
-        elif role == "admin":
-            User.objects.create_superuser(username, email, password)
-        elif role == "custom_admin":
-            auth_user = User.objects.create_superuser(username, email, password)
-            CustomAdmin.objects.create(auth_user=auth_user, hospital="Hospital de São João")
-        self.login("vasco", "pwd")
-
     def setUp(self):
-        self.create_user_and_login("custom_admin", "vasco", "vr@ua.pt", "pwd")
+        create_user_and_login(self.client, "custom_admin", "vasco", "vr@ua.pt", "pwd")
 
         response = self.client.post("/doctors", {"email": "vr@ua.pt", "password": "pwd", "first_name": "Vasco",
                                                  "last_name": "Ramos", "birth_date": "2020-03-04"})
         self.assertEqual(response.status_code, HTTP_200_OK)
 
-        self.login("vr@ua.pt", "pwd")
+        login(self.client, "vr@ua.pt", "pwd")
 
     def test_update_nothing(self):
         response = self.client.put("/doctors/vr@ua.pt", {})
@@ -109,34 +74,15 @@ class DoctorUpdateTest(APITestCase):
 
 
 class DoctorDeleteTest(APITestCase):
-
-    def login(self, username, password):
-        response = self.client.post("/login", {"username": username, "password": password})
-        self.assertEqual(response.status_code, HTTP_200_OK)
-        token = response.data["token"]
-        self.client.credentials(HTTP_AUTHORIZATION=f"Token {token}")
-
-    def create_user_and_login(self, role, username, email, password):
-        if role == "client":
-            user = User.objects.create_user(username, email, password)
-            clients_group = Group.objects.get_or_create(name="clients_group")[0]
-            clients_group.user_set.add(user)
-        elif role == "admin":
-            User.objects.create_superuser(username, email, password)
-        elif role == "custom_admin":
-            auth_user = User.objects.create_superuser(username, email, password)
-            CustomAdmin.objects.create(auth_user=auth_user, hospital="Hospital de São João")
-
-        self.login(username, password)
-
     def setUp(self):
-        self.create_user_and_login("custom_admin", "vasco", "vr@ua.pt", "pwd")
+        create_user_and_login(self.client, "custom_admin", "vasco", "vr@ua.pt", "pwd")
 
         response = self.client.post("/doctors",
                                     {"email": "v@ua.pt", "password": "pwd", "first_name": "Vasco", "last_name": "Ramos",
                                      "birth_date": "2020-03-04"})
         self.assertEqual(response.status_code, HTTP_200_OK)
-        self.login("v@ua.pt", "pwd")
+
+        login(self.client, "v@ua.pt", "pwd")
 
     def test_delete_non_existent_user(self):
         response = self.client.delete("/doctors/vr99@ua.pt")
@@ -148,19 +94,19 @@ class DoctorDeleteTest(APITestCase):
         self.assertEqual(response.status_code, HTTP_403_FORBIDDEN)
 
     def test_delete_other_doctor_account(self):
-        self.create_user_and_login("custom_admin", "vasco99", "vr@ua.pt", "pwd")
+        create_user_and_login(self.client, "custom_admin", "vasco99", "vr@ua.pt", "pwd")
         response = self.client.post("/doctors",
                                     {"email": "ze@ua.pt", "password": "pwd", "first_name": "Ze", "last_name": "Costa",
                                      "birth_date": "2020-03-04"})
         self.assertEqual(response.status_code, HTTP_200_OK)
 
-        self.login("v@ua.pt", "pwd")
+        login(self.client, "v@ua.pt", "pwd")
 
         response = self.client.delete("/doctors/ze@ua.pt")
         self.assertEqual(response.status_code, HTTP_403_FORBIDDEN)
 
     def test_admin_delete_doctor_account(self):
-        self.create_user_and_login("custom_admin", "vasco99", "vr@ua.pt", "pwd")
+        create_user_and_login(self.client, "custom_admin", "vasco99", "vr@ua.pt", "pwd")
         response = self.client.post("/doctors",
                                     {"email": "ze@ua.pt", "password": "pwd", "first_name": "Ze", "last_name": "Costa",
                                      "birth_date": "2020-03-04"})
@@ -194,22 +140,17 @@ class GetDoctorTest(APITestCase):
         self.assertEqual(response.status_code, HTTP_200_OK)
         Client.objects.filter(user__auth_user__username="ana99@ua.pt").update(doctor=self.doctor)
 
-    def login(self, username, pwd):
-        response = self.client.post("/login", {"username": username, "password": pwd})
-        token = response.data["token"]
-        self.client.credentials(HTTP_AUTHORIZATION=f"Token {token}")
-
     def test_get_doctor_info_other_client(self):
-        self.login("tos@ua.pt", "pwd")
+        login(self.client, "tos@ua.pt", "pwd")
         response = self.client.get("/doctors/ana@ua.pt")
         self.assertEqual(response.status_code, HTTP_403_FORBIDDEN)
 
     def test_get_doctor_self_info(self):
-        self.login("ana@ua.pt", "pwd")
+        login(self.client, "ana@ua.pt", "pwd")
         response = self.client.get("/doctors/ana@ua.pt")
         self.assertEqual(response.status_code, HTTP_200_OK)
 
     def test_get_doctor_info_client_doctor(self):
-        self.login("ana99@ua.pt", "pwd")
+        login(self.client, "ana99@ua.pt", "pwd")
         response = self.client.get("/doctors/ana@ua.pt")
         self.assertEqual(response.status_code, HTTP_200_OK)
