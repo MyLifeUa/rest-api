@@ -2,6 +2,16 @@
 
 ## Configuration
 
+### Recommended Method: Docker Composed
+
+The Django system is being packed in a docker image defined by the `Dockerfile` present in the root directory of this repository.
+
+The best way of running the system, along with the postgres database needed, is by running the `docker-compose.yml` file, also available in the root directory of the repository.
+
+```bash
+docker-compose up [-d]
+```
+
 ### 1. On API Project:
 
 For development and testing, We recommend using the [PyCharm IDE](https://www.jetbrains.com/pycharm/).

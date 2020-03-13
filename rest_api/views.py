@@ -12,7 +12,7 @@ from rest_framework.status import (
 from rest_api import queries
 from rest_api.authentication import token_expire_handler
 from rest_api.serializers import UserSerializer, UserLoginSerializer
-from .models import CustomAdmin, Doctor
+from .models import Doctor, Client, CustomAdmin
 from .utils import *
 
 
@@ -85,7 +85,7 @@ def client_rud(request, email):
     elif request.method == "DELETE":
         return delete_client(request, email)
     elif request.method == "GET":
-        return None
+        return get_client(request, email)
 
 
 def update_client(request, email):
@@ -99,7 +99,7 @@ def update_client(request, email):
 
     state, message = queries.update_client(request, email)
     status = HTTP_200_OK if state else HTTP_400_BAD_REQUEST
-    return Response({"role": role, "state": state, "message": message, 'token': token},
+    return Response({"role": role, "state": state, "message": message, "token": token},
                     status=status)
 
 
@@ -114,7 +114,7 @@ def delete_client(request, email):
         return Response({"role": role, "state": state, "message": message, "token": token},
                         status=status)
 
-    if verify_authorization(get_role(email), "client"):
+    if verify_authorization(role, "client"):
         if username == email:
             state, message = queries.delete_user(user)
             state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
@@ -128,6 +128,35 @@ def delete_client(request, email):
         state = "Error"
         message = "The user is not a client"
         status = HTTP_400_BAD_REQUEST
+
+    return Response({"role": role, "state": state, "message": message, "token": token},
+                    status=status)
+
+
+def get_client(request, email):
+    token, username, role = who_am_i(request)
+    if verify_authorization(role, "client"):
+        if username == email:
+            state, message = queries.get_client(username)
+            state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+        else:
+            state = "Error"
+            message = "You don't have permissions to access this account info"
+            status = HTTP_403_FORBIDDEN
+
+    elif verify_authorization(role, "doctor"):
+        doctor = Doctor.objects.get(user__auth_user__username=username)
+        client = Client.objects.get(user__auth_user__username=email)
+
+        if client.doctor == doctor:
+            state, message = queries.get_client(email)
+            state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+        else:
+            state = "Error"
+            message = "You don't have permissions to access this account info"
+            status = HTTP_403_FORBIDDEN
 
     return Response({"role": role, "state": state, "message": message, "token": token},
                     status=status)

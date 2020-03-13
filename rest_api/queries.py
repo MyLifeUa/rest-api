@@ -3,6 +3,7 @@ from django.db import Error, transaction
 
 from .models import *
 from .constants import *
+from .serializers import ClientSerializer
 
 
 def add_client(data):
@@ -133,6 +134,22 @@ def update_client(request, email):
     except Exception:
         state, message = False, "Error while updating client!"
 
+    return state, message
+
+def get_client(email):
+    state, message = None, None
+
+    user = CustomUser.objects.filter(auth_user__username=email)
+    if not user.exists():
+        state, message = False, "User does not exist!"
+        return state, message
+
+    client = Client.objects.filter(user=user[0])
+    if not client.exists():
+        state, message = False, "User is not a client!"
+        return state, message
+
+    state, message = True, ClientSerializer(Client.objects.get(user=user[0])).data
     return state, message
 
 

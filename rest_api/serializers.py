@@ -11,3 +11,27 @@ class UserSerializer(serializers.Serializer):
 class UserLoginSerializer(serializers.Serializer):
     username = serializers.CharField(required=True)
     password = serializers.CharField(required=True)
+
+
+class ClientSerializer(serializers.Serializer):
+    email = serializers.SerializerMethodField()
+    name = serializers.SerializerMethodField()
+    phone_number = serializers.SerializerMethodField()
+    photo = serializers.SerializerMethodField()
+    height = serializers.FloatField()
+    weight_goal = serializers.FloatField()
+
+    def get_id(self, obj):
+        return obj.user.auth_user.id
+
+    def get_email(self, obj):
+        return obj.user.auth_user.email
+
+    def get_name(self, obj):
+        return obj.user.auth_user.get_full_name()
+
+    def get_phone_number(self, obj):
+        return obj.user.phone_number
+
+    def get_photo(self, obj):
+        return obj.user.photo
