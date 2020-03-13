@@ -178,7 +178,6 @@ def get_doctor(request, email):
     elif verify_authorization(role, "client"):
         doctor = Doctor.objects.get(user__auth_user__username=email)
         client = Client.objects.get(user__auth_user__username=username)
-        print(username + "  " + role)
         if client.doctor == doctor:
             state, message = queries.get_doctor(email)
             state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
