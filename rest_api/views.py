@@ -12,7 +12,7 @@ from rest_framework.status import (
 from rest_api import queries
 from rest_api.authentication import token_expire_handler
 from rest_api.serializers import UserSerializer, UserLoginSerializer
-from .models import CustomAdmin
+from .models import CustomAdmin, Doctor
 from .utils import *
 
 
@@ -67,6 +67,7 @@ def new_client(request):
             and "password" in data
             and "height" in data
             and "weight_goal" in data
+            and "birth_date" in data
     ):
         return Response({"state": "Error", "message": "Missing parameters"},
                         status=HTTP_400_BAD_REQUEST)
@@ -188,6 +189,8 @@ def new_doctor(request):
             and "first_name" in data
             and "last_name" in data
             and "password" in data
+            and "birth_date" in data
+
     ):
         state = "Error"
         message = "Missing parameters"
@@ -249,10 +252,21 @@ def delete_doctor(request, email):
             state = "Error"
             message = "You do not have permissions to delete this account"
             status = HTTP_403_FORBIDDEN
+    elif verify_authorization(role, "admin"):
+        admin_hospital = CustomAdmin.objects.get(auth_user__username=username).hospital
+        doctor_hospital = Doctor.objects.get(user__auth_user__username=email).hospital
+        if doctor_hospital == admin_hospital:
+            state, message = queries.delete_user(user)
+            state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+        else:
+            state = "Error"
+            message = "You do not have permissions to delete this account"
+            status = HTTP_403_FORBIDDEN
 
     else:
         state = "Error"
-        message = "The user is not a doctor"
+        message = "The user is not a doctor or an admin"
         status = HTTP_400_BAD_REQUEST
 
     return Response({"role": role, "state": state, "message": message, "token": token},

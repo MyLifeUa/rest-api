@@ -158,6 +158,14 @@ class DoctorDeleteTest(APITestCase):
         response = self.client.delete("/doctors/ze@ua.pt")
         self.assertEqual(response.status_code, HTTP_403_FORBIDDEN)
 
+    def test_admin_delete_doctor_account(self):
+        self.create_user_and_login("custom_admin", "vasco99", "vr@ua.pt", "pwd")
+        self.client.post("/doctors", {"email": "ze@ua.pt", "password": "pwd", "first_name": "Ze",
+                                      "last_name": "Costa", "birth_date": "2020-03-04"})
+
+        response = self.client.delete("/doctors/ze@ua.pt")
+        self.assertEqual(response.status_code, HTTP_200_OK)
+
     def test_delete_self(self):
         response = self.client.delete("/doctors/v@ua.pt")
         self.assertEqual(response.status_code, HTTP_200_OK)
