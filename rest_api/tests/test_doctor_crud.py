@@ -1,5 +1,4 @@
-from django.contrib.auth.models import User, Group
-from datetime import date
+from django.contrib.auth.models import User
 
 from rest_framework.status import (
     HTTP_200_OK,
@@ -9,7 +8,7 @@ from rest_framework.status import (
 from rest_framework.test import APITestCase
 
 from .utils import login, create_user_and_login
-from ..models import Client, CustomUser, Doctor
+from ..models import Client, Doctor
 
 
 class DoctorRegistrationTest(APITestCase):
@@ -160,3 +159,12 @@ class GetDoctorTest(APITestCase):
         login(self.client, "ana99@ua.pt", "pwd")
         response = self.client.get("/doctors/ana@ua.pt")
         self.assertEqual(response.status_code, HTTP_200_OK)
+
+    def test_get_doctor_info_admin(self):
+        response = self.client.get("/doctors/ana@ua.pt")
+        self.assertEqual(response.status_code, HTTP_200_OK)
+
+    def test_get_doctor_info_other_hospital_admin(self):
+        create_user_and_login(self.client, "custom_admin", "ant@ua.pt", "ant@ua.pt", "pwd", "Other Hospital")
+        response = self.client.get("/doctors/ana@ua.pt")
+        self.assertEqual(response.status_code, HTTP_403_FORBIDDEN)
