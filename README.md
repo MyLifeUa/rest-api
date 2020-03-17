@@ -21,6 +21,12 @@ For example, if you want to run some tests on the django service, do:
 docker-compose run django python manage.py test
 ```
 
+Or, if you are getting an error starting when starting the server, the commando might not execute that way. Try:
+```bash
+docker-compose up -d
+docker-compose exec <SERVICE> <COMMAND>
+```
+
 ### 1. On API Project:
 
 For development and testing, We recommend using the [PyCharm IDE](https://www.jetbrains.com/pycharm/).
