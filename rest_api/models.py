@@ -59,6 +59,7 @@ class Meal(models.Model):
 class MealHistory(models.Model):
     day = models.DateField()
     meals = models.ManyToManyField(Meal)
+    client = models.ForeignKey(Client, on_delete=models.CASCADE)
 
 
 class Exercise(models.Model):
@@ -68,7 +69,7 @@ class Exercise(models.Model):
 
 
 class Set(models.Model):
-    exercise = models.OneToOneField(Exercise, on_delete=models.CASCADE)
+    exercise = models.ForeignKey(Exercise, on_delete=models.SET_NULL, null=True, blank=True)
     number_of_reps = models.IntegerField()
     time = models.FloatField()
 
@@ -77,3 +78,4 @@ class Workout(models.Model):
     workout_sets = models.ManyToManyField(Set)
     rest_time = models.DurationField()  # https://docs.djangoproject.com/en/3.0/ref/models/fields/#durationfield
     difficulty = models.IntegerField()
+    client = models.ForeignKey(Client, on_delete=models.CASCADE)
