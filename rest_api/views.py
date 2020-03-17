@@ -336,3 +336,35 @@ def get_doctor(request, email):
         state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+
+@api_view(["POST"])
+def new_food_log(request, email):
+    token, username, role = who_am_i(request)
+
+    # default possibility
+    state = "Error"
+    message = "You do not have permissions to create a food log in this account"
+    status = HTTP_403_FORBIDDEN
+
+    if is_self(role, "client", username, email):
+        state, message = queries.update_admin(request, email)
+        status = HTTP_200_OK if state else HTTP_400_BAD_REQUEST
+
+    data = request.data
+    if not (
+            "day" in data
+            and "type_of_meal" in data
+            and "meal" in data
+            and "client" in data
+
+    ):
+        state = "Error"
+        message = "Missing parameters"
+        status = HTTP_400_BAD_REQUEST
+        return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+    state, message = queries.add_food_log(data)
+    state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)

@@ -58,6 +58,7 @@ class Meal(models.Model):
 
 class MealHistory(models.Model):
     day = models.DateField()
+    type_of_meal = models.CharField(max_length=25)
     meals = models.ManyToManyField(Meal)
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
 
