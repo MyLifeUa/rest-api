@@ -12,6 +12,15 @@ The best way of running the system, along with the postgres database needed, is 
 docker-compose up [-d]
 ```
 
+If you need to run any oher commands on a docker container, you can do:
+```bash
+docker-compose run <SERVICE_NAME> <COMMAND>
+```
+For example, if you want to run some tests on the django service, do:
+```
+docker-compose run django python manage.py test
+```
+
 ### 1. On API Project:
 
 For development and testing, We recommend using the [PyCharm IDE](https://www.jetbrains.com/pycharm/).
