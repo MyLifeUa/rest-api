@@ -59,7 +59,7 @@ class Meal(models.Model):
 class MealHistory(models.Model):
     day = models.DateField()
     type_of_meal = models.CharField(max_length=25)
-    meals = models.ManyToManyField(Meal)
+    meals = models.ManyToManyField(Meal) #TODO Mudar para Foreign Key
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
 
 

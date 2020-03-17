@@ -311,7 +311,7 @@ def add_food_log(data):
                 return False, error_message
         else:  # Food log exists for this day and for this type of meal
             try:
-                meal_history_with_type_of_meal.meals.add(meal)
+                meal_history_with_type_of_meal.meals.add(meal) # TODO lançar mensagem de erro pq esta a fazer update pelo POST
 
             except Exception:
                 error_message = "Error while creating new food log!"
