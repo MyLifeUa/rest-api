@@ -284,38 +284,42 @@ def get_doctor(email):
 def add_food_log(data):
     day = data.get("day")
     type_of_meal = data.get("type_of_meal")
-    meal = data.get("meal")
-    client = data.get("client")
+    meal_id = data.get("meal")
+    email = data.get("client")
 
-    meal_history = MealHistory.objects.filter(day=day, client=client)
+    client = Client.objects.filter(user__auth_user__username=email)
 
-    if not meal_history.exists():  # Food log does not exist for this day
+    if not client.exists():
+        state, message = False, "Client does not exist."
+        return state, message
+
+    current_client = Client.objects.get(user__auth_user__username=email)
+
+    meal_history_with_type_of_meal = MealHistory.objects.filter(day=day, type_of_meal=type_of_meal,
+                                                                client=current_client)
+
+    if not meal_history_with_type_of_meal.exists():  # Food log does not exist yet
         try:
-            current_meal_history = MealHistory.objects.create(day=day, type_of_meal=type_of_meal, client=client)
-            current_meal_history.meals.add(meal)
 
-        except Exception:
+            meal = Meal.objects.filter(id=meal_id)
+
+            if not meal.exists():
+                state, message = False, "Meal does not exist."
+                return state, message
+
+            current_meal = Meal.objects.get(id=meal_id)
+
+            MealHistory.objects.create(day=day, type_of_meal=type_of_meal, client=current_client,
+                                       meal=current_meal)
+
+        except Exception as e:
+            print(e)
             error_message = "Error while creating new food log!"
             return False, error_message
+    else:  # Food log exists for this day and for this type of meal
 
-    else:  # Food log exists for this day
-        meal_history_with_type_of_meal = MealHistory.objects.filter(day=day, type_of_meal=type_of_meal, client=client)
-
-        if not meal_history_with_type_of_meal.exists():  # Food log exists for this day but not for this type of meal
-            try:
-                current_meal_history = MealHistory.objects.create(day=day, type_of_meal=type_of_meal, client=client)
-                current_meal_history.meals.add(meal)
-
-            except Exception:
-                error_message = "Error while creating new food log!"
-                return False, error_message
-        else:  # Food log exists for this day and for this type of meal
-            try:
-                meal_history_with_type_of_meal.meals.add(meal) # TODO lançar mensagem de erro pq esta a fazer update pelo POST
-
-            except Exception:
-                error_message = "Error while creating new food log!"
-                return False, error_message
+        error_message = "Food log already exists for this day and type of meal."
+        return False, error_message
 
     state_message = "The food log was created with success"
     return True, state_message
