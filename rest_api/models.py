@@ -46,6 +46,7 @@ class MealCatalog(models.Model):
     name = models.CharField(max_length=30)
     category = models.CharField(max_length=30)
     ingredients = models.ManyToManyField(Ingredient)
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, null=True, blank=True)
 
 
 class Meal(models.Model):
