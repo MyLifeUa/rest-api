@@ -1,6 +1,7 @@
 from rest_framework.status import (
     HTTP_401_UNAUTHORIZED,
     HTTP_200_OK,
+    HTTP_201_CREATED,
     HTTP_400_BAD_REQUEST,
     HTTP_403_FORBIDDEN,
 )
@@ -32,7 +33,7 @@ class AdminRegistrationTest(APITestCase):
         create_user_and_login(self.client, "admin", "vasco", "vr@ua.pt", "pwd")
         response = self.client.post("/admins", {"email": "vr@ua.pt", "password": "pwd", "first_name": "Vasco",
                                                 "last_name": "Ramos", "hospital": "Centro Hospitalar de São João"})
-        self.assertEqual(response.status_code, HTTP_200_OK)
+        self.assertEqual(response.status_code, HTTP_201_CREATED)
 
 
 class AdminUpdateTest(APITestCase):
@@ -83,7 +84,7 @@ class GetAdminTest(APITestCase):
         response = self.client.post("/clients", {"email": "tos@ua.pt", "password": "pwd", "first_name": "Tomas",
                                                  "last_name": "Ramos", "height": 1.60, "weight_goal": 65,
                                                  "birth_date": "2020-03-04"})
-        self.assertEqual(response.status_code, HTTP_200_OK)
+        self.assertEqual(response.status_code, HTTP_201_CREATED)
 
         login(self.client, "tos@ua.pt", "pwd")
 
@@ -93,7 +94,7 @@ class GetAdminTest(APITestCase):
     def test_doctor_same_hospital_get_admin_info(self):
         response = self.client.post("/doctors", {"email": "jose@ua.pt", "password": "pwd", "first_name": "Vasco",
                                                  "last_name": "Ramos", "birth_date": "2020-03-04"})
-        self.assertEqual(response.status_code, HTTP_200_OK)
+        self.assertEqual(response.status_code, HTTP_201_CREATED)
 
         login(self.client, "jose@ua.pt", "pwd")
 
@@ -107,7 +108,7 @@ class GetAdminTest(APITestCase):
         # create doctor from different hospital
         response = self.client.post("/doctors", {"email": "jose@ua.pt", "password": "pwd", "first_name": "Vasco",
                                                  "last_name": "Ramos", "birth_date": "2020-03-04"})
-        self.assertEqual(response.status_code, HTTP_200_OK)
+        self.assertEqual(response.status_code, HTTP_201_CREATED)
 
         response = self.client.get("/admins/ana@ua.pt")
         self.assertEqual(response.status_code, HTTP_403_FORBIDDEN)
