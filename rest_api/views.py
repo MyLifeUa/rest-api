@@ -7,7 +7,8 @@ from rest_framework.status import (
     HTTP_200_OK,
     HTTP_400_BAD_REQUEST,
     HTTP_403_FORBIDDEN,
-    HTTP_404_NOT_FOUND
+    HTTP_404_NOT_FOUND,
+    HTTP_201_CREATED
 )
 from rest_api import queries
 from rest_api.authentication import token_expire_handler
@@ -334,5 +335,34 @@ def get_doctor(request, email):
     elif verify_authorization(role, "admin") and is_doctor_admin(email, username):
         state, message = queries.get_doctor(email)
         state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+
+@api_view(["POST"])
+def new_food_log(request):
+    token, username, role = who_am_i(request)
+
+    if not verify_authorization(role, "client"):
+        state = "Error"
+        message = "You do not have permissions to add a new food log."
+        status = HTTP_403_FORBIDDEN
+        return Response({"role": role, "state": state, "message": message, "token": token},
+                        status=status)
+
+    data = request.data
+    if not (
+            "day" in data
+            and "type_of_meal" in data
+            and "meal" in data
+
+    ):
+        state = "Error"
+        message = "Missing parameters"
+        status = HTTP_400_BAD_REQUEST
+        return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+    state, message = queries.add_food_log(data, username)
+    state, status = ("Success", HTTP_201_CREATED) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
