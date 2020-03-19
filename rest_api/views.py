@@ -7,12 +7,12 @@ from rest_framework.status import (
     HTTP_200_OK,
     HTTP_400_BAD_REQUEST,
     HTTP_403_FORBIDDEN,
-    HTTP_404_NOT_FOUND
+    HTTP_404_NOT_FOUND,
+    HTTP_201_CREATED
 )
 from rest_api import queries
 from rest_api.authentication import token_expire_handler
 from rest_api.serializers import UserSerializer, UserLoginSerializer
-from .models import Doctor, Client, CustomAdmin
 from .utils import *
 
 
@@ -77,7 +77,7 @@ def new_admin(request):
         return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
     state, message = queries.add_admin(data)
-    state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+    state, status = ("Success", HTTP_201_CREATED) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
@@ -160,7 +160,7 @@ def new_client(request):
         return Response({"state": "Error", "message": "Missing parameters"}, status=HTTP_400_BAD_REQUEST)
 
     state, message = queries.add_client(data)
-    state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+    state, status = ("Success", HTTP_201_CREATED) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"state": state, "message": message}, status=status)
 
@@ -260,7 +260,7 @@ def new_doctor(request):
 
     admin_hospital = CustomAdmin.objects.get(auth_user__username=username).hospital
     state, message = queries.add_doctor(data, admin_hospital)
-    state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+    state, status = ("Success", HTTP_201_CREATED) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
