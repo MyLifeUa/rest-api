@@ -44,14 +44,14 @@ class Ingredient(models.Model):
 
 class MealCatalog(models.Model):
     name = models.CharField(max_length=30)
-    type_of_meal = models.CharField(max_length=30)
+    category = models.CharField(max_length=30)
     ingredients = models.ManyToManyField(Ingredient)
 
 
 class Meal(models.Model):
     name = models.CharField(max_length=30)
     number_of_servings = models.FloatField()
-    type_of_meal = models.CharField(max_length=30)
+    category = models.CharField(max_length=30)
     ingredients = models.ManyToManyField(Ingredient)
     meal_from_catalog = models.ForeignKey(MealCatalog, on_delete=models.SET_NULL, null=True, blank=True)
 
