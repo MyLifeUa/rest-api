@@ -3,6 +3,7 @@ from datetime import date
 from django.contrib.auth.models import User, Group
 from rest_framework.status import (
     HTTP_200_OK,
+    HTTP_201_CREATED,
     HTTP_400_BAD_REQUEST,
     HTTP_403_FORBIDDEN)
 from rest_framework.test import APITestCase
@@ -38,7 +39,7 @@ class ClientRegistrationTest(APITestCase):
                                     {"email": "vr@ua.pt", "password": "pwd", "first_name": "Vasco",
                                      "last_name": "Ramos", "height": 1.60, "weight_goal": 65,
                                      "birth_date": "2020-03-04"})
-        self.assertEqual(response.status_code, HTTP_200_OK)
+        self.assertEqual(response.status_code, HTTP_201_CREATED)
 
 
 class ClientUpdateTest(APITestCase):
@@ -46,7 +47,7 @@ class ClientUpdateTest(APITestCase):
         response = self.client.post("/clients", {"email": "vr@ua.pt", "password": "pwd", "first_name": "Vasco",
                                                  "last_name": "Ramos", "height": 1.60, "weight_goal": 65,
                                                  "birth_date": "2020-03-04"})
-        self.assertEqual(response.status_code, HTTP_200_OK)
+        self.assertEqual(response.status_code, HTTP_201_CREATED)
         login(self.client, "vr@ua.pt", "pwd")
 
     def test_update_nothing(self):
@@ -71,7 +72,7 @@ class ClientDeleteTest(APITestCase):
         response = self.client.post("/clients",
                                     {"email": "v@ua.pt", "password": "pwd", "first_name": "Vasco", "last_name": "Ramos",
                                      "height": 1.60, "weight_goal": 65, "birth_date": "2020-03-04"})
-        self.assertEqual(response.status_code, HTTP_200_OK)
+        self.assertEqual(response.status_code, HTTP_201_CREATED)
         login(self.client, "v@ua.pt", "pwd")
 
     def test_delete_non_existent_user(self):
@@ -87,7 +88,7 @@ class ClientDeleteTest(APITestCase):
         response = self.client.post("/clients", {"email": "ze@ua.pt", "password": "pwd", "first_name": "Ze",
                                                  "last_name": "Costa", "height": 1.60, "weight_goal": 65,
                                                  "birth_date": "2020-03-04"})
-        self.assertEqual(response.status_code, HTTP_200_OK)
+        self.assertEqual(response.status_code, HTTP_201_CREATED)
         response = self.client.delete("/clients/ze@ua.pt")
         self.assertEqual(response.status_code, HTTP_403_FORBIDDEN)
 
@@ -101,7 +102,7 @@ class GetClientTest(APITestCase):
         response = self.client.post("/clients", {"email": "tos@ua.pt", "password": "pwd", "first_name": "Tomas",
                                                  "last_name": "Ramos", "height": 1.60, "weight_goal": 65,
                                                  "birth_date": "2020-03-04"})
-        self.assertEqual(response.status_code, HTTP_200_OK)
+        self.assertEqual(response.status_code, HTTP_201_CREATED)
 
         # create doctor
         auth_user = User.objects.create_user("ana@ua.pt", "ana@ua.pt", "pwd")
@@ -114,7 +115,7 @@ class GetClientTest(APITestCase):
         response = self.client.post("/clients", {"email": "vr@ua.pt", "password": "pwd", "first_name": "Tomas",
                                                  "last_name": "Ramos", "height": 1.60, "weight_goal": 65,
                                                  "birth_date": "2020-03-04"})
-        self.assertEqual(response.status_code, HTTP_200_OK)
+        self.assertEqual(response.status_code, HTTP_201_CREATED)
         login(self.client, "vr@ua.pt", "pwd")
         response = self.client.get("/clients/tos@ua.pt")
         self.assertEqual(response.status_code, HTTP_403_FORBIDDEN)

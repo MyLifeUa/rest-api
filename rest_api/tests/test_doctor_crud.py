@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 
 from rest_framework.status import (
     HTTP_200_OK,
+    HTTP_201_CREATED,
     HTTP_400_BAD_REQUEST,
     HTTP_401_UNAUTHORIZED,
     HTTP_403_FORBIDDEN)
@@ -41,7 +42,7 @@ class DoctorRegistrationTest(APITestCase):
         response = self.client.post("/doctors",
                                     {"email": "j.vasconcelos99@ua.pt", "password": "pwd", "first_name": "Vasco",
                                      "last_name": "Ramos", "birth_date": "2020-03-04"})
-        self.assertEqual(response.status_code, HTTP_200_OK)
+        self.assertEqual(response.status_code, HTTP_201_CREATED)
 
 
 class DoctorUpdateTest(APITestCase):
@@ -50,7 +51,7 @@ class DoctorUpdateTest(APITestCase):
 
         response = self.client.post("/doctors", {"email": "vr@ua.pt", "password": "pwd", "first_name": "Vasco",
                                                  "last_name": "Ramos", "birth_date": "2020-03-04"})
-        self.assertEqual(response.status_code, HTTP_200_OK)
+        self.assertEqual(response.status_code, HTTP_201_CREATED)
 
         login(self.client, "vr@ua.pt", "pwd")
 
@@ -78,7 +79,7 @@ class DoctorDeleteTest(APITestCase):
         response = self.client.post("/doctors",
                                     {"email": "v@ua.pt", "password": "pwd", "first_name": "Vasco", "last_name": "Ramos",
                                      "birth_date": "2020-03-04"})
-        self.assertEqual(response.status_code, HTTP_200_OK)
+        self.assertEqual(response.status_code, HTTP_201_CREATED)
 
         login(self.client, "v@ua.pt", "pwd")
 
@@ -96,7 +97,7 @@ class DoctorDeleteTest(APITestCase):
         response = self.client.post("/doctors",
                                     {"email": "ze@ua.pt", "password": "pwd", "first_name": "Ze", "last_name": "Costa",
                                      "birth_date": "2020-03-04"})
-        self.assertEqual(response.status_code, HTTP_200_OK)
+        self.assertEqual(response.status_code, HTTP_201_CREATED)
 
         login(self.client, "v@ua.pt", "pwd")
 
@@ -107,7 +108,7 @@ class DoctorDeleteTest(APITestCase):
         response = self.client.post("/clients", {"email": "joana@ua.pt", "password": "pwd", "first_name": "Vasco",
                                                  "last_name": "Ramos", "height": 1.60, "weight_goal": 65,
                                                  "birth_date": "2020-03-04"})
-        self.assertEqual(response.status_code, HTTP_200_OK)
+        self.assertEqual(response.status_code, HTTP_201_CREATED)
 
         login(self.client, "joana@ua.pt", "pwd")
 
@@ -129,20 +130,20 @@ class GetDoctorTest(APITestCase):
         response = self.client.post("/clients", {"email": "tos@ua.pt", "password": "pwd", "first_name": "Tomas",
                                                  "last_name": "Ramos", "height": 1.60, "weight_goal": 65,
                                                  "birth_date": "2020-03-04"})
-        self.assertEqual(response.status_code, HTTP_200_OK)
+        self.assertEqual(response.status_code, HTTP_201_CREATED)
 
         create_user_and_login(self.client, "custom_admin", "vasco", "vr@ua.pt", "pwd")
 
         response = self.client.post("/doctors", {"email": "ana@ua.pt", "password": "pwd", "first_name": "Vasco",
                                                  "last_name": "Ramos", "birth_date": "2020-03-04"})
-        self.assertEqual(response.status_code, HTTP_200_OK)
+        self.assertEqual(response.status_code, HTTP_201_CREATED)
         self.doctor = Doctor.objects.get(user__auth_user__username="ana@ua.pt")
 
         # Client with doctor
         self.client.post("/clients",
                          {"email": "ana99@ua.pt", "password": "pwd", "first_name": "Tomas", "last_name": "Ramos",
                           "height": 1.60, "weight_goal": 65, "birth_date": "2020-03-04"})
-        self.assertEqual(response.status_code, HTTP_200_OK)
+        self.assertEqual(response.status_code, HTTP_201_CREATED)
         Client.objects.filter(user__auth_user__username="ana99@ua.pt").update(doctor=self.doctor)
 
     def test_get_doctor_info_other_client(self):
