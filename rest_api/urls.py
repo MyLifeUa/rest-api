@@ -18,6 +18,6 @@ urlpatterns = [
     url("^doctors/(?P<email>.+)", doctor_rud, name="doctor-rud"),
 
     # Meal History
-    url("^food_log/(?P<email>.+)", new_food_log, name="new-food-log"),
+    path("food-logs", new_food_log, name="new-food-log"),
 
 ]

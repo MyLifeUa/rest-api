@@ -7,7 +7,8 @@ from rest_framework.status import (
     HTTP_200_OK,
     HTTP_400_BAD_REQUEST,
     HTTP_403_FORBIDDEN,
-    HTTP_404_NOT_FOUND
+    HTTP_404_NOT_FOUND,
+    HTTP_201_CREATED
 )
 from rest_api import queries
 from rest_api.authentication import token_expire_handler
@@ -339,24 +340,21 @@ def get_doctor(request, email):
 
 
 @api_view(["POST"])
-def new_food_log(request, email):
+def new_food_log(request):
     token, username, role = who_am_i(request)
 
-    # default possibility
-    state = "Error"
-    message = "You do not have permissions to create a food log in this account"
-    status = HTTP_403_FORBIDDEN
-
-    if is_self(role, "client", username, email):
-        state, message = queries.update_admin(request, email)
-        status = HTTP_200_OK if state else HTTP_400_BAD_REQUEST
+    if not verify_authorization(role, "client"):
+        state = "Error"
+        message = "You do not have permissions to add a new food log."
+        status = HTTP_403_FORBIDDEN
+        return Response({"role": role, "state": state, "message": message, "token": token},
+                        status=status)
 
     data = request.data
     if not (
             "day" in data
             and "type_of_meal" in data
             and "meal" in data
-            and "client" in data
 
     ):
         state = "Error"
@@ -364,7 +362,7 @@ def new_food_log(request, email):
         status = HTTP_400_BAD_REQUEST
         return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
-    state, message = queries.add_food_log(data)
-    state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+    state, message = queries.add_food_log(data, username)
+    state, status = ("Success", HTTP_201_CREATED) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)

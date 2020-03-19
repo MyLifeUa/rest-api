@@ -281,11 +281,10 @@ def get_doctor(email):
     return state, message
 
 
-def add_food_log(data):
+def add_food_log(data, email):
     day = data.get("day")
     type_of_meal = data.get("type_of_meal")
     meal_id = data.get("meal")
-    email = data.get("client")
 
     client = Client.objects.filter(user__auth_user__username=email)
 
