@@ -279,3 +279,46 @@ def get_doctor(email):
 
     state, message = True, DoctorSerializer(doctor[0]).data
     return state, message
+
+
+def add_food_log(data, email):
+    day = data.get("day")
+    type_of_meal = data.get("type_of_meal")
+    meal_id = data.get("meal")
+
+    client = Client.objects.filter(user__auth_user__username=email)
+
+    if not client.exists():
+        state, message = False, "Client does not exist."
+        return state, message
+
+    current_client = Client.objects.get(user__auth_user__username=email)
+
+    meal_history_with_type_of_meal = MealHistory.objects.filter(day=day, type_of_meal=type_of_meal,
+                                                                client=current_client)
+
+    if not meal_history_with_type_of_meal.exists():  # Food log does not exist yet
+        try:
+
+            meal = Meal.objects.filter(id=meal_id)
+
+            if not meal.exists():
+                state, message = False, "Meal does not exist."
+                return state, message
+
+            current_meal = Meal.objects.get(id=meal_id)
+
+            MealHistory.objects.create(day=day, type_of_meal=type_of_meal, client=current_client,
+                                       meal=current_meal)
+
+        except Exception as e:
+            print(e)
+            error_message = "Error while creating new food log!"
+            return False, error_message
+    else:  # Food log exists for this day and for this type of meal
+
+        error_message = "Food log already exists for this day and type of meal."
+        return False, error_message
+
+    state_message = "The food log was created with success"
+    return True, state_message

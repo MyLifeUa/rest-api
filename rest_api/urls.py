@@ -17,4 +17,7 @@ urlpatterns = [
     path("doctors", new_doctor, name="new-doctor"),
     url("^doctors/(?P<email>.+)", doctor_rud, name="doctor-rud"),
 
+    # Meal History
+    path("food-logs", new_food_log, name="new-food-log"),
+
 ]
