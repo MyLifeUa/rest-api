@@ -369,30 +369,25 @@ def new_food_log(request):
 
 
 @api_view(["GET", "PUT", "DELETE"])
-def food_log_rud(request, food_log_id):
+def food_log_rud(request, food_log_filter):
     if request.method == "DELETE":
-        return delete_food_log(request, food_log_id)
+        pass
+    elif request.method == "PUT":
+        pass
+    elif request.method == "GET":
+        return get_food_log(request, food_log_filter)
 
 
-def delete_food_log(request, food_log_id):
+def get_food_log(request, day):
     token, username, role = who_am_i(request)
-
-    try:
-        meal_history = MealHistory.objects.get(id=food_log_id)
-    except meal_history.DoesNotExist:
-        state = "Error"
-        message = "Food Log does not exist!"
-        status = HTTP_400_BAD_REQUEST
-        return Response({"role": role, "state": state, "message": message, "token": token},
-                        status=status)
 
     # default possibility
     state = "Error"
-    message = "You don't have permissions to delete this food log"
+    message = "You don't have permissions to access this food log"
     status = HTTP_403_FORBIDDEN
 
     if verify_authorization(role, "client"):
-        state, message = queries.delete_food_log(meal_history)
+        state, message = queries.get_food_log(username, day)
         state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
