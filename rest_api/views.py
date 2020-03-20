@@ -373,21 +373,21 @@ def food_log_rud(request, food_log_filter):
     if request.method == "DELETE":
         pass
     elif request.method == "PUT":
-        pass
+        return update_food_log(request, food_log_filter)
     elif request.method == "GET":
-        return get_food_log(request, food_log_filter)
+        pass
 
 
-def get_food_log(request, day):
+def update_food_log(request, food_log_id):
     token, username, role = who_am_i(request)
 
     # default possibility
     state = "Error"
-    message = "You don't have permissions to access this food log"
+    message = "You do not have permissions to update this food log"
     status = HTTP_403_FORBIDDEN
 
     if verify_authorization(role, "client"):
-        state, message = queries.get_food_log(username, day)
-        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+        state, message = queries.update_food_log(request, food_log_id)
+        status = HTTP_200_OK if state else HTTP_400_BAD_REQUEST
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
