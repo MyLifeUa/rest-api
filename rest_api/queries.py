@@ -290,7 +290,7 @@ def add_food_log(data, email):
 
     if not client.exists():
         state, message = False, "Client does not exist."
-        return state, message  # TODO verificaçao nao necessaria
+        return state, message  
 
     current_client = Client.objects.get(user__auth_user__username=email)
 
@@ -334,5 +334,5 @@ def get_food_log(email, day):
         return state, message
 
     state, message = True, [MealHistorySerializer(r).data for r in meal_history]
-    
+
     return state, message
