@@ -322,3 +322,14 @@ def add_food_log(data, email):
 
     state_message = "The food log was created with success"
     return True, state_message
+
+def delete_food_log(meal_history):
+    try:
+        meal_history.delete()
+        state, message = True, "Food log successfully deleted"
+
+    except Error:
+        state, message = False, "Error while deleting user"
+
+    finally:
+        return state, message

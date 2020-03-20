@@ -14,6 +14,7 @@ from rest_api import queries
 from rest_api.authentication import token_expire_handler
 from rest_api.serializers import UserSerializer, UserLoginSerializer
 from .utils import *
+from .models import MealHistory
 
 
 @api_view(["POST"])
@@ -363,5 +364,35 @@ def new_food_log(request):
 
     state, message = queries.add_food_log(data, username)
     state, status = ("Success", HTTP_201_CREATED) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+
+@api_view(["GET", "PUT", "DELETE"])
+def food_log_rud(request, food_log_id):
+    if request.method == "DELETE":
+        return delete_food_log(request, food_log_id)
+
+
+def delete_food_log(request, food_log_id):
+    token, username, role = who_am_i(request)
+
+    try:
+        meal_history = MealHistory.objects.get(id=food_log_id)
+    except meal_history.DoesNotExist:
+        state = "Error"
+        message = "Food Log does not exist!"
+        status = HTTP_400_BAD_REQUEST
+        return Response({"role": role, "state": state, "message": message, "token": token},
+                        status=status)
+
+    # default possibility
+    state = "Error"
+    message = "You don't have permissions to delete this food log"
+    status = HTTP_403_FORBIDDEN
+
+    if verify_authorization(role, "client"):
+        state, message = queries.delete_food_log(meal_history)
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
