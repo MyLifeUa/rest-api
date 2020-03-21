@@ -82,3 +82,48 @@ class AdminSerializer(serializers.Serializer):
 
     def get_hospital(self, obj):
         return obj.hospital
+
+class Meal(serializers.Serializer): # TODO Finish this implementation, started to implement the MealHistorySerializer
+    id = serializers.SerializerMethodField()
+    name = serializers.SerializerMethodField()
+    number_of_servings = serializers.SerializerMethodField()
+    category = serializers.SerializerMethodField()
+
+    def get_id(self, obj):
+        return obj.id
+
+    def get_name(self, obj):
+        return obj.name
+
+    def get_number_of_servings(self, obj):
+        return obj.number_of_servings
+
+    def get_category(self, obj):
+        return obj.category
+
+
+class MealHistorySerializer(serializers.Serializer):
+    id = serializers.SerializerMethodField()
+    day = serializers.SerializerMethodField()
+    type_of_meal = serializers.SerializerMethodField()
+    meal_name = serializers.SerializerMethodField()
+    number_of_servings = serializers.SerializerMethodField()
+    meal_category = serializers.SerializerMethodField()
+
+    def get_id(self, obj):
+        return obj.id
+
+    def get_day(self, obj):
+        return obj.day
+
+    def get_type_of_meal(self, obj):
+        return obj.type_of_meal
+
+    def get_meal_name(self, obj):
+        return obj.meal.name
+
+    def get_number_of_servings(self, obj):
+        return obj.meal.number_of_servings
+
+    def get_meal_category(self, obj):
+        return obj.meal.category
