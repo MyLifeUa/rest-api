@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate
 from django.views.decorators.csrf import csrf_exempt
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -10,13 +11,13 @@ from rest_framework.status import (
     HTTP_404_NOT_FOUND,
     HTTP_201_CREATED
 )
-from rest_api import queries
+from rest_api import queries, documentation_serializers as doc
 from rest_api.authentication import token_expire_handler
-from rest_api.serializers import UserSerializer, UserLoginSerializer
 from .utils import *
 from .models import MealHistory
 
 
+@swagger_auto_schema(method="post", request_body=doc.UserLoginSerializer)
 @api_view(["POST"])
 @permission_classes((AllowAny,))
 def login(request):
@@ -52,6 +53,7 @@ def logout(request):
     return Response(status=HTTP_200_OK)
 
 
+@swagger_auto_schema(method="post", request_body=doc.AdminSerializer)
 @api_view(["POST"])
 def new_admin(request):
     token, username, role = who_am_i(request)
@@ -83,6 +85,7 @@ def new_admin(request):
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
 
+@swagger_auto_schema(method="put", request_body=doc.AdminSerializer)
 @api_view(["GET", "PUT", "DELETE"])
 def admin_rud(request, email):
     if request.method == "PUT":
@@ -147,6 +150,7 @@ def get_admin(request, email):
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
 
+@swagger_auto_schema(method="post", request_body=doc.ClientSerializer)
 @api_view(["POST"])
 @permission_classes((AllowAny,))
 def new_client(request):
@@ -166,6 +170,7 @@ def new_client(request):
     return Response({"state": state, "message": message}, status=status)
 
 
+@swagger_auto_schema(method="put", request_body=doc.ClientSerializer)
 @api_view(["GET", "PUT", "DELETE"])
 def client_rud(request, email):
     if request.method == "PUT":
@@ -234,6 +239,7 @@ def get_client(request, email):
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
 
+@swagger_auto_schema(method="post", request_body=doc.DoctorSerializer)
 @api_view(["POST"])
 def new_doctor(request):
     token, username, role = who_am_i(request)
@@ -266,6 +272,7 @@ def new_doctor(request):
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
 
+@swagger_auto_schema(method="put", request_body=doc.DoctorSerializer)
 @api_view(["GET", "PUT", "DELETE"])
 def doctor_rud(request, email):
     if request.method == "PUT":
@@ -339,6 +346,7 @@ def get_doctor(request, email):
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
 
+@swagger_auto_schema(method="post", request_body=doc.MealHistorySerializer)
 @api_view(["POST"])
 def new_food_log(request):
     token, username, role = who_am_i(request)
@@ -368,6 +376,7 @@ def new_food_log(request):
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
 
+@swagger_auto_schema(method="put", request_body=doc.MealHistorySerializer)
 @api_view(["GET", "PUT", "DELETE"])
 def food_log_rud(request, food_log_filter):
     if request.method == "DELETE":

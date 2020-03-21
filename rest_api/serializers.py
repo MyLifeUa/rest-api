@@ -68,7 +68,8 @@ class DoctorSerializer(serializers.Serializer):
 class AdminSerializer(serializers.Serializer):
     id = serializers.SerializerMethodField()
     email = serializers.SerializerMethodField()
-    name = serializers.SerializerMethodField()
+    first_name = serializers.SerializerMethodField()
+    last_name = serializers.SerializerMethodField()
     hospital = serializers.SerializerMethodField()
 
     def get_id(self, obj):
@@ -77,13 +78,17 @@ class AdminSerializer(serializers.Serializer):
     def get_email(self, obj):
         return obj.auth_user.email
 
-    def get_name(self, obj):
-        return obj.auth_user.get_full_name()
+    def get_first_name(self, obj):
+        return obj.auth_user.first_name
+
+    def get_last_name(self, obj):
+        return obj.auth_user.last_name
 
     def get_hospital(self, obj):
         return obj.hospital
 
-class Meal(serializers.Serializer): # TODO Finish this implementation, started to implement the MealHistorySerializer
+
+class Meal(serializers.Serializer):  # TODO Finish this implementation, started to implement the MealHistorySerializer
     id = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
     number_of_servings = serializers.SerializerMethodField()
