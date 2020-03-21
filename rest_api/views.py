@@ -14,6 +14,7 @@ from rest_api import queries
 from rest_api.authentication import token_expire_handler
 from rest_api.serializers import UserSerializer, UserLoginSerializer
 from .utils import *
+from .models import MealHistory
 
 
 @api_view(["POST"])
@@ -363,5 +364,30 @@ def new_food_log(request):
 
     state, message = queries.add_food_log(data, username)
     state, status = ("Success", HTTP_201_CREATED) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+
+@api_view(["GET", "PUT", "DELETE"])
+def food_log_rud(request, food_log_filter):
+    if request.method == "DELETE":
+        pass
+    elif request.method == "PUT":
+        pass
+    elif request.method == "GET":
+        return get_food_log(request, food_log_filter)
+
+
+def get_food_log(request, day):
+    token, username, role = who_am_i(request)
+
+    # default possibility
+    state = "Error"
+    message = "You don't have permissions to access this food log"
+    status = HTTP_403_FORBIDDEN
+
+    if verify_authorization(role, "client"):
+        state, message = queries.get_food_log(username, day)
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
