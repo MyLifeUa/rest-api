@@ -15,6 +15,7 @@ from rest_api import queries, documentation_serializers as doc
 from rest_api.authentication import token_expire_handler
 from .utils import *
 from .models import MealHistory
+from .serializers import *
 
 
 @swagger_auto_schema(method="post", request_body=doc.UserLoginSerializer)
