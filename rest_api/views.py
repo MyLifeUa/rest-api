@@ -381,13 +381,23 @@ def food_log_rud(request, food_log_filter):
 def update_food_log(request, food_log_id):
     token, username, role = who_am_i(request)
 
+    try:
+        meal_history = MealHistory.objects.filter(id=food_log_id)
+        current_meal_history = MealHistory.objects.get(id=food_log_id)
+    except meal_history.DoesNotExist:
+        state = "Error"
+        message = "Food Log does not exist!"
+        status = HTTP_400_BAD_REQUEST
+        return Response({"role": role, "state": state, "message": message, "token": token},
+                        status=status)
+
     # default possibility
     state = "Error"
     message = "You do not have permissions to update this food log"
     status = HTTP_403_FORBIDDEN
 
-    if verify_authorization(role, "client"):
-        state, message = queries.update_food_log(request, food_log_id)
+    if is_self(role, "client", username, current_meal_history.client.user.auth_user.username):
+        state, message = queries.update_food_log(request, current_meal_history, meal_history)
         status = HTTP_200_OK if state else HTTP_400_BAD_REQUEST
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)

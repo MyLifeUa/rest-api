@@ -324,17 +324,10 @@ def add_food_log(data, email):
     return True, state_message
 
 
-def update_food_log(request, food_log_id):
+def update_food_log(request, current_meal_history, meal_history):
     data = request.data
     state = True
     message = "Food log successfully updated!"
-
-    meal_history = MealHistory.objects.filter(id=food_log_id)
-    if not meal_history.exists():
-        state, message = False, "Food log does not exist"
-        return state, message
-
-    current_meal_history = MealHistory.objects.get(id=food_log_id)
 
     try:
 
