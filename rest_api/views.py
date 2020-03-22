@@ -401,3 +401,30 @@ def get_food_log(request, day):
         state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+
+@api_view(["POST"])
+def new_doctor_patient_association(request):
+    token, username, role = who_am_i(request)
+
+    if not verify_authorization(role, "doctor"):
+        state = "Error"
+        message = "You do not have permissions to add a new doctor patient association."
+        status = HTTP_403_FORBIDDEN
+        return Response({"role": role, "state": state, "message": message, "token": token},
+                        status=status)
+
+    data = request.data
+    if not (
+            "client" in data
+
+    ):
+        state = "Error"
+        message = "Missing parameters"
+        status = HTTP_400_BAD_REQUEST
+        return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+    state, message = queries.add_doctor_patient_association(data, username)
+    state, status = ("Success", HTTP_201_CREATED) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)

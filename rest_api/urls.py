@@ -22,4 +22,7 @@ urlpatterns = [
     path("food-logs", new_food_log, name="new-food-log"),
     url("^food-logs/(?P<food_log_filter>.+)", food_log_rud, name="food-log-rud"),
 
+    # Doctor patient association
+    path("doctor-patient-association", new_doctor_patient_association, name="new-doctor-patient-association"),
+
 ]
