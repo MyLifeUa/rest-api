@@ -379,7 +379,7 @@ def food_log_rud(request, food_log_filter):
 
 
 def update_food_log(request, food_log_id):
-    token, username, role = who_am_i(request    )
+    token, username, role = who_am_i(request)
 
     try:
         meal_history = MealHistory.objects.filter(id=food_log_id)
