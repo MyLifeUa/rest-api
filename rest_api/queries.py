@@ -324,6 +324,18 @@ def add_food_log(data, email):
     return True, state_message
 
 
+def delete_food_log(meal_history):
+    try:
+        meal_history.delete()
+        state, message = True, "Food log successfully deleted"
+
+    except Error:
+        state, message = False, "Error while deleting user"
+
+    finally:
+        return state, message
+
+
 def get_food_log(email, day):
     current_client = Client.objects.get(user__auth_user__username=email)
 
@@ -336,3 +348,4 @@ def get_food_log(email, day):
     state, message = True, [MealHistorySerializer(r).data for r in meal_history]
 
     return state, message
+
