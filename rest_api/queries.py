@@ -341,12 +341,7 @@ def get_food_log(email, day):
 def add_doctor_patient_association(data, email):
     client_username = data.get("client")
 
-    doctor = Doctor.objects.filter(user__auth_user__username=email)
     client = Client.objects.filter(user__auth_user__username=client_username)
-
-    if not doctor.exists():
-        state, message = False, "Doctor does not exist."
-        return state, message
 
     current_doctor = Doctor.objects.get(user__auth_user__username=email)
 
@@ -357,6 +352,12 @@ def add_doctor_patient_association(data, email):
     current_client = Client.objects.get(user__auth_user__username=client_username)
 
     print(current_client.doctor)
+
+    if current_client.doctor is None:
+        print("Yes")
+    else:
+        error_message = "The patient already has a doctor associated."
+        return False, error_message
 
 
     '''meal_history_with_type_of_meal = MealHistory.objects.filter(day=day, type_of_meal=type_of_meal,

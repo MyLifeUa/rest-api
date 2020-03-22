@@ -425,6 +425,6 @@ def new_doctor_patient_association(request):
         return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
     state, message = queries.add_doctor_patient_association(data, username)
-    state, status = ("Success", HTTP_201_CREATED) if state else ("Error", HTTP_400_BAD_REQUEST)
+    state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
