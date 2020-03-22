@@ -87,8 +87,7 @@ class AdminSerializer(serializers.Serializer):
     def get_hospital(self, obj):
         return obj.hospital
 
-
-class Meal(serializers.Serializer):  # TODO Finish this implementation, started to implement the MealHistorySerializer
+class Meal(serializers.Serializer): # TODO Finish this implementation, started to implement the MealHistorySerializer
     id = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
     number_of_servings = serializers.SerializerMethodField()
