@@ -379,12 +379,12 @@ def food_log_rud(request, food_log_filter):
 
 
 def update_food_log(request, food_log_id):
-    token, username, role = who_am_i(request)
+    token, username, role = who_am_i(request    )
 
     try:
         meal_history = MealHistory.objects.filter(id=food_log_id)
         current_meal_history = MealHistory.objects.get(id=food_log_id)
-    except meal_history.DoesNotExist:
+    except MealHistory.DoesNotExist:
         state = "Error"
         message = "Food Log does not exist!"
         status = HTTP_400_BAD_REQUEST
