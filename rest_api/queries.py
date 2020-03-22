@@ -3,7 +3,7 @@ from django.db import Error, transaction
 
 from .models import *
 from .constants import *
-from .serializers import ClientSerializer, DoctorSerializer, AdminSerializer
+from .serializers import ClientSerializer, DoctorSerializer, AdminSerializer, MealHistorySerializer
 
 
 def add_user(data, is_superuser=False):
@@ -290,7 +290,7 @@ def add_food_log(data, email):
 
     if not client.exists():
         state, message = False, "Client does not exist."
-        return state, message
+        return state, message  
 
     current_client = Client.objects.get(user__auth_user__username=email)
 
@@ -322,3 +322,17 @@ def add_food_log(data, email):
 
     state_message = "The food log was created with success"
     return True, state_message
+
+
+def get_food_log(email, day):
+    current_client = Client.objects.get(user__auth_user__username=email)
+
+    meal_history = MealHistory.objects.filter(day=day, client=current_client)
+
+    if not meal_history.exists():
+        state, message = False, "Food log does not exist."
+        return state, message
+
+    state, message = True, [MealHistorySerializer(r).data for r in meal_history]
+
+    return state, message
