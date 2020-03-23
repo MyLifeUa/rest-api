@@ -15,7 +15,7 @@ class ClientSerializer(serializers.Serializer):
     phone_number = serializers.SerializerMethodField()
     photo = serializers.SerializerMethodField()
     height = serializers.FloatField(required=True)
-    current_weight= serializers.FloatField(required=True)
+    current_weight = serializers.FloatField(required=True)
     weight_goal = serializers.FloatField(required=True)
 
     def get_email(self, obj):
@@ -107,7 +107,7 @@ class IngredientSerializer(serializers.Serializer):
     carbs = serializers.FloatField(required=True)
     name = serializers.CharField(required=True)
 
-    
+
 class IngredientMinSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     quantity = serializers.FloatField()
@@ -117,6 +117,7 @@ class MealSerializer(serializers.Serializer):
     name = serializers.CharField(required=True)
     category = serializers.CharField(required=True)
     ingredients = serializers.ListField(child=IngredientMinSerializer())
+
 
 class ClientEmailSerializer(serializers.Serializer):
     client = serializers.CharField(required=True)

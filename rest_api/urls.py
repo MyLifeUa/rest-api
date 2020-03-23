@@ -23,7 +23,7 @@ urlpatterns = [
 
     # Ingredients
     path("ingredients", new_ingredient, name="new-ingredient"),
-    
+
     # Meal
     path("meals", new_meal, name="new-meal"),
     # Doctor patient association
