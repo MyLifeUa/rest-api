@@ -100,6 +100,14 @@ class MealHistorySerializer(serializers.Serializer):
         return obj.meal.id
 
 
+class IngredientSerializer(serializers.Serializer):
+    calories = serializers.FloatField(required=True)
+    proteins = serializers.FloatField(required=True)
+    fat = serializers.FloatField(required=True)
+    carbs = serializers.FloatField(required=True)
+    name = serializers.CharField(required=True)
+
+    
 class IngredientMinSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     quantity = serializers.FloatField()

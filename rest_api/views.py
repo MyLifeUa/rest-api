@@ -452,6 +452,7 @@ def get_food_log(request, day):
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
+
 @swagger_auto_schema(method="post", request_body=doc.ClientEmailSerializer)
 @api_view(["POST"])
 def new_doctor_patient_association(request):
@@ -479,6 +480,26 @@ def new_doctor_patient_association(request):
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
+
+@swagger_auto_schema(method="post", request_body=doc.IngredientSerializer)
+@api_view(["POST"])
+def new_ingredient(request):
+    token, username, role = who_am_i(request)
+
+    data = request.data
+
+    if not ("calories" in data and "proteins" in data and "fat" in data and "carbs" in data and "name" in data):
+        state = "Error"
+        message = "Missing parameters"
+        status = HTTP_400_BAD_REQUEST
+        return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+    state, message = queries.add_ingredient(data)
+    state, status = ("Success", HTTP_201_CREATED) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+
 @swagger_auto_schema(method="post", request_body=doc.MealSerializer)
 @api_view(["POST"])
 def new_meal(request):
@@ -495,4 +516,3 @@ def new_meal(request):
     state, status = ("Success", HTTP_201_CREATED) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
-

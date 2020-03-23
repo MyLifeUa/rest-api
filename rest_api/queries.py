@@ -145,7 +145,7 @@ def get_admin(username):
 def add_client(data):
     height = data.get("height")
     weight_goal = data.get("weight_goal")
-    current_weight= data.get("current_weight")
+    current_weight = data.get("current_weight")
 
     state, content = add_user(data)
     if not state:
@@ -156,7 +156,7 @@ def add_client(data):
 
     try:
         # link the user to a client
-        Client.objects.create(user=custom_user, height=height,current_weight=current_weight, weight_goal=weight_goal)
+        Client.objects.create(user=custom_user, height=height, current_weight=current_weight, weight_goal=weight_goal)
 
     except Exception:
         user.delete()
@@ -422,6 +422,24 @@ def update_food_log(request, current_meal_history, meal_history):
     return state, message
 
 
+def add_ingredient(data):
+    name = data.get("name")
+    calories = data.get("calories")
+    carbs = data.get("carbs")
+    fat = data.get("fat")
+    proteins = data.get("proteins")
+
+    try:
+        Ingredient.objects.create(name=name, calories=calories, carbs=carbs, fat=fat, proteins=proteins)
+
+    except Exception:
+        error_message = "Error while creating new ingredient!"
+        return False, error_message
+
+    state_message = "The ingredient was created with success"
+    return True, state_message
+
+
 def add_new_meal(data, username, role="admin"):
     name = data.get("name")
     category = data.get("category")
@@ -455,7 +473,8 @@ def add_new_meal(data, username, role="admin"):
 
     state_message = "Meal created successfully!"
     return True, state_message
-    
+
+
 def add_doctor_patient_association(data, email):
     client_username = data.get("client")
 
