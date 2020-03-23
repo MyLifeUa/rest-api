@@ -4,6 +4,7 @@ from rest_framework.status import (
     HTTP_201_CREATED,
     HTTP_400_BAD_REQUEST,
     HTTP_403_FORBIDDEN,
+    HTTP_204_NO_CONTENT
 )
 from rest_framework.test import APITestCase
 
@@ -71,7 +72,7 @@ class AdminDeleteTest(APITestCase):
 
     def test_delete_self(self):
         response = self.client.delete("/admins/ana@ua.pt")
-        self.assertEqual(response.status_code, HTTP_200_OK)
+        self.assertEqual(response.status_code, HTTP_204_NO_CONTENT)
 
 
 class GetAdminTest(APITestCase):
