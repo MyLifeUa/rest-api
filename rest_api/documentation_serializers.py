@@ -15,6 +15,7 @@ class ClientSerializer(serializers.Serializer):
     phone_number = serializers.SerializerMethodField()
     photo = serializers.SerializerMethodField()
     height = serializers.FloatField(required=True)
+    current_weight= serializers.FloatField(required=True)
     weight_goal = serializers.FloatField(required=True)
 
     def get_email(self, obj):

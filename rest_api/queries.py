@@ -145,6 +145,7 @@ def get_admin(username):
 def add_client(data):
     height = data.get("height")
     weight_goal = data.get("weight_goal")
+    current_weight= data.get("current_weight")
 
     state, content = add_user(data)
     if not state:
@@ -155,7 +156,7 @@ def add_client(data):
 
     try:
         # link the user to a client
-        Client.objects.create(user=custom_user, height=height, weight_goal=weight_goal)
+        Client.objects.create(user=custom_user, height=height,current_weight=current_weight, weight_goal=weight_goal)
 
     except Exception:
         user.delete()
@@ -196,6 +197,10 @@ def update_client(request, email):
         if "height" in data:
             height = data.get("height")
             client.update(height=height)
+
+        if "current_weight" in data:
+            current_weight = data.get("current_weight")
+            client.update(current_weight=current_weight)
 
         if "weight_goal" in data:
             weight_goal = data.get("weight_goal")

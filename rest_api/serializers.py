@@ -20,6 +20,7 @@ class ClientSerializer(serializers.Serializer):
     phone_number = serializers.SerializerMethodField()
     photo = serializers.SerializerMethodField()
     height = serializers.FloatField()
+    current_weight = serializers.FloatField()
     weight_goal = serializers.FloatField()
 
     def get_id(self, obj):
@@ -87,7 +88,8 @@ class AdminSerializer(serializers.Serializer):
     def get_hospital(self, obj):
         return obj.hospital
 
-class Meal(serializers.Serializer): # TODO Finish this implementation, started to implement the MealHistorySerializer
+
+class Meal(serializers.Serializer):  # TODO Finish this implementation, started to implement the MealHistorySerializer
     id = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
     number_of_servings = serializers.SerializerMethodField()

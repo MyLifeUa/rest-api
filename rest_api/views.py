@@ -161,6 +161,7 @@ def new_client(request):
             and "last_name" in data
             and "password" in data
             and "height" in data
+            and "current_weight" in data
             and "weight_goal" in data
             and "birth_date" in data):
         return Response({"state": "Error", "message": "Missing parameters"}, status=HTTP_400_BAD_REQUEST)
