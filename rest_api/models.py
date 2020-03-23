@@ -30,6 +30,7 @@ class Client(models.Model):
         CustomUser, on_delete=models.CASCADE, unique=True, primary_key=True
     )
     height = models.FloatField()
+    current_weight = models.FloatField()
     weight_goal = models.FloatField()
     doctor = models.ForeignKey(Doctor, on_delete=models.SET_NULL, null=True, blank=True)
 
