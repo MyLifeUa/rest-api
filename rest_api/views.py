@@ -452,6 +452,7 @@ def get_food_log(request, day):
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
+
 @swagger_auto_schema(method="post", request_body=doc.ClientEmailSerializer)
 @api_view(["POST"])
 def new_doctor_patient_association(request):
@@ -478,6 +479,7 @@ def new_doctor_patient_association(request):
     state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
 
 @swagger_auto_schema(method="post", request_body=doc.IngredientSerializer)
 @api_view(["POST"])
@@ -514,4 +516,3 @@ def new_meal(request):
     state, status = ("Success", HTTP_201_CREATED) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
-

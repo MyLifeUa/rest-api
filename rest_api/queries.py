@@ -145,7 +145,7 @@ def get_admin(username):
 def add_client(data):
     height = data.get("height")
     weight_goal = data.get("weight_goal")
-    current_weight= data.get("current_weight")
+    current_weight = data.get("current_weight")
 
     state, content = add_user(data)
     if not state:
@@ -156,7 +156,7 @@ def add_client(data):
 
     try:
         # link the user to a client
-        Client.objects.create(user=custom_user, height=height,current_weight=current_weight, weight_goal=weight_goal)
+        Client.objects.create(user=custom_user, height=height, current_weight=current_weight, weight_goal=weight_goal)
 
     except Exception:
         user.delete()
@@ -473,7 +473,8 @@ def add_new_meal(data, username, role="admin"):
 
     state_message = "Meal created successfully!"
     return True, state_message
-    
+
+
 def add_doctor_patient_association(data, email):
     client_username = data.get("client")
 
