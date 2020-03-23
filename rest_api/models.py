@@ -51,7 +51,7 @@ class Meal(models.Model):
 
 
 class Quantity(models.Model):
-    ingredient = person = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
+    ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
     meal = models.ForeignKey(Meal, on_delete=models.CASCADE)
     quantity = models.FloatField()
 
