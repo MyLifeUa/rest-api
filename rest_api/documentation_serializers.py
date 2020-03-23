@@ -105,3 +105,14 @@ class IngredientSerializer(serializers.Serializer):
     fat = serializers.FloatField(required=True)
     carbs = serializers.FloatField(required=True)
     name = serializers.CharField(required=True)
+
+    
+class IngredientMinSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    quantity = serializers.FloatField()
+
+
+class MealSerializer(serializers.Serializer):
+    name = serializers.CharField(required=True)
+    category = serializers.CharField(required=True)
+    ingredients = serializers.ListField(child=IngredientMinSerializer())

@@ -433,3 +433,38 @@ def add_ingredient(data):
 
     state_message = "The ingredient was created with success"
     return True, state_message
+
+
+def add_new_meal(data, username, role="admin"):
+    name = data.get("name")
+    category = data.get("category")
+    ingredients = data.get("ingredients")
+
+    # treat nullable fields
+    client = Client.objects.get(user__auth_user__username=username) if role == "client" else None
+
+    if not ingredients:
+        error_message = "Error while creating new meal!"
+        return False, error_message
+
+    try:
+        # create new meal
+        meal = Meal.objects.create(name=name, category=category, client=client)
+
+        # add ingredients quantities
+        for ingredient_json in ingredients:
+            ingredient = Ingredient.objects.get(id=ingredient_json["id"])
+            Quantity.objects.create(meal=meal, ingredient=ingredient, quantity=ingredient_json["quantity"])
+
+    except Ingredient.DoesNotExist:
+        meal.delete()
+        error_message = "Ingredient does not exist!"
+        return False, error_message
+
+    except Exception:
+        meal.delete()
+        error_message = "Error while creating new meal!"
+        return False, error_message
+
+    state_message = "Meal created successfully!"
+    return True, state_message
