@@ -473,3 +473,25 @@ def add_new_meal(data, username, role="admin"):
 
     state_message = "Meal created successfully!"
     return True, state_message
+    
+def add_doctor_patient_association(data, email):
+    client_username = data.get("client")
+
+    client = Client.objects.filter(user__auth_user__username=client_username)
+
+    current_doctor = Doctor.objects.get(user__auth_user__username=email)
+
+    if not client.exists():
+        state, message = False, "Patient does not exist."
+        return state, message
+
+    current_client = Client.objects.get(user__auth_user__username=client_username)
+
+    if current_client.doctor is None:
+        client.update(doctor=current_doctor)
+    else:
+        error_message = "The patient already has a doctor associated."
+        return False, error_message
+
+    state_message = "The Doctor patient association was created with success"
+    return True, state_message
