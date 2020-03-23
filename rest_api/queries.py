@@ -351,40 +351,11 @@ def add_doctor_patient_association(data, email):
 
     current_client = Client.objects.get(user__auth_user__username=client_username)
 
-    print(current_client.doctor)
-
     if current_client.doctor is None:
-        print("Yes")
+        client.update(doctor=current_doctor)
     else:
         error_message = "The patient already has a doctor associated."
         return False, error_message
-
-
-    '''meal_history_with_type_of_meal = MealHistory.objects.filter(day=day, type_of_meal=type_of_meal,
-                                                                client=current_client)
-
-    if not meal_history_with_type_of_meal.exists():  # Food log does not exist yet
-        try:
-
-            meal = Meal.objects.filter(id=meal_id)
-
-            if not meal.exists():
-                state, message = False, "Meal does not exist."
-                return state, message
-
-            current_meal = Meal.objects.get(id=meal_id)
-
-            MealHistory.objects.create(day=day, type_of_meal=type_of_meal, client=current_client,
-                                       meal=current_meal)
-
-        except Exception as e:
-            print(e)
-            error_message = "Error while creating new food log!"
-            return False, error_message
-    else:  # Food log exists for this day and for this type of meal
-
-        error_message = "Food log already exists for this day and type of meal."
-        return False, error_message'''
 
     state_message = "The Doctor patient association was created with success"
     return True, state_message
