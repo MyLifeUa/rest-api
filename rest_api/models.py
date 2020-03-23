@@ -42,25 +42,25 @@ class Ingredient(models.Model):
     name = models.CharField(max_length=30)
 
 
-class MealCatalog(models.Model):
+class Meal(models.Model):
     name = models.CharField(max_length=30)
     category = models.CharField(max_length=30)
-    ingredients = models.ManyToManyField(Ingredient)
+    # https://docs.djangoproject.com/en/3.0/topics/db/models/#extra-fields-on-many-to-many-relationships
+    ingredients = models.ManyToManyField(Ingredient, through="Quantity")
     client = models.ForeignKey(Client, on_delete=models.CASCADE, null=True, blank=True)
 
 
-class Meal(models.Model):
-    name = models.CharField(max_length=30)
-    number_of_servings = models.FloatField()
-    category = models.CharField(max_length=30)
-    ingredients = models.ManyToManyField(Ingredient)
-    meal_from_catalog = models.ForeignKey(MealCatalog, on_delete=models.SET_NULL, null=True, blank=True)
+class Quantity(models.Model):
+    ingredient = person = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
+    meal = models.ForeignKey(Meal, on_delete=models.CASCADE)
+    quantity = models.FloatField()
 
 
 class MealHistory(models.Model):
     day = models.DateField()
     type_of_meal = models.CharField(max_length=25)
     meal = models.ForeignKey(Meal, on_delete=models.CASCADE)
+    number_of_servings = models.FloatField()
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
 
 
