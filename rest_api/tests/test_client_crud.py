@@ -37,7 +37,7 @@ class ClientRegistrationTest(APITestCase):
     def test_new_client_right_parameters(self):
         response = self.client.post("/clients",
                                     {"email": "vr@ua.pt", "password": "pwd", "first_name": "Vasco",
-                                     "last_name": "Ramos", "height": 1.60, "weight_goal": 65,
+                                     "last_name": "Ramos", "height": 1.60, "weight_goal": 65, "current_weight": 90,
                                      "birth_date": "2020-03-04"})
         self.assertEqual(response.status_code, HTTP_201_CREATED)
 
@@ -46,6 +46,7 @@ class ClientUpdateTest(APITestCase):
     def setUp(self):
         response = self.client.post("/clients", {"email": "vr@ua.pt", "password": "pwd", "first_name": "Vasco",
                                                  "last_name": "Ramos", "height": 1.60, "weight_goal": 65,
+                                                 "current_weight": 90,
                                                  "birth_date": "2020-03-04"})
         self.assertEqual(response.status_code, HTTP_201_CREATED)
         login(self.client, "vr@ua.pt", "pwd")
@@ -71,7 +72,8 @@ class ClientDeleteTest(APITestCase):
     def setUp(self):
         response = self.client.post("/clients",
                                     {"email": "v@ua.pt", "password": "pwd", "first_name": "Vasco", "last_name": "Ramos",
-                                     "height": 1.60, "weight_goal": 65, "birth_date": "2020-03-04"})
+                                     "height": 1.60, "weight_goal": 65, "current_weight": 90,
+                                     "birth_date": "2020-03-04"})
         self.assertEqual(response.status_code, HTTP_201_CREATED)
         login(self.client, "v@ua.pt", "pwd")
 
@@ -87,6 +89,7 @@ class ClientDeleteTest(APITestCase):
     def test_delete_other_client_account(self):
         response = self.client.post("/clients", {"email": "ze@ua.pt", "password": "pwd", "first_name": "Ze",
                                                  "last_name": "Costa", "height": 1.60, "weight_goal": 65,
+                                                 "current_weight": 90,
                                                  "birth_date": "2020-03-04"})
         self.assertEqual(response.status_code, HTTP_201_CREATED)
         response = self.client.delete("/clients/ze@ua.pt")
@@ -101,6 +104,7 @@ class GetClientTest(APITestCase):
     def setUp(self):
         response = self.client.post("/clients", {"email": "tos@ua.pt", "password": "pwd", "first_name": "Tomas",
                                                  "last_name": "Ramos", "height": 1.60, "weight_goal": 65,
+                                                 "current_weight": 90,
                                                  "birth_date": "2020-03-04"})
         self.assertEqual(response.status_code, HTTP_201_CREATED)
 
@@ -114,6 +118,7 @@ class GetClientTest(APITestCase):
     def test_get_client_info_other_client(self):
         response = self.client.post("/clients", {"email": "vr@ua.pt", "password": "pwd", "first_name": "Tomas",
                                                  "last_name": "Ramos", "height": 1.60, "weight_goal": 65,
+                                                 "current_weight": 90,
                                                  "birth_date": "2020-03-04"})
         self.assertEqual(response.status_code, HTTP_201_CREATED)
         login(self.client, "vr@ua.pt", "pwd")
