@@ -500,6 +500,21 @@ def new_ingredient(request):
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
 
+@swagger_auto_schema(method="put", request_body=doc.IngredientSerializer)
+@api_view(["GET", "PUT", "DELETE"])
+def doctor_rud(request, ingredient_id):
+    if request.method == "PUT":
+        return update_ingredient(request, ingredient_id)
+    elif request.method == "DELETE":
+        pass
+    elif request.method == "GET":
+        pass
+
+
+def update_ingredient(request, ingredient_id):
+    pass
+
+
 @swagger_auto_schema(method="post", request_body=doc.MealSerializer)
 @api_view(["POST"])
 def new_meal(request):

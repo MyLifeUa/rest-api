@@ -440,6 +440,10 @@ def add_ingredient(data):
     return True, state_message
 
 
+def update_ingredient(data, ingredient_id):
+    pass
+
+
 def add_new_meal(data, username, role="admin"):
     name = data.get("name")
     category = data.get("category")
