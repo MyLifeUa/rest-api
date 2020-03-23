@@ -451,3 +451,20 @@ def get_food_log(request, day):
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
+
+@swagger_auto_schema(method="post", request_body=doc.MealSerializer)
+@api_view(["POST"])
+def new_meal(request):
+    token, username, role = who_am_i(request)
+
+    data = request.data
+    if not ("name" in data and "category" in data and "ingredients" in data):
+        state = "Error"
+        message = "Missing parameters"
+        status = HTTP_400_BAD_REQUEST
+        return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+    state, message = queries.add_new_meal(data, username, role)
+    state, status = ("Success", HTTP_201_CREATED) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
