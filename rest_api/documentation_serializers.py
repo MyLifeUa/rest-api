@@ -109,3 +109,6 @@ class MealSerializer(serializers.Serializer):
     name = serializers.CharField(required=True)
     category = serializers.CharField(required=True)
     ingredients = serializers.ListField(child=IngredientMinSerializer())
+
+class ClientEmailSerializer(serializers.Serializer):
+    client = serializers.CharField(required=True)

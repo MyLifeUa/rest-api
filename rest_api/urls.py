@@ -24,5 +24,7 @@ urlpatterns = [
 
     # Meal
     path("meals", new_meal, name="new-meal"),
+    # Doctor patient association
+    path("doctor-patient-association", new_doctor_patient_association, name="new-doctor-patient-association"),
 
 ]
