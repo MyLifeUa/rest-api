@@ -97,3 +97,14 @@ class MealHistorySerializer(serializers.Serializer):
 
     def get_meal(self, obj):
         return obj.meal.id
+
+
+class IngredientMinSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    quantity = serializers.FloatField()
+
+
+class MealSerializer(serializers.Serializer):
+    name = serializers.CharField(required=True)
+    category = serializers.CharField(required=True)
+    ingredients = serializers.ListField(child=IngredientMinSerializer())
