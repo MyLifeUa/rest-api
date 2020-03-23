@@ -415,3 +415,21 @@ def update_food_log(request, current_meal_history, meal_history):
         state, message = False, "Error while updating Food log!"
 
     return state, message
+
+
+def add_ingredient(data):
+    name = data.get("name")
+    calories = data.get("calories")
+    carbs = data.get("carbs")
+    fat = data.get("fat")
+    proteins = data.get("proteins")
+
+    try:
+        Ingredient.objects.create(name=name, calories=calories, carbs=carbs, fat=fat, proteins=proteins)
+
+    except Exception:
+        error_message = "Error while creating new ingredient!"
+        return False, error_message
+
+    state_message = "The ingredient was created with success"
+    return True, state_message

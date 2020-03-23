@@ -4,7 +4,6 @@ from django.urls import path
 from .views import *
 
 urlpatterns = [
-
     # access
     path("login", login, name="login"),
     path("logout", logout, name="logout"),
@@ -21,5 +20,8 @@ urlpatterns = [
     # Meal History
     path("food-logs", new_food_log, name="new-food-log"),
     url("^food-logs/(?P<food_log_filter>.+)", food_log_rud, name="food-log-rud"),
+
+    # Ingredients
+    path("ingredients", new_ingredient, name="new-ingredient"),
 
 ]
