@@ -503,7 +503,7 @@ def new_ingredient(request):
 
 @swagger_auto_schema(method="put", request_body=doc.IngredientSerializer)
 @api_view(["GET", "PUT", "DELETE"])
-def doctor_rud(request, ingredient_id):
+def ingredient_rud(request, ingredient_id):
     if request.method == "PUT":
         return update_ingredient(request, ingredient_id)
     elif request.method == "DELETE":
