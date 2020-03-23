@@ -9,7 +9,8 @@ from rest_framework.status import (
     HTTP_400_BAD_REQUEST,
     HTTP_403_FORBIDDEN,
     HTTP_404_NOT_FOUND,
-    HTTP_201_CREATED
+    HTTP_201_CREATED,
+    HTTP_204_NO_CONTENT,
 )
 from rest_api import queries, documentation_serializers as doc
 from rest_api.authentication import token_expire_handler
@@ -131,7 +132,7 @@ def delete_admin(request, email):
 
     if is_self(role, "admin", username, email):
         state, message = queries.delete_user(user)
-        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+        state, status = ("Success", HTTP_204_NO_CONTENT) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
@@ -217,7 +218,7 @@ def delete_client(request, email):
 
     if is_self(role, "client", username, email):
         state, message = queries.delete_user(user)
-        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+        state, status = ("Success", HTTP_204_NO_CONTENT) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
@@ -316,7 +317,7 @@ def delete_doctor(request, email):
 
     if is_self(role, "doctor", username, email):
         state, message = queries.delete_user(user)
-        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+        state, status = ("Success", HTTP_204_NO_CONTENT) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     elif verify_authorization(role, "admin") and is_doctor_admin(email, username):
         state, message = queries.delete_user(user)
@@ -433,7 +434,7 @@ def delete_food_log(request, food_log_id):
 
     if is_self(role, "client", username, meal_history.client.user.auth_user.username):
         state, message = queries.delete_food_log(meal_history)
-        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+        state, status = ("Success", HTTP_204_NO_CONTENT) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
