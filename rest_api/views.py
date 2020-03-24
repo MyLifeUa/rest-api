@@ -513,7 +513,14 @@ def ingredient_rud(request, ingredient_id):
 
 
 def update_ingredient(request, ingredient_id):
-    pass
+    token, username, role = who_am_i(request)
+
+    data = request.data
+
+    state, message = queries.update_ingredient(data, ingredient_id)
+    status = HTTP_200_OK if state else HTTP_400_BAD_REQUEST
+
+    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
 
 @swagger_auto_schema(method="post", request_body=doc.MealSerializer)

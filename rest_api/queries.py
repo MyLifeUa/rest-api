@@ -441,7 +441,39 @@ def add_ingredient(data):
 
 
 def update_ingredient(data, ingredient_id):
-    pass
+    state = True
+    message = "Client successfully updated!"
+
+    ingredient = Ingredient.objects.filter(id=ingredient_id)
+    if not ingredient.exists():
+        state, message = False, "Ingredient does not exist!"
+        return state, message
+
+    try:
+        if "calories" in data:
+            calories = data.get("calories")
+            ingredient.update(calories=calories)
+
+        if "proteins" in data:
+            proteins = data.get("proteins")
+            ingredient.update(proteins=proteins)
+
+        if "fat" in data:
+            fat = data.get("fat")
+            ingredient.update(fat=fat)
+
+        if "carbs" in data:
+            carbs = data.get("carbs")
+            ingredient.update(carbs=carbs)
+
+        if "name" in data:
+            name = data.get("name")
+            ingredient.update(name=name)
+
+    except Exception:
+        state, message = False, "Error while updating ingredient!"
+
+    return state, message
 
 
 def add_new_meal(data, username, role="admin"):
