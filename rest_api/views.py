@@ -321,7 +321,7 @@ def delete_doctor(request, email):
 
     elif verify_authorization(role, "admin") and is_doctor_admin(email, username):
         state, message = queries.delete_user(user)
-        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+        state, status = ("Success", HTTP_204_NO_CONTENT) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
