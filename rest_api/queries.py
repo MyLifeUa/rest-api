@@ -3,7 +3,7 @@ from django.db import Error, transaction
 
 from .models import *
 from .constants import *
-from .serializers import ClientSerializer, DoctorSerializer, AdminSerializer, MealHistorySerializer
+from .serializers import *
 
 
 def add_user(data, is_superuser=False):
@@ -488,6 +488,18 @@ def delete_ingredient(ingredient_id):
         state, message = False, "Ingredient does not exist!"
 
     return state, message
+
+
+def get_ingredient(ingredient_id):
+    try:
+        ingredient = Ingredient.objects.get(id=ingredient_id)
+        ingredient.delete()
+
+    except Ingredient.DoesNotExist:
+        state, message = False, "Ingredient does not exist!"
+        return state, message
+
+    return True, IngredientSerializer(ingredient).data
 
 
 def add_new_meal(data, username, role="admin"):
