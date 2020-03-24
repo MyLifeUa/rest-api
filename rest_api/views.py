@@ -507,7 +507,7 @@ def ingredient_rud(request, ingredient_id):
     if request.method == "PUT":
         return update_ingredient(request, ingredient_id)
     elif request.method == "DELETE":
-        pass
+        return delete_ingredient(request, ingredient_id)
     elif request.method == "GET":
         pass
 
@@ -518,6 +518,15 @@ def update_ingredient(request, ingredient_id):
     data = request.data
 
     state, message = queries.update_ingredient(data, ingredient_id)
+    status = HTTP_200_OK if state else HTTP_400_BAD_REQUEST
+
+    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+
+def delete_ingredient(request, ingredient_id):
+    token, username, role = who_am_i(request)
+
+    state, message = queries.delete_ingredient(ingredient_id)
     status = HTTP_200_OK if state else HTTP_400_BAD_REQUEST
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)

@@ -442,7 +442,7 @@ def add_ingredient(data):
 
 def update_ingredient(data, ingredient_id):
     state = True
-    message = "Client successfully updated!"
+    message = "Ingredient successfully updated!"
 
     ingredient = Ingredient.objects.filter(id=ingredient_id)
     if not ingredient.exists():
@@ -472,6 +472,20 @@ def update_ingredient(data, ingredient_id):
 
     except Exception:
         state, message = False, "Error while updating ingredient!"
+
+    return state, message
+
+
+def delete_ingredient(ingredient_id):
+    state = True
+    message = "Ingredient successfully deleted!"
+
+    try:
+        ingredient = Ingredient.objects.get(id=ingredient_id)
+        ingredient.delete()
+
+    except Ingredient.DoesNotExist:
+        state, message = False, "Ingredient does not exist!"
 
     return state, message
 
