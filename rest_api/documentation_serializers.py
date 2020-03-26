@@ -94,6 +94,7 @@ class AdminSerializer(serializers.Serializer):
 class MealHistorySerializer(serializers.Serializer):
     day = serializers.CharField(required=True)
     type_of_meal = serializers.CharField(required=True)
+    number_of_servings = serializers.FloatField(required=True)
     meal = serializers.SerializerMethodField()
 
     def get_meal(self, obj):

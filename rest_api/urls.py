@@ -31,7 +31,7 @@ urlpatterns = [
     # Meals
     path("meals", new_meal, name="new-meal"),
 
-    # Doctor-Patient Association
-    path("doctor-patient-association", new_doctor_patient_association, name="new-doctor-patient-association"),
+    # Doctor patient association
+    path("doctor-patient-association", doctor_patient_association_cd, name="doctor-patient-association-cd"),
 
 ]

@@ -290,6 +290,7 @@ def add_food_log(data, email):
     day = data.get("day")
     type_of_meal = data.get("type_of_meal")
     meal_id = data.get("meal")
+    number_of_servings = data.get("number_of_servings")
 
     client = Client.objects.filter(user__auth_user__username=email)
 
@@ -314,7 +315,7 @@ def add_food_log(data, email):
             current_meal = Meal.objects.get(id=meal_id)
 
             MealHistory.objects.create(day=day, type_of_meal=type_of_meal, client=current_client,
-                                       meal=current_meal)
+                                       meal=current_meal, number_of_servings=number_of_servings)
 
         except Exception as e:
             print(e)
@@ -414,6 +415,10 @@ def update_food_log(request, current_meal_history, meal_history):
             current_meal = Meal.objects.get(id=meal_id)
 
             meal_history.update(meal=current_meal)
+
+        if "number_of_servings" in data:
+            number_of_servings = data.get("number_of_servings")
+            meal_history.update(number_of_servings=number_of_servings)
 
     except Exception as e:
         print(e)
@@ -557,3 +562,16 @@ def add_doctor_patient_association(data, email):
 
     state_message = "The Doctor patient association was created with success"
     return True, state_message
+
+
+def delete_doctor_patient_association(email):
+    try:
+        client = Client.objects.filter(user__auth_user__username=email)
+        client.update(doctor=None)
+        state, message = True, "Doctor patient association successfully deleted"
+
+    except Error:
+        state, message = False, "Error while deleting Doctor patient association"
+
+    finally:
+        return state, message
