@@ -366,6 +366,7 @@ def new_food_log(request):
             "day" in data
             and "type_of_meal" in data
             and "meal" in data
+            and "number_of_servings" in data
 
     ):
         state = "Error"

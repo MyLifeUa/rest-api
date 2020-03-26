@@ -92,7 +92,6 @@ class AdminSerializer(serializers.Serializer):
 class Meal(serializers.Serializer):  # TODO Finish this implementation, started to implement the MealHistorySerializer
     id = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
-    number_of_servings = serializers.SerializerMethodField()
     category = serializers.SerializerMethodField()
 
     def get_id(self, obj):
@@ -101,8 +100,7 @@ class Meal(serializers.Serializer):  # TODO Finish this implementation, started 
     def get_name(self, obj):
         return obj.name
 
-    def get_number_of_servings(self, obj):
-        return obj.number_of_servings
+
 
     def get_category(self, obj):
         return obj.category
@@ -129,7 +127,7 @@ class MealHistorySerializer(serializers.Serializer):
         return obj.meal.name
 
     def get_number_of_servings(self, obj):
-        return obj.meal.number_of_servings
+        return obj.number_of_servings
 
     def get_meal_category(self, obj):
         return obj.meal.category
