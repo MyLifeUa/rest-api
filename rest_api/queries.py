@@ -496,3 +496,16 @@ def add_doctor_patient_association(data, email):
 
     state_message = "The Doctor patient association was created with success"
     return True, state_message
+
+
+def delete_doctor_patient_association(email):
+    try:
+        client = Client.objects.filter(user__auth_user__username=email)
+        client.update(doctor=None)
+        state, message = True, "Doctor patient association successfully deleted"
+
+    except Error:
+        state, message = False, "Error while deleting Doctor patient association"
+
+    finally:
+        return state, message
