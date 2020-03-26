@@ -3,7 +3,7 @@ from django.db import Error, transaction
 
 from .models import *
 from .constants import *
-from .serializers import ClientSerializer, DoctorSerializer, AdminSerializer, MealHistorySerializer
+from .serializers import *
 
 
 def add_user(data, is_superuser=False):
@@ -443,6 +443,67 @@ def add_ingredient(data):
 
     state_message = "The ingredient was created with success"
     return True, state_message
+
+
+def update_ingredient(data, ingredient_id):
+    state = True
+    message = "Ingredient successfully updated!"
+
+    ingredient = Ingredient.objects.filter(id=ingredient_id)
+    if not ingredient.exists():
+        state, message = False, "Ingredient does not exist!"
+        return state, message
+
+    try:
+        if "calories" in data:
+            calories = data.get("calories")
+            ingredient.update(calories=calories)
+
+        if "proteins" in data:
+            proteins = data.get("proteins")
+            ingredient.update(proteins=proteins)
+
+        if "fat" in data:
+            fat = data.get("fat")
+            ingredient.update(fat=fat)
+
+        if "carbs" in data:
+            carbs = data.get("carbs")
+            ingredient.update(carbs=carbs)
+
+        if "name" in data:
+            name = data.get("name")
+            ingredient.update(name=name)
+
+    except Exception:
+        state, message = False, "Error while updating ingredient!"
+
+    return state, message
+
+
+def delete_ingredient(ingredient_id):
+    state = True
+    message = "Ingredient successfully deleted!"
+
+    try:
+        ingredient = Ingredient.objects.get(id=ingredient_id)
+        ingredient.delete()
+
+    except Ingredient.DoesNotExist:
+        state, message = False, "Ingredient does not exist!"
+
+    return state, message
+
+
+def get_ingredient(ingredient_id):
+    try:
+        ingredient = Ingredient.objects.get(id=ingredient_id)
+
+    except Ingredient.DoesNotExist:
+        state, message = False, "Ingredient does not exist!"
+        return state, message
+
+    return True, IngredientSerializer(ingredient).data
 
 
 def add_new_meal(data, username, role="admin"):
