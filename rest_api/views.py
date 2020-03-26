@@ -535,8 +535,6 @@ def delete_ingredient(request, ingredient_id):
 def get_ingredient(request, ingredient_id):
     token, username, role = who_am_i(request)
 
-    data = request.data
-
     state, message = queries.get_ingredient(ingredient_id)
     status = HTTP_200_OK if state else HTTP_400_BAD_REQUEST
 

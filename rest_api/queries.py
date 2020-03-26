@@ -493,7 +493,6 @@ def delete_ingredient(ingredient_id):
 def get_ingredient(ingredient_id):
     try:
         ingredient = Ingredient.objects.get(id=ingredient_id)
-        ingredient.delete()
 
     except Ingredient.DoesNotExist:
         state, message = False, "Ingredient does not exist!"
