@@ -89,7 +89,7 @@ class AdminSerializer(serializers.Serializer):
         return obj.hospital
 
 
-class Meal(serializers.Serializer):  # TODO Finish this implementation, started to implement the MealHistorySerializer
+class MealSerializer(serializers.Serializer):  # TODO Finish this implementation, started to implement the MealHistorySerializer
     id = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
     category = serializers.SerializerMethodField()

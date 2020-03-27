@@ -522,19 +522,21 @@ def add_new_meal(data, username, role="admin"):
         # create new meal
         meal = Meal.objects.create(name=name, category=category, client=client)
 
+    except Exception as e:
+        print(e)
+        error_message = "Error while creating new meal!"
+        return False, error_message
+
+    try:
         # add ingredients quantities
         for ingredient_json in ingredients:
             ingredient = Ingredient.objects.get(id=ingredient_json["id"])
             Quantity.objects.create(meal=meal, ingredient=ingredient, quantity=ingredient_json["quantity"])
 
-    except Ingredient.DoesNotExist:
+    except Ingredient.DoesNotExist as e:
+        print(e)
         meal.delete()
         error_message = "Ingredient does not exist!"
-        return False, error_message
-
-    except Exception:
-        meal.delete()
-        error_message = "Error while creating new meal!"
         return False, error_message
 
     state_message = "Meal created successfully!"
