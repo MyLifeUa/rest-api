@@ -317,8 +317,7 @@ def add_food_log(data, email):
             MealHistory.objects.create(day=day, type_of_meal=type_of_meal, client=current_client,
                                        meal=current_meal, number_of_servings=number_of_servings)
 
-        except Exception as e:
-            print(e)
+        except Exception:
             error_message = "Error while creating new food log!"
             return False, error_message
     else:  # Food log exists for this day and for this type of meal
@@ -420,8 +419,7 @@ def update_food_log(request, current_meal_history, meal_history):
             number_of_servings = data.get("number_of_servings")
             meal_history.update(number_of_servings=number_of_servings)
 
-    except Exception as e:
-        print(e)
+    except Exception:
         state, message = False, "Error while updating Food log!"
 
     return state, message
@@ -522,8 +520,7 @@ def add_new_meal(data, username, role="admin"):
         # create new meal
         meal = Meal.objects.create(name=name, category=category, client=client)
 
-    except Exception as e:
-        print(e)
+    except Exception:
         error_message = "Error while creating new meal!"
         return False, error_message
 
@@ -533,8 +530,7 @@ def add_new_meal(data, username, role="admin"):
             ingredient = Ingredient.objects.get(id=ingredient_json["id"])
             Quantity.objects.create(meal=meal, ingredient=ingredient, quantity=ingredient_json["quantity"])
 
-    except Ingredient.DoesNotExist as e:
-        print(e)
+    except Ingredient.DoesNotExist:
         meal.delete()
         error_message = "Ingredient does not exist!"
         return False, error_message
@@ -572,8 +568,25 @@ def delete_doctor_patient_association(email):
         client.update(doctor=None)
         state, message = True, "Doctor patient association successfully deleted"
 
-    except Error:
+    except Exception:
         state, message = False, "Error while deleting Doctor patient association"
 
-    finally:
-        return state, message
+    return state, message
+
+
+def doctor_get_all_patients(username):
+    try:
+        doctor = Doctor.objects.get(user__auth_user__username=username)
+
+        state = True
+        message = [ClientSerializer(client).data for client in Client.objects.filter(doctor=doctor)]
+
+    except Doctor.DoesNotExist:
+        state = False
+        message = "Operation not allowed: you are not a doctor!"
+
+    except Exception:
+        state = False
+        message = "Error while fetching doctor clients' data!"
+
+    return state, message
