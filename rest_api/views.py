@@ -349,6 +349,83 @@ def get_doctor(request, email):
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
 
+@swagger_auto_schema(methods=["post", "delete"], request_body=doc.ClientEmailSerializer)
+@api_view(["POST", "DELETE"])
+def doctor_patient_association_cd(request):
+    if request.method == "POST":
+        return new_doctor_patient_association(request)
+    elif request.method == "DELETE":
+        return delete_doctor_patient_association(request)
+
+
+def new_doctor_patient_association(request):
+    token, username, role = who_am_i(request)
+
+    if not verify_authorization(role, "doctor"):
+        state = "Error"
+        message = "You do not have permissions to add a new doctor patient association."
+        status = HTTP_403_FORBIDDEN
+        return Response({"role": role, "state": state, "message": message, "token": token},
+                        status=status)
+
+    data = request.data
+    if not ("client" in data):
+        state = "Error"
+        message = "Missing parameters"
+        status = HTTP_400_BAD_REQUEST
+        return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+    state, message = queries.add_doctor_patient_association(data, username)
+    state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+
+def delete_doctor_patient_association(request):
+    token, username, role = who_am_i(request)
+
+    data = request.data
+    if not ("client" in data):
+        state = "Error"
+        message = "Missing parameters"
+        status = HTTP_400_BAD_REQUEST
+        return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+    email = data.get("client")
+
+    try:
+        user = Client.objects.get(user__auth_user__username=email)
+    except User.DoesNotExist:
+        state = "Error"
+        message = "User does not exist!"
+        status = HTTP_400_BAD_REQUEST
+        return Response({"role": role, "state": state, "message": message, "token": token},
+                        status=status)
+    doctor_from_user = user.doctor
+
+    if doctor_from_user is None:
+        state = "Error"
+        message = "The patient has no doctor associated"
+        status = HTTP_400_BAD_REQUEST
+        return Response({"role": role, "state": state, "message": message, "token": token},
+                        status=status)
+
+    # default possibility
+    state = "Error"
+    message = "You don't have permissions to delete this doctor patient association"
+    status = HTTP_403_FORBIDDEN
+
+    if is_self(role, "client", username, email):
+        state, message = queries.delete_doctor_patient_association(email)
+        state, status = ("Success", HTTP_204_NO_CONTENT) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+    elif is_self(role, "doctor", username, doctor_from_user.user.auth_user.username):
+        state, message = queries.delete_doctor_patient_association(email)
+        state, status = ("Success", HTTP_204_NO_CONTENT) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+
 @swagger_auto_schema(method="post", request_body=doc.MealHistorySerializer)
 @api_view(["POST"])
 def new_food_log(request):
@@ -474,76 +551,6 @@ def new_ingredient(request):
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
 
-@swagger_auto_schema(method="post", request_body=doc.MealSerializer)
-@api_view(["POST"])
-def new_meal(request):
-    token, username, role = who_am_i(request)
-
-    data = request.data
-    if not ("name" in data and "category" in data and "ingredients" in data):
-        state = "Error"
-        message = "Missing parameters"
-        status = HTTP_400_BAD_REQUEST
-        return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
-
-    state, message = queries.add_new_meal(data, username, role)
-    state, status = ("Success", HTTP_201_CREATED) if state else ("Error", HTTP_400_BAD_REQUEST)
-
-    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
-
-
-@swagger_auto_schema(method="post", request_body=doc.ClientEmailSerializer)
-@swagger_auto_schema(method="delete", request_body=doc.ClientEmailSerializer)
-@api_view(["POST", "DELETE"])
-def doctor_patient_association_cd(request):
-    if request.method == "POST":
-        return new_doctor_patient_association(request)
-    elif request.method == "DELETE":
-        return delete_doctor_patient_association(request)
-
-
-def new_doctor_patient_association(request):
-    token, username, role = who_am_i(request)
-
-    if not verify_authorization(role, "doctor"):
-        state = "Error"
-        message = "You do not have permissions to add a new doctor patient association."
-        status = HTTP_403_FORBIDDEN
-        return Response({"role": role, "state": state, "message": message, "token": token},
-                        status=status)
-
-    data = request.data
-    if not (
-            "client" in data
-
-    ):
-        state = "Error"
-        message = "Missing parameters"
-        status = HTTP_400_BAD_REQUEST
-        return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
-
-    state, message = queries.add_doctor_patient_association(data, username)
-    state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
-
-    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
-
-
-def delete_doctor_patient_association(request):
-    token, username, role = who_am_i(request)
-
-    data = request.data
-    if not (
-            "client" in data
-
-    ):
-        state = "Error"
-        message = "Missing parameters"
-        status = HTTP_400_BAD_REQUEST
-        return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
-
-    email = data.get("client")
-
-
 @swagger_auto_schema(method="put", request_body=doc.IngredientSerializer)
 @api_view(["GET", "PUT", "DELETE"])
 def ingredient_rud(request, ingredient_id):
@@ -588,34 +595,15 @@ def get_ingredient(request, ingredient_id):
 @api_view(["POST"])
 def new_meal(request):
     token, username, role = who_am_i(request)
-    try:
-        user = Client.objects.get(user__auth_user__username=email)
-    except User.DoesNotExist:
+
+    data = request.data
+    if not ("name" in data and "category" in data and "ingredients" in data):
         state = "Error"
-        message = "User does not exist!"
+        message = "Missing parameters"
         status = HTTP_400_BAD_REQUEST
-        return Response({"role": role, "state": state, "message": message, "token": token},
-                        status=status)
-    doctor_from_user = user.doctor
+        return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
-    if doctor_from_user is None:
-        state = "Error"
-        message = "The patient has no doctor associated"
-        status = HTTP_400_BAD_REQUEST
-        return Response({"role": role, "state": state, "message": message, "token": token},
-                        status=status)
-
-    # default possibility
-    state = "Error"
-    message = "You don't have permissions to delete this doctor patient association"
-    status = HTTP_403_FORBIDDEN
-
-    if is_self(role, "client", username, email):
-        state, message = queries.delete_doctor_patient_association(email)
-        state, status = ("Success", HTTP_204_NO_CONTENT) if state else ("Error", HTTP_400_BAD_REQUEST)
-
-    elif is_self(role, "doctor", username, doctor_from_user.user.auth_user.username):
-        state, message = queries.delete_doctor_patient_association(email)
-        state, status = ("Success", HTTP_204_NO_CONTENT) if state else ("Error", HTTP_400_BAD_REQUEST)
+    state, message = queries.add_new_meal(data, username, role)
+    state, status = ("Success", HTTP_201_CREATED) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
