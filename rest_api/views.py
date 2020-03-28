@@ -623,3 +623,19 @@ def new_meal(request):
     state, status = ("Success", HTTP_201_CREATED) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+
+@api_view(["GET"])
+def list_hospital_doctors(request):
+    token, username, role = who_am_i(request)
+
+    # default possibility
+    state = "Error"
+    message = "You don't have permissions to access the list of doctors."
+    status = HTTP_403_FORBIDDEN
+
+    if verify_authorization(role, "admin"):
+        state, message = queries.get_hospital_doctors(username)
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)

@@ -35,4 +35,7 @@ urlpatterns = [
     # Doctor patient association
     path("doctor-patient-association", doctor_patient_association_cd, name="doctor-patient-association-cd"),
 
+    # List doctors from an hospital
+    path("hospital-doctors", list_hospital_doctors, name="list-hospital-doctors"),
+
 ]

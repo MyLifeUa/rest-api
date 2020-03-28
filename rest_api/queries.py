@@ -590,3 +590,13 @@ def doctor_get_all_patients(username):
         message = "Error while fetching doctor clients' data!"
 
     return state, message
+
+
+def get_hospital_doctors(email):
+    admin_hospital = CustomAdmin.objects.get(auth_user__username=email).hospital
+
+    doctors = Doctor.objects.filter(hospital=admin_hospital)
+
+    state, message = True, [DoctorSerializer(r).data for r in doctors]
+
+    return state, message
