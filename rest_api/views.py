@@ -426,6 +426,22 @@ def delete_doctor_patient_association(request):
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
 
+@api_view(["GET"])
+def doctor_get_all_patients(request):
+    token, username, role = who_am_i(request)
+
+    # default possibility
+    state = "Error"
+    message = "You do not have permissions to update this account"
+    status = HTTP_403_FORBIDDEN
+
+    if verify_authorization(role, "doctor"):
+        state, message = queries.doctor_get_all_patients(username)
+        status = HTTP_200_OK if state else HTTP_400_BAD_REQUEST
+
+    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+
 @swagger_auto_schema(method="post", request_body=doc.MealHistorySerializer)
 @api_view(["POST"])
 def new_food_log(request):
