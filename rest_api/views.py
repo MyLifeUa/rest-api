@@ -55,6 +55,18 @@ def logout(request):
     return Response(status=HTTP_200_OK)
 
 
+@api_view(["GET"])
+@permission_classes((AllowAny,))
+def check_email(request, email):
+    status = HTTP_200_OK
+    state = "Success"
+
+    email_exists = User.objects.filter(username=email).exists()
+    message = True if email_exists else False
+
+    return Response({"state": state, "message": message}, status=status)
+
+
 @swagger_auto_schema(method="post", request_body=doc.AdminSerializer)
 @api_view(["POST"])
 def new_admin(request):
