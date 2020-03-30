@@ -651,3 +651,12 @@ def list_hospital_doctors(request):
         state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+
+@api_view(["GET"])
+@permission_classes((AllowAny,))
+def hello(request):
+    state = "Success"
+    message = "Hello World!"
+    status = HTTP_200_OK
+    return Response({"state": state, "message": message}, status=status)
