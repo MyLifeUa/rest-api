@@ -3,6 +3,7 @@ from django.urls import path
 
 from .views import *
 
+
 urlpatterns = [
     # Access
     path("login", login, name="login"),
@@ -38,4 +39,5 @@ urlpatterns = [
     # List doctors from an hospital
     path("hospital-doctors", list_hospital_doctors, name="list-hospital-doctors"),
 
+    url("^check-email/(?P<email>.+)", check_email, name="check-email"),
 ]
