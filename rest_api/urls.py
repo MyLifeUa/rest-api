@@ -41,5 +41,5 @@ urlpatterns = [
 
     url("^check-email/(?P<email>.+)", check_email, name="check-email"),
 
-    path("hello_world", hello),
+    path("hello_world", hello_world, name="hello-world"),
 ]

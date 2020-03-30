@@ -655,8 +655,9 @@ def list_hospital_doctors(request):
 
 @api_view(["GET"])
 @permission_classes((AllowAny,))
-def hello(request):
+def hello_world(request):
     state = "Success"
     message = "Hello World!"
     status = HTTP_200_OK
     return Response({"state": state, "message": message}, status=status)
+
