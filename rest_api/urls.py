@@ -40,6 +40,4 @@ urlpatterns = [
     path("hospital-doctors", list_hospital_doctors, name="list-hospital-doctors"),
 
     url("^check-email/(?P<email>.+)", check_email, name="check-email"),
-
-    path("hello-world", hello_world, name="hello-world"),
 ]
