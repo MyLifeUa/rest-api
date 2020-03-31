@@ -606,3 +606,19 @@ def get_hospital_doctors(email):
     state, message = True, [DoctorSerializer(r).data for r in doctors]
 
     return state, message
+
+
+def add_fitbit_token(data, email):
+    fitbit_access_token = data.get("access_token")
+    fitbit_refresh_token = data.get("refresh_token")
+
+    client = Client.objects.filter(user__auth_user__username=email)
+
+    try:
+        client.update(fitbit_access_token=fitbit_access_token, fitbit_refresh_token=fitbit_refresh_token)
+        state, state_message = True, "The fitbit token was added with success"
+
+    except Exception:
+        state, message = False, "Error while adding fitbit token."
+
+    return state, state_message

@@ -42,4 +42,7 @@ urlpatterns = [
     url("^check-email/(?P<email>.+)", check_email, name="check-email"),
 
     path("hello-world", hello_world, name="hello-world"),
+
+    # Add fitbit token
+    path("fitbit-token", add_fitbit_token, name="add-fitbit-token"),
 ]

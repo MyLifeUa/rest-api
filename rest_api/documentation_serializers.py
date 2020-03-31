@@ -123,3 +123,8 @@ class MealSerializer(serializers.Serializer):
 
 class ClientEmailSerializer(serializers.Serializer):
     client = serializers.CharField(required=True)
+
+
+class ClientFitbitToken(serializers.Serializer):
+    access_token = serializers.CharField(required=True)
+    refresh_token = serializers.CharField(required=True)

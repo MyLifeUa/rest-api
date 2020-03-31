@@ -662,3 +662,27 @@ def hello_world(request):
     status = HTTP_200_OK
     return Response({"state": state, "message": message}, status=status)
 
+
+@swagger_auto_schema(methods=["post"], request_body=doc.ClientFitbitToken)
+@api_view(["POST"])
+def add_fitbit_token(request):
+    token, username, role = who_am_i(request)
+
+    if not verify_authorization(role, "client"):
+        state = "Error"
+        message = "You do not have permissions to add a new fitbit token."
+        status = HTTP_403_FORBIDDEN
+        return Response({"role": role, "state": state, "message": message, "token": token},
+                        status=status)
+
+    data = request.data
+    if not ("access_token" in data) or not ("refresh_token" in data):
+        state = "Error"
+        message = "Missing parameters"
+        status = HTTP_400_BAD_REQUEST
+        return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+    state, message = queries.add_fitbit_token(data, username)
+    state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
