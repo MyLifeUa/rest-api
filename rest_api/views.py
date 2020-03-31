@@ -652,7 +652,7 @@ def list_hospital_doctors(request):
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
-'''
+
 @api_view(["GET"])
 @permission_classes((AllowAny,))
 def hello_world(request):
@@ -660,4 +660,4 @@ def hello_world(request):
     message = "Hello World!"
     status = HTTP_200_OK
     return Response({"state": state, "message": message}, status=status)
-'''
+
