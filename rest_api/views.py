@@ -170,6 +170,7 @@ def get_admin(request, email):
 def new_client(request):
     data = request.data
     if not ("email" in data
+            and "sex" in data
             and "first_name" in data
             and "last_name" in data
             and "password" in data

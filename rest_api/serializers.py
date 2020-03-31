@@ -22,6 +22,9 @@ class ClientSerializer(serializers.Serializer):
     height = serializers.FloatField()
     current_weight = serializers.FloatField()
     weight_goal = serializers.FloatField()
+    sex = serializers.CharField()
+    fitbit_access_token = serializers.CharField()
+    fitbit_refresh_token = serializers.CharField()
 
     def get_id(self, obj):
         return obj.user.auth_user.id
@@ -89,7 +92,8 @@ class AdminSerializer(serializers.Serializer):
         return obj.hospital
 
 
-class MealSerializer(serializers.Serializer):  # TODO Finish this implementation, started to implement the MealHistorySerializer
+class MealSerializer(
+    serializers.Serializer):  # TODO Finish this implementation, started to implement the MealHistorySerializer
     id = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
     category = serializers.SerializerMethodField()
@@ -99,8 +103,6 @@ class MealSerializer(serializers.Serializer):  # TODO Finish this implementation
 
     def get_name(self, obj):
         return obj.name
-
-
 
     def get_category(self, obj):
         return obj.category

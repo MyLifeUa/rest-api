@@ -109,7 +109,7 @@ class DoctorDeleteTest(APITestCase):
     def test_client_delete_doctor_account(self):
         response = self.client.post("/clients", {"email": "joana@ua.pt", "password": "pwd", "first_name": "Vasco",
                                                  "last_name": "Ramos", "height": 1.60, "weight_goal": 65,
-                                                 "current_weight": 90,
+                                                 "current_weight": 90, "sex": "Male",
                                                  "birth_date": "2020-03-04"})
         self.assertEqual(response.status_code, HTTP_201_CREATED)
 
@@ -132,7 +132,7 @@ class GetDoctorTest(APITestCase):
         # Client without a doctor
         response = self.client.post("/clients", {"email": "tos@ua.pt", "password": "pwd", "first_name": "Tomas",
                                                  "last_name": "Ramos", "height": 1.60, "weight_goal": 65,
-                                                 "current_weight": 90,
+                                                 "current_weight": 90, "sex": "Male",
                                                  "birth_date": "2020-03-04"})
         self.assertEqual(response.status_code, HTTP_201_CREATED)
 
@@ -146,6 +146,7 @@ class GetDoctorTest(APITestCase):
         # Client with doctor
         self.client.post("/clients",
                          {"email": "ana99@ua.pt", "password": "pwd", "first_name": "Tomas", "last_name": "Ramos",
+                          "sex": "Male",
                           "height": 1.60, "weight_goal": 65, "current_weight": 90, "birth_date": "2020-03-04"})
         self.assertEqual(response.status_code, HTTP_201_CREATED)
         Client.objects.filter(user__auth_user__username="ana99@ua.pt").update(doctor=self.doctor)

@@ -84,7 +84,7 @@ class GetAdminTest(APITestCase):
         # create client
         response = self.client.post("/clients", {"email": "tos@ua.pt", "password": "pwd", "first_name": "Tomas",
                                                  "last_name": "Ramos", "height": 1.60, "weight_goal": 65,
-                                                 "current_weight": 90,
+                                                 "current_weight": 90, "sex": "Male",
                                                  "birth_date": "2020-03-04"})
         self.assertEqual(response.status_code, HTTP_201_CREATED)
 
