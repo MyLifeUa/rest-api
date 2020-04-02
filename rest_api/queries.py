@@ -146,6 +146,7 @@ def add_client(data):
     height = data.get("height")
     weight_goal = data.get("weight_goal")
     current_weight = data.get("current_weight")
+    sex = data.get("sex")
 
     state, content = add_user(data)
     if not state:
@@ -156,7 +157,8 @@ def add_client(data):
 
     try:
         # link the user to a client
-        Client.objects.create(user=custom_user, height=height, current_weight=current_weight, weight_goal=weight_goal)
+        Client.objects.create(user=custom_user, height=height, current_weight=current_weight, weight_goal=weight_goal,
+                              sex=sex)
 
     except Exception:
         user.delete()
@@ -205,6 +207,10 @@ def update_client(request, email):
         if "weight_goal" in data:
             weight_goal = data.get("weight_goal")
             client.update(weight_goal=weight_goal)
+
+        if "sex" in data:
+            sex = data.get("sex")
+            client.update(sex=sex)
 
     except Exception:
         state, message = False, "Error while updating client!"

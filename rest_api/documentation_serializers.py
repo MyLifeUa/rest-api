@@ -17,6 +17,7 @@ class ClientSerializer(serializers.Serializer):
     height = serializers.FloatField(required=True)
     current_weight = serializers.FloatField(required=True)
     weight_goal = serializers.FloatField(required=True)
+    sex = serializers.CharField(required=True)
 
     def get_email(self, obj):
         return obj.user.auth_user.email

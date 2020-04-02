@@ -29,6 +29,9 @@ class Client(models.Model):
     user = models.OneToOneField(
         CustomUser, on_delete=models.CASCADE, unique=True, primary_key=True
     )
+    sex = models.CharField(max_length=30)
+    fitbit_access_token = models.CharField(max_length=300, null=True, blank=True)
+    fitbit_refresh_token = models.CharField(max_length=300, null=True, blank=True)
     height = models.FloatField()
     current_weight = models.FloatField()
     weight_goal = models.FloatField()
