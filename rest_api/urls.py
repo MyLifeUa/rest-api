@@ -40,4 +40,7 @@ urlpatterns = [
     path("hospital-doctors", list_hospital_doctors, name="list-hospital-doctors"),
 
     url("^check-email/(?P<email>.+)", check_email, name="check-email"),
+
+    # Add fitbit token
+    path("fitbit-token", add_fitbit_token, name="add-fitbit-token"),
 ]
