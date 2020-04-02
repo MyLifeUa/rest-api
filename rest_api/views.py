@@ -676,7 +676,7 @@ def add_fitbit_token(request):
                         status=status)
 
     data = request.data
-    if not ("access_token" in data) or not ("refresh_token" in data):
+    if not ("access_token" in data and "refresh_token" in data):
         state = "Error"
         message = "Missing parameters"
         status = HTTP_400_BAD_REQUEST
