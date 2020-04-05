@@ -626,13 +626,12 @@ def add_fitbit_token(data, email):
     return state, state_message
 
 
-def classify_image(data):
-    if "image_b64" not in data:
+def classify_image(image_b64):
+    if image_b64 == "":
         state = "Error"
         message = "Missing parameters"
 
     else:
-        image_b64 = data["image_b64"]
         params = {"image_b64": image_b64}
         response = get(url=ML_URL, params=params)
 

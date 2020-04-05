@@ -690,9 +690,9 @@ def classify_image(request):
     status = HTTP_403_FORBIDDEN
 
     if verify_authorization(role, "client"):
-        data = request.data
+        image_b64 = request.GET.get("image_b64", "")
 
-        state, message = queries.classify_image(data)
+        state, message = queries.classify_image(image_b64)
         state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
