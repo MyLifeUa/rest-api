@@ -60,8 +60,9 @@ def update_user(data, auth_user, user=None):
         auth_user.update(last_name=last_name)
 
     if "password" in data:
-        auth_user[0].set_password(data.get("password"))
-        auth_user[0].save()
+        pwd_user = User.objects.get(username=auth_user[0].username)
+        pwd_user.set_password(data.get("password"))
+        pwd_user.save()
 
     if "phone_number" in data and user is not None:
         phone_number = data.get("phone_number")
