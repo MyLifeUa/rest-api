@@ -39,8 +39,12 @@ urlpatterns = [
     # List doctors from an hospital
     path("hospital-doctors", list_hospital_doctors, name="list-hospital-doctors"),
 
+    # Check email is taken
     url("^check-email/(?P<email>.+)", check_email, name="check-email"),
 
     # Add fitbit token
     path("fitbit-token", add_fitbit_token, name="add-fitbit-token"),
+
+    # Image Classification
+    path("image-classification", classify_image, name="classify-image"),
 ]

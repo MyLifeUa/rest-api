@@ -1,6 +1,8 @@
 from django.contrib.auth.models import Group
-from django.db import Error, transaction
+from django.db import Error
+from requests import get
 
+from my_life_rest_api.settings import ML_URL
 from .models import *
 from .constants import *
 from .serializers import *
@@ -622,3 +624,26 @@ def add_fitbit_token(data, email):
         state, message = False, "Error while adding fitbit token."
 
     return state, state_message
+
+
+def classify_image(data):
+    if "image_b64" not in data:
+        state = "Error"
+        message = "Missing parameters"
+
+    else:
+        image_b64 = data["image_b64"]
+        params = {"image_b64": image_b64}
+        response = get(url=ML_URL, params=params)
+
+        if response.status_code == 200:
+            data = eval(response.text)
+
+            state = "Success"
+            message = {"food": data[0]["label"]}
+
+        else:
+            state = "Error"
+            message = "Error while trying to classifying food"
+
+    return state, message
