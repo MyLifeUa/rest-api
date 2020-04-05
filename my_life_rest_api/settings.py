@@ -137,6 +137,4 @@ STATIC_URL = "/static/"
 
 TOKEN_EXPIRED_AFTER_SECONDS = 300
 
-LOCAL_ML_URL = "http://0.0.0.0:5000/predict"
-
 ML_URL = "http://mednat.ieeta.pt:8443/predict"
