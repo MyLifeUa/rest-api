@@ -1,4 +1,5 @@
 from django.contrib.auth.models import Group
+from django.db.models import Q
 from django.db import Error, transaction
 
 from .models import *
@@ -543,6 +544,11 @@ def add_new_meal(data, username, role="admin"):
 
     state_message = "Meal created successfully!"
     return True, state_message
+
+
+def get_meals(username):
+    client = Client.objects.get(user__auth_user__username=username)
+    return True, [MealSerializer(meal).data for meal in Meal.objects.filter(Q(client__isnull=True) | Q(client=client))]
 
 
 def add_doctor_patient_association(data, email):
