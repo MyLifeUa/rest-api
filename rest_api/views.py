@@ -640,7 +640,7 @@ def new_meal(request):
         return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
     state, message = queries.add_new_meal(data, username, role)
-    state, status = ("Success", HTTP_201_CREATED) if state else ("Error", HTTP_400_BAD_REQUEST)
+    state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
@@ -653,7 +653,7 @@ def get_meals(request):
     status = HTTP_403_FORBIDDEN
 
     if verify_authorization(role, "client"):
-        state, message = queries.get_meals()
+        state, message = queries.get_meals(username)
         state, status = ("Success", HTTP_201_CREATED) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
