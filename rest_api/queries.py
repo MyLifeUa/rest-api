@@ -545,6 +545,10 @@ def add_new_meal(data, username, role="admin"):
     return True, state_message
 
 
+def get_meals():
+    return True, [MealSerializer(meal).data for meal in Meal.objects.all()]
+
+
 def add_doctor_patient_association(data, email):
     client_username = data.get("client")
 

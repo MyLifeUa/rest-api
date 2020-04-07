@@ -621,7 +621,14 @@ def get_ingredient(request, ingredient_id):
 
 
 @swagger_auto_schema(method="post", request_body=doc.MealSerializer)
-@api_view(["POST"])
+@api_view(["POST", "GET"])
+def meals(request):
+    if request.method == "POST":
+        return new_meal(request)
+    elif request.method == "GET":
+        return get_meals(request)
+
+
 def new_meal(request):
     token, username, role = who_am_i(request)
 
@@ -634,6 +641,20 @@ def new_meal(request):
 
     state, message = queries.add_new_meal(data, username, role)
     state, status = ("Success", HTTP_201_CREATED) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+
+def get_meals(request):
+    token, username, role = who_am_i(request)
+
+    state = "Error"
+    message = "You don't have permissions to access the list of doctors."
+    status = HTTP_403_FORBIDDEN
+
+    if verify_authorization(role, "client"):
+        state, message = queries.get_meals()
+        state, status = ("Success", HTTP_201_CREATED) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 

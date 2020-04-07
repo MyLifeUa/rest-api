@@ -31,7 +31,7 @@ urlpatterns = [
     path("ingredients/<int:ingredient_id>", ingredient_rud, name="ingredient-rud"),
 
     # Meals
-    path("meals", new_meal, name="new-meal"),
+    path("meals", meals, name="new-meal"),
 
     # Doctor patient association
     path("doctor-patient-association", doctor_patient_association_cd, name="doctor-patient-association-cd"),
