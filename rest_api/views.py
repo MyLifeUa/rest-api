@@ -363,7 +363,7 @@ def get_doctor(request, email):
 
 
 @swagger_auto_schema(methods=["post", "delete"], request_body=doc.ClientEmailSerializer)
-@api_view(["POST", "DELETE", "GET"])
+@api_view(["GET", "POST", "DELETE"])
 def doctor_patient_association_cd(request):
     if request.method == "POST":
         return new_doctor_patient_association(request)
