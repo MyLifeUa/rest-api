@@ -363,10 +363,12 @@ def get_doctor(request, email):
 
 
 @swagger_auto_schema(methods=["post", "delete"], request_body=doc.ClientEmailSerializer)
-@api_view(["POST", "DELETE"])
+@api_view(["POST", "DELETE", "GET"])
 def doctor_patient_association_cd(request):
     if request.method == "POST":
         return new_doctor_patient_association(request)
+    elif request.method == "GET":
+        return get_client_doctor(request)
     elif request.method == "DELETE":
         return delete_doctor_patient_association(request)
 
@@ -435,6 +437,20 @@ def delete_doctor_patient_association(request):
     elif is_self(role, "doctor", username, doctor_from_user.user.auth_user.username):
         state, message = queries.delete_doctor_patient_association(email)
         state, status = ("Success", HTTP_204_NO_CONTENT) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+
+def get_client_doctor(request):
+    token, username, role = who_am_i(request)
+
+    state = "Error"
+    message = "You don't have permissions to access this information."
+    status = HTTP_403_FORBIDDEN
+
+    if verify_authorization(role, "client"):
+        state, message = queries.get_client_doctor(username)
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 

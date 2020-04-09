@@ -69,6 +69,25 @@ class DoctorSerializer(serializers.Serializer):
         return obj.hospital
 
 
+class DoctorSerializer(serializers.Serializer):
+    email = serializers.SerializerMethodField()
+    name = serializers.SerializerMethodField()
+    photo = serializers.SerializerMethodField()
+    hospital = serializers.SerializerMethodField()
+
+    def get_email(self, obj):
+        return obj.user.auth_user.email
+
+    def get_name(self, obj):
+        return obj.user.auth_user.get_full_name()
+
+    def get_photo(self, obj):
+        return obj.user.photo
+
+    def get_hospital(self, obj):
+        return obj.hospital
+
+
 class AdminSerializer(serializers.Serializer):
     id = serializers.SerializerMethodField()
     email = serializers.SerializerMethodField()
