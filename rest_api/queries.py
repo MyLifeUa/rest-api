@@ -500,6 +500,10 @@ def delete_ingredient(ingredient_id):
     return state, message
 
 
+def get_ingredients():
+    return True, [IngredientSerializer(ingredient).data for ingredient in Ingredient.objects.all()]
+
+
 def get_ingredient(ingredient_id):
     try:
         ingredient = Ingredient.objects.get(id=ingredient_id)

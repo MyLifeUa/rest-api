@@ -27,7 +27,7 @@ urlpatterns = [
     url("^food-logs/(?P<food_log_filter>.+)", food_log_rud, name="food-log-rud"),
 
     # Ingredients
-    path("ingredients", new_ingredient, name="new-ingredient"),
+    path("ingredients", ingredients, name="new-ingredient"),
     path("ingredients/<int:ingredient_id>", ingredient_rud, name="ingredient-rud"),
 
     # Meals

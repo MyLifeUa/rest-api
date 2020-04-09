@@ -562,7 +562,14 @@ def get_food_log(request, day):
 
 
 @swagger_auto_schema(method="post", request_body=doc.IngredientSerializer)
-@api_view(["POST"])
+@api_view(["POST", "GET"])
+def ingredients(request):
+    if request.method == "POST":
+        return new_ingredient(request)
+    elif request.method == "GET":
+        return get_ingredients(request)
+
+
 def new_ingredient(request):
     token, username, role = who_am_i(request)
 
@@ -576,6 +583,20 @@ def new_ingredient(request):
 
     state, message = queries.add_ingredient(data)
     state, status = ("Success", HTTP_201_CREATED) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+
+def get_ingredients(request):
+    token, username, role = who_am_i(request)
+
+    state = "Error"
+    message = "You don't have permissions to access the list of ingredients."
+    status = HTTP_403_FORBIDDEN
+
+    if verify_authorization(role, "client"):
+        state, message = queries.get_ingredients()
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
@@ -649,12 +670,12 @@ def get_meals(request):
     token, username, role = who_am_i(request)
 
     state = "Error"
-    message = "You don't have permissions to access the list of doctors."
+    message = "You don't have permissions to access the list of meals."
     status = HTTP_403_FORBIDDEN
 
     if verify_authorization(role, "client"):
         state, message = queries.get_meals(username)
-        state, status = ("Success", HTTP_201_CREATED) if state else ("Error", HTTP_400_BAD_REQUEST)
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
