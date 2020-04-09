@@ -622,9 +622,22 @@ def add_fitbit_token(data, email):
 
     try:
         client.update(fitbit_access_token=fitbit_access_token, fitbit_refresh_token=fitbit_refresh_token)
-        state, state_message = True, "The fitbit token was added with success"
+        state, message = True, "The fitbit token was added with success"
 
     except Exception:
         state, message = False, "Error while adding fitbit token."
 
-    return state, state_message
+    return state, message
+
+
+def get_client_doctor(username):
+    client = Client.objects.get(user__auth_user__username=username)
+
+    try:
+        doctor = client.doctor
+        state = True
+        message = DoctorSerializer(doctor).data if doctor is not None else None
+    except Exception:
+        state, message = False, "Error while adding fitbit token."
+
+    return state, message
