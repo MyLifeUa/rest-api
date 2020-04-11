@@ -654,7 +654,7 @@ def get_ingredient(request, ingredient_id):
 
 
 @swagger_auto_schema(method="post", request_body=doc.MealSerializer)
-@api_view(["POST", "GET"])
+@api_view(["GET", "POST"])
 @cache_control(public=CACHE_CONTROL['public'],  max_age=CACHE_CONTROL['max_age'], s_maxage=CACHE_CONTROL['s_maxage'])
 def meals(request):
     if request.method == "POST":
@@ -688,7 +688,7 @@ def get_meals(request):
 
     if verify_authorization(role, "client"):
         state, message = queries.get_meals(username)
-        state, status = ("Success", HTTP_201_CREATED) if state else ("Error", HTTP_400_BAD_REQUEST)
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
