@@ -324,7 +324,6 @@ def add_food_log(data, email):
         message = "Error while creating new food log!"
         return False, message
 
-
     message = "The food log was created with success"
     return True, message
 
@@ -354,52 +353,20 @@ def get_food_log(email, day):
     return state, message
 
 
-def update_food_log(request, current_meal_history, meal_history):
+def update_food_log(request, meal_history):
     data = request.data
     state = True
     message = "Food log successfully updated!"
 
     try:
 
-        if "day" in data and "type_of_meal" in data:
+        if "day" in data:
             day = data.get("day")
+            meal_history.update(day=day)
+
+        if "type_of_meal" in data:
             type_of_meal = data.get("type_of_meal")
-
-            possible_meal_history = MealHistory.objects.filter(day=day, type_of_meal=type_of_meal,
-                                                               client=current_meal_history.client)
-
-            if not possible_meal_history.exists():  # Food log does not exist yet
-                meal_history.update(day=day)
-                meal_history.update(type_of_meal=type_of_meal)
-            else:  # Food log exists for this day and for this type of meal
-                error_message = "Food log already exists for this day and type of meal."
-                return False, error_message
-        else:
-            if "day" in data:
-                day = data.get("day")
-
-                possible_meal_history = MealHistory.objects.filter(day=day,
-                                                                   type_of_meal=current_meal_history.type_of_meal,
-                                                                   client=current_meal_history.client)
-
-                if not possible_meal_history.exists():  # Food log does not exist yet
-                    meal_history.update(day=day)
-                else:  # Food log exists for this day and for this type of meal
-                    error_message = "Food log already exists for this day and type of meal."
-                    return False, error_message
-
-            if "type_of_meal" in data:
-                type_of_meal = data.get("type_of_meal")
-
-                possible_meal_history = MealHistory.objects.filter(day=current_meal_history.day,
-                                                                   type_of_meal=type_of_meal,
-                                                                   client=current_meal_history.client)
-
-                if not possible_meal_history.exists():  # Food log does not exist yet
-                    meal_history.update(type_of_meal=type_of_meal)
-                else:  # Food log exists for this day and for this type of meal
-                    error_message = "Food log already exists for this day and type of meal."
-                    return False, error_message
+            meal_history.update(type_of_meal=type_of_meal)
 
         if "meal" in data:
             meal_id = data.get("meal")
