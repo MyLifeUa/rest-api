@@ -307,33 +307,26 @@ def add_food_log(data, email):
 
     current_client = Client.objects.get(user__auth_user__username=email)
 
-    meal_history_with_type_of_meal = MealHistory.objects.filter(day=day, type_of_meal=type_of_meal,
-                                                                client=current_client)
+    try:
 
-    if not meal_history_with_type_of_meal.exists():  # Food log does not exist yet
-        try:
+        meal = Meal.objects.filter(id=meal_id)
 
-            meal = Meal.objects.filter(id=meal_id)
+        if not meal.exists():
+            state, message = False, "Meal does not exist."
+            return state, message
 
-            if not meal.exists():
-                state, message = False, "Meal does not exist."
-                return state, message
+        current_meal = Meal.objects.get(id=meal_id)
 
-            current_meal = Meal.objects.get(id=meal_id)
+        MealHistory.objects.create(day=day, type_of_meal=type_of_meal, client=current_client,
+                                   meal=current_meal, number_of_servings=number_of_servings)
 
-            MealHistory.objects.create(day=day, type_of_meal=type_of_meal, client=current_client,
-                                       meal=current_meal, number_of_servings=number_of_servings)
+    except Exception:
+        message = "Error while creating new food log!"
+        return False, message
 
-        except Exception:
-            error_message = "Error while creating new food log!"
-            return False, error_message
-    else:  # Food log exists for this day and for this type of meal
 
-        error_message = "Food log already exists for this day and type of meal."
-        return False, error_message
-
-    state_message = "The food log was created with success"
-    return True, state_message
+    message = "The food log was created with success"
+    return True, message
 
 
 def delete_food_log(meal_history):
@@ -344,8 +337,7 @@ def delete_food_log(meal_history):
     except Error:
         state, message = False, "Error while deleting user"
 
-    finally:
-        return state, message
+    return state, message
 
 
 def get_food_log(email, day):
