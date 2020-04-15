@@ -39,10 +39,10 @@ class Client(models.Model):
 
 
 class Ingredient(models.Model):
-    calories = models.FloatField()
-    proteins = models.FloatField()
-    fat = models.FloatField()
-    carbs = models.FloatField()
+    calories = models.FloatField(default=0)
+    proteins = models.FloatField(default=0)
+    fat = models.FloatField(default=0)
+    carbs = models.FloatField(default=0)
     name = models.CharField(max_length=30)
 
 
@@ -65,6 +65,10 @@ class MealHistory(models.Model):
     type_of_meal = models.CharField(max_length=25)
     meal = models.ForeignKey(Meal, on_delete=models.CASCADE)
     number_of_servings = models.FloatField()
+    calories = models.FloatField(default=0)
+    proteins = models.FloatField(default=0)
+    fat = models.FloatField(default=0)
+    carbs = models.FloatField(default=0)
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
 
 

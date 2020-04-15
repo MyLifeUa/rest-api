@@ -1,6 +1,11 @@
 from django.contrib.auth.models import Group
+<<<<<<< HEAD
 from django.db import Error
 from requests import get
+=======
+from django.db.models import Q
+from django.db import Error
+>>>>>>> master
 
 from my_life_rest_api.settings import ML_URL
 from .models import *
@@ -62,9 +67,9 @@ def update_user(data, auth_user, user=None):
         auth_user.update(last_name=last_name)
 
     if "password" in data:
-        user = User.objects.get(username=email)
-        auth_user.set_password(data.get("password"))
-        auth_user.save()
+        pwd_user = User.objects.get(username=auth_user[0].username)
+        pwd_user.set_password(data.get("password"))
+        pwd_user.save()
 
     if "phone_number" in data and user is not None:
         phone_number = data.get("phone_number")
@@ -308,33 +313,25 @@ def add_food_log(data, email):
 
     current_client = Client.objects.get(user__auth_user__username=email)
 
-    meal_history_with_type_of_meal = MealHistory.objects.filter(day=day, type_of_meal=type_of_meal,
-                                                                client=current_client)
+    try:
 
-    if not meal_history_with_type_of_meal.exists():  # Food log does not exist yet
-        try:
+        meal = Meal.objects.filter(id=meal_id)
 
-            meal = Meal.objects.filter(id=meal_id)
+        if not meal.exists():
+            state, message = False, "Meal does not exist."
+            return state, message
 
-            if not meal.exists():
-                state, message = False, "Meal does not exist."
-                return state, message
+        current_meal = Meal.objects.get(id=meal_id)
 
-            current_meal = Meal.objects.get(id=meal_id)
+        MealHistory.objects.create(day=day, type_of_meal=type_of_meal, client=current_client,
+                                   meal=current_meal, number_of_servings=number_of_servings)
 
-            MealHistory.objects.create(day=day, type_of_meal=type_of_meal, client=current_client,
-                                       meal=current_meal, number_of_servings=number_of_servings)
+    except Exception:
+        message = "Error while creating new food log!"
+        return False, message
 
-        except Exception:
-            error_message = "Error while creating new food log!"
-            return False, error_message
-    else:  # Food log exists for this day and for this type of meal
-
-        error_message = "Food log already exists for this day and type of meal."
-        return False, error_message
-
-    state_message = "The food log was created with success"
-    return True, state_message
+    message = "The food log was created with success"
+    return True, message
 
 
 def delete_food_log(meal_history):
@@ -345,8 +342,7 @@ def delete_food_log(meal_history):
     except Error:
         state, message = False, "Error while deleting user"
 
-    finally:
-        return state, message
+    return state, message
 
 
 def get_food_log(email, day):
@@ -354,61 +350,24 @@ def get_food_log(email, day):
 
     meal_history = MealHistory.objects.filter(day=day, client=current_client)
 
-    if not meal_history.exists():
-        state, message = False, "Food log does not exist."
-        return state, message
-
     state, message = True, [MealHistorySerializer(r).data for r in meal_history]
 
     return state, message
 
 
-def update_food_log(request, current_meal_history, meal_history):
+def update_food_log(request, meal_history):
     data = request.data
     state = True
     message = "Food log successfully updated!"
 
     try:
-
-        if "day" in data and "type_of_meal" in data:
+        if "day" in data:
             day = data.get("day")
+            meal_history.update(day=day)
+
+        if "type_of_meal" in data:
             type_of_meal = data.get("type_of_meal")
-
-            possible_meal_history = MealHistory.objects.filter(day=day, type_of_meal=type_of_meal,
-                                                               client=current_meal_history.client)
-
-            if not possible_meal_history.exists():  # Food log does not exist yet
-                meal_history.update(day=day)
-                meal_history.update(type_of_meal=type_of_meal)
-            else:  # Food log exists for this day and for this type of meal
-                error_message = "Food log already exists for this day and type of meal."
-                return False, error_message
-        else:
-            if "day" in data:
-                day = data.get("day")
-
-                possible_meal_history = MealHistory.objects.filter(day=day,
-                                                                   type_of_meal=current_meal_history.type_of_meal,
-                                                                   client=current_meal_history.client)
-
-                if not possible_meal_history.exists():  # Food log does not exist yet
-                    meal_history.update(day=day)
-                else:  # Food log exists for this day and for this type of meal
-                    error_message = "Food log already exists for this day and type of meal."
-                    return False, error_message
-
-            if "type_of_meal" in data:
-                type_of_meal = data.get("type_of_meal")
-
-                possible_meal_history = MealHistory.objects.filter(day=current_meal_history.day,
-                                                                   type_of_meal=type_of_meal,
-                                                                   client=current_meal_history.client)
-
-                if not possible_meal_history.exists():  # Food log does not exist yet
-                    meal_history.update(type_of_meal=type_of_meal)
-                else:  # Food log exists for this day and for this type of meal
-                    error_message = "Food log already exists for this day and type of meal."
-                    return False, error_message
+            meal_history.update(type_of_meal=type_of_meal)
 
         if "meal" in data:
             meal_id = data.get("meal")
@@ -501,6 +460,10 @@ def delete_ingredient(ingredient_id):
     return state, message
 
 
+def get_ingredients():
+    return True, [IngredientSerializer(ingredient).data for ingredient in Ingredient.objects.all()]
+
+
 def get_ingredient(ingredient_id):
     try:
         ingredient = Ingredient.objects.get(id=ingredient_id)
@@ -545,6 +508,11 @@ def add_new_meal(data, username, role="admin"):
 
     state_message = "Meal created successfully!"
     return True, state_message
+
+
+def get_meals(username):
+    client = Client.objects.get(user__auth_user__username=username)
+    return True, [MealSerializer(meal).data for meal in Meal.objects.filter(Q(client__isnull=True) | Q(client=client))]
 
 
 def add_doctor_patient_association(data, email):
@@ -618,12 +586,12 @@ def add_fitbit_token(data, email):
 
     try:
         client.update(fitbit_access_token=fitbit_access_token, fitbit_refresh_token=fitbit_refresh_token)
-        state, state_message = True, "The fitbit token was added with success"
+        state, message = True, "The fitbit token was added with success"
 
     except Exception:
         state, message = False, "Error while adding fitbit token."
 
-    return state, state_message
+    return state, message
 
 
 def classify_image(image_b64):
@@ -644,5 +612,18 @@ def classify_image(image_b64):
         else:
             state = "Error"
             message = "Error while trying to classifying food"
+
+    return state, message
+
+
+def get_client_doctor(username):
+    client = Client.objects.get(user__auth_user__username=username)
+
+    try:
+        doctor = client.doctor
+        state = True
+        message = DoctorSerializer(doctor).data if doctor is not None else None
+    except Exception:
+        state, message = False, "Error while adding fitbit token."
 
     return state, message
