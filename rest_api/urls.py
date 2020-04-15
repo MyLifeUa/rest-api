@@ -44,4 +44,7 @@ urlpatterns = [
 
     # Add fitbit token
     path("fitbit-token", add_fitbit_token, name="add-fitbit-token"),
+
+    # Reload Database
+    path("reload-db", reload_db, name="reload-db"),
 ]

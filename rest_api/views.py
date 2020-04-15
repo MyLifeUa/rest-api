@@ -714,3 +714,15 @@ def add_fitbit_token(request):
     state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+
+@api_view(["GET"])
+@permission_classes((AllowAny,))
+def reload_db(request):
+    state = queries.reload_database()
+
+    state = "Success" if state else "Error"
+    status = HTTP_200_OK if state else HTTP_400_BAD_REQUEST
+    message = "DB reloaded with success!" if state else "Error while reloading DB!"
+
+    return Response({"state": state, "message": message}, status=status)

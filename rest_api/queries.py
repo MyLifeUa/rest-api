@@ -595,3 +595,22 @@ def get_client_doctor(username):
         state, message = False, "Error while adding fitbit token."
 
     return state, message
+
+
+def reload_database():
+    try:
+        #######################################
+        #            WIPE DATABASE            #
+        #######################################
+        Ingredient.objects.all().delete()
+        Meal.objects.all().delete()
+
+        #######################################
+        #          CREATE INGREDIENTS         #
+        #######################################
+
+        return True
+
+    except Exception as e:
+        print(e)
+        return False
