@@ -1,6 +1,6 @@
 from django.contrib.auth.models import Group
 from django.db.models import Q
-from django.db import Error, transaction
+from django.db import Error
 
 from .models import *
 from .constants import *
@@ -344,10 +344,6 @@ def get_food_log(email, day):
 
     meal_history = MealHistory.objects.filter(day=day, client=current_client)
 
-    if not meal_history.exists():
-        state, message = False, "Food log does not exist."
-        return state, message
-
     state, message = True, [MealHistorySerializer(r).data for r in meal_history]
 
     return state, message
@@ -359,7 +355,6 @@ def update_food_log(request, meal_history):
     message = "Food log successfully updated!"
 
     try:
-
         if "day" in data:
             day = data.get("day")
             meal_history.update(day=day)

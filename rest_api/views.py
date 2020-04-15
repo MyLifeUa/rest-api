@@ -480,8 +480,7 @@ def new_food_log(request):
         state = "Error"
         message = "You do not have permissions to add a new food log."
         status = HTTP_403_FORBIDDEN
-        return Response({"role": role, "state": state, "message": message, "token": token},
-                        status=status)
+        return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
     data = request.data
     if not (
