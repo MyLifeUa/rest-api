@@ -21,15 +21,6 @@ from .models import MealHistory
 from .serializers import *
 
 
-# CACHE-CONTROL SETTINGS
-CACHE_CONTROL = {
-    'public': True,
-    #  HOURS * MINUTES * SECONDS
-    'max_age': 12*60*60, 
-    's_maxage': 12*60*60
-}
-
-
 @swagger_auto_schema(method="post", request_body=doc.UserLoginSerializer)
 @api_view(["POST"])
 @permission_classes((AllowAny,))
@@ -68,7 +59,6 @@ def logout(request):
 
 @api_view(["GET"])
 @permission_classes((AllowAny,))
-@cache_control(public=CACHE_CONTROL['public'],  max_age=CACHE_CONTROL['max_age'], s_maxage=CACHE_CONTROL['s_maxage'])
 def check_email(request, email):
     status = HTTP_200_OK
     state = "Success"
@@ -200,7 +190,6 @@ def new_client(request):
 
 @swagger_auto_schema(method="put", request_body=doc.ClientSerializer)
 @api_view(["GET", "PUT", "DELETE"])
-@cache_control(public=CACHE_CONTROL['public'],  max_age=CACHE_CONTROL['max_age'], s_maxage=CACHE_CONTROL['s_maxage'])
 def client_rud(request, email):
     if request.method == "PUT":
         return update_client(request, email)
@@ -303,7 +292,6 @@ def new_doctor(request):
 
 @swagger_auto_schema(method="put", request_body=doc.DoctorSerializer)
 @api_view(["GET", "PUT", "DELETE"])
-@cache_control(public=CACHE_CONTROL['public'],  max_age=CACHE_CONTROL['max_age'], s_maxage=CACHE_CONTROL['s_maxage'])
 def doctor_rud(request, email):
     if request.method == "PUT":
         return update_doctor(request, email)
@@ -378,7 +366,6 @@ def get_doctor(request, email):
 
 @swagger_auto_schema(methods=["post", "delete"], request_body=doc.ClientEmailSerializer)
 @api_view(["GET", "POST", "DELETE"])
-@cache_control(public=CACHE_CONTROL['public'],  max_age=CACHE_CONTROL['max_age'], s_maxage=CACHE_CONTROL['s_maxage'])
 def doctor_patient_association_cd(request):
     if request.method == "POST":
         return new_doctor_patient_association(request)
@@ -471,7 +458,6 @@ def get_client_doctor(request):
 
 
 @api_view(["GET"])
-@cache_control(public=CACHE_CONTROL['public'],  max_age=CACHE_CONTROL['max_age'], s_maxage=CACHE_CONTROL['s_maxage'])
 def doctor_get_all_patients(request):
     token, username, role = who_am_i(request)
 
@@ -519,7 +505,6 @@ def new_food_log(request):
 
 @swagger_auto_schema(method="put", request_body=doc.MealHistorySerializer)
 @api_view(["GET", "PUT", "DELETE"])
-@cache_control(public=CACHE_CONTROL['public'],  max_age=CACHE_CONTROL['max_age'], s_maxage=CACHE_CONTROL['s_maxage'])
 def food_log_rud(request, food_log_filter):
     if request.method == "PUT":
         return update_food_log(request, food_log_filter)
@@ -636,7 +621,6 @@ def get_ingredients(request):
 
 @swagger_auto_schema(method="put", request_body=doc.IngredientSerializer)
 @api_view(["GET", "PUT", "DELETE"])
-@cache_control(public=CACHE_CONTROL['public'],  max_age=CACHE_CONTROL['max_age'], s_maxage=CACHE_CONTROL['s_maxage'])
 def ingredient_rud(request, ingredient_id):
     if request.method == "PUT":
         return update_ingredient(request, ingredient_id)
@@ -677,7 +661,6 @@ def get_ingredient(request, ingredient_id):
 
 @swagger_auto_schema(method="post", request_body=doc.MealSerializer)
 @api_view(["GET", "POST"])
-@cache_control(public=CACHE_CONTROL['public'],  max_age=CACHE_CONTROL['max_age'], s_maxage=CACHE_CONTROL['s_maxage'])
 def meals(request):
     if request.method == "POST":
         return new_meal(request)
@@ -716,7 +699,6 @@ def get_meals(request):
 
 
 @api_view(["GET"])
-@cache_control(public=CACHE_CONTROL['public'],  max_age=CACHE_CONTROL['max_age'], s_maxage=CACHE_CONTROL['s_maxage'])
 def list_hospital_doctors(request):
     token, username, role = who_am_i(request)
 
