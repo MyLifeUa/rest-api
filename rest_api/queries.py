@@ -1,11 +1,7 @@
 from django.contrib.auth.models import Group
-<<<<<<< HEAD
-from django.db import Error
 from requests import get
-=======
 from django.db.models import Q
 from django.db import Error
->>>>>>> master
 
 from my_life_rest_api.settings import ML_URL
 from .models import *
