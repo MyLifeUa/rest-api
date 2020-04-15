@@ -13,6 +13,7 @@ from rest_framework.status import (
     HTTP_201_CREATED,
     HTTP_204_NO_CONTENT,
 )
+
 from rest_api import queries, documentation_serializers as doc
 from rest_api.authentication import token_expire_handler
 from .utils import *
@@ -754,3 +755,23 @@ def add_fitbit_token(request):
     state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+
+@api_view(["GET"])
+def classify_image(request):
+    token, username, role = who_am_i(request)
+
+    # default possibility
+    state = "Error"
+    message = "You don't have permissions to access the list of doctors."
+    status = HTTP_403_FORBIDDEN
+
+    if verify_authorization(role, "client"):
+        image_b64 = request.GET.get("image_b64", "")
+
+        state, message = queries.classify_image(image_b64)
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+
