@@ -39,6 +39,7 @@ urlpatterns = [
     # List doctors from an hospital
     path("hospital-doctors", list_hospital_doctors, name="list-hospital-doctors"),
 
+    # Check email already exists
     url("^check-email/(?P<email>.+)", check_email, name="check-email"),
 
     # Add fitbit token

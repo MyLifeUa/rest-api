@@ -480,8 +480,7 @@ def new_food_log(request):
         state = "Error"
         message = "You do not have permissions to add a new food log."
         status = HTTP_403_FORBIDDEN
-        return Response({"role": role, "state": state, "message": message, "token": token},
-                        status=status)
+        return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
     data = request.data
     if not (
@@ -519,6 +518,7 @@ def update_food_log(request, food_log_id):
     try:
         meal_history = MealHistory.objects.filter(id=food_log_id)
         current_meal_history = MealHistory.objects.get(id=food_log_id)
+
     except MealHistory.DoesNotExist:
         state = "Error"
         message = "Food Log does not exist!"
@@ -532,7 +532,7 @@ def update_food_log(request, food_log_id):
     status = HTTP_403_FORBIDDEN
 
     if is_self(role, "client", username, current_meal_history.client.user.auth_user.username):
-        state, message = queries.update_food_log(request, current_meal_history, meal_history)
+        state, message = queries.update_food_log(request, meal_history)
         status = HTTP_200_OK if state else HTTP_400_BAD_REQUEST
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
