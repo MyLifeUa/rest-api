@@ -116,6 +116,7 @@ class MealSerializer(
     id = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
     category = serializers.SerializerMethodField()
+    # TODO: Update this with Meal models update
 
     def get_id(self, obj):
         return obj.id
