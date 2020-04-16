@@ -135,4 +135,5 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 TOKEN_EXPIRED_AFTER_SECONDS = 24*60*60
 
-ML_URL = "http://mednat.ieeta.pt:8443/predict"
+# ML_URL = "http://mednat.ieeta.pt:8443/predict"
+ML_URL = "http://darkflow:5000/predict"
