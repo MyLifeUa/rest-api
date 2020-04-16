@@ -599,15 +599,15 @@ def classify_image(image_b64):
         params = {"image_b64": image_b64}
         response = get(url=ML_URL, params=params)
 
+        state = "Error"
+        message = "Error while trying to classifying food"
+
         if response.status_code == 200:
             data = eval(response.text)
 
-            state = "Success"
-            message = {"food": data[0]["label"]}
-
-        else:
-            state = "Error"
-            message = "Error while trying to classifying food"
+            if data:  # check if list is not empty
+                state = "Success"
+                message = {"food": data[-1]["label"]}  # get the last element (the one ml module has most confident)
 
     return state, message
 
