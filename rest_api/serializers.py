@@ -155,8 +155,12 @@ class MealHistorySerializer(serializers.Serializer):
 
 
 class IngredientSerializer(serializers.Serializer):
+    id = serializers.SerializerMethodField()
     calories = serializers.FloatField(required=True)
     proteins = serializers.FloatField(required=True)
     fat = serializers.FloatField(required=True)
     carbs = serializers.FloatField(required=True)
     name = serializers.CharField(required=True)
+
+    def get_id(self, obj):
+        return obj.id
