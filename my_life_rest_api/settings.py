@@ -137,4 +137,5 @@ STATIC_URL = "/static/"
 
 TOKEN_EXPIRED_AFTER_SECONDS = 300
 
-ML_URL = "http://mednat.ieeta.pt:8443/predict"
+# ML_URL = "http://mednat.ieeta.pt:8443/predict"
+ML_URL = "http://darkflow:5000/predict"
