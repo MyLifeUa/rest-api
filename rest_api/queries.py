@@ -592,21 +592,21 @@ def add_fitbit_token(data, email):
 
 def classify_image(image_b64):
     if image_b64 == "":
-        state = "Error"
+        state = False
         message = "Missing parameters"
 
     else:
         params = {"image_b64": image_b64}
         response = get(url=ML_URL, params=params)
 
-        state = "Error"
+        state = False
         message = "Error while trying to classifying food"
 
         if response.status_code == 200:
             data = eval(response.text)
 
             if data:  # check if list is not empty
-                state = "Success"
+                state = True
                 message = {"food": data[-1]["label"]}  # get the last element (the one ml module has most confident)
 
     return state, message
