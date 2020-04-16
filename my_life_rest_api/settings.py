@@ -133,8 +133,6 @@ STATIC_URL = "/static/"
 
 CORS_ORIGIN_ALLOW_ALL = True
 
-STATIC_URL = "/static/"
-
 TOKEN_EXPIRED_AFTER_SECONDS = 300
 
 # ML_URL = "http://mednat.ieeta.pt:8443/predict"
