@@ -16,3 +16,7 @@ services:
       - "8000:8000"
     depends_on:
       - postgres
+  darkflow:
+    image: registry.gitlab.com/my-life-ua/ml-food-recognition
+    ports:
+      - "5000:5000"
