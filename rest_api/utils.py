@@ -49,3 +49,26 @@ def is_client_doctor(doctor_username, client_username):
     doctor = Doctor.objects.get(user__auth_user__username=doctor_username)
     client = Client.objects.get(user__auth_user__username=client_username)
     return client.doctor == doctor
+
+# populate meal nutrient values with values from ingredient passed or ingredients queried
+def populate_nutrient_values(meal, ingredient=None, quantity=None):
+    # if already have ingredient and quantity, use those
+    if ingredient is not None and quantity is not None: 
+        meal.calories += quantity * ingredient.calories / 100
+        meal.proteins += quantity * ingredient.proteins / 100
+        meal.fat += quantity * ingredient.fat / 100
+        meal.carbs += quantity * ingredient.carbs / 100
+    # else query
+    else:
+        entries = meal.quantity_set.all()
+        meal.calories = sum(entry.quantity * entry.ingredient.calories / 100 for entry in entries)
+        meal.proteins = sum(entry.quantity * entry.ingredient.proteins / 100 for entry in entries)
+        meal.fat = sum(entry.quantity * entry.ingredient.fat / 100 for entry in entries)
+        meal.carbs = sum(entry.quantity * entry.ingredient.carbs / 100 for entry in entries)
+
+def populate_nutrient_values_meal_history(meal_history, meal=None, number_of_servings=None):
+    if meal is None:
+        meal = meal_history.meal
+    if number_of_servings is None:
+        number_of_servings = meal_history.number_of_servings
+    meal_history.calories, meal_history.proteins, meal_history.carbs, meal_history.fat = number_of_servings * (meal.calories, meal.proteins, meal.carbs, meal.fat)
