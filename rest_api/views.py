@@ -750,7 +750,7 @@ def add_fitbit_token(request):
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
 
-@api_view(["GET"])
+@api_view(["POST"])
 def classify_image(request):
     token, username, role = who_am_i(request)
 
@@ -759,8 +759,11 @@ def classify_image(request):
     message = "You don't have permissions to access the list of doctors."
     status = HTTP_403_FORBIDDEN
 
+    data = request.data
+
     if verify_authorization(role, "client"):
-        image_b64 = request.GET.get("image_b64", "")
+
+        image_b64 = data["image_b64"] if "image_b64" in data else ""
 
         state, message = queries.classify_image(image_b64)
         state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
