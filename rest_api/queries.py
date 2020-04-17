@@ -386,14 +386,14 @@ def update_food_log(request, meal_history):
             current_meal = Meal.objects.get(id=meal_id)
 
             # TODO: update nutrients
-            populate_nutrient_values_meal_history(meal_history, meal)
+            populate_nutrient_values_meal_history(meal_history, meal=meal)
 
             meal_history.update(meal=current_meal)
 
         if "number_of_servings" in data:
             number_of_servings = data.get("number_of_servings")
             meal_history.update(number_of_servings=number_of_servings)
-            populate_nutrient_values_meal_history(meal_history, number_of_servings)
+            populate_nutrient_values_meal_history(meal_history, number_of_servings=number_of_servings)
 
     except Exception:
         state, message = False, "Error while updating Food log!"
