@@ -7,6 +7,7 @@ from my_life_rest_api.settings import ML_URL
 from .models import *
 from .constants import *
 from .serializers import *
+from .utils import *
 
 
 def add_user(data, is_superuser=False):
@@ -320,6 +321,8 @@ def add_food_log(data, email):
 
         current_meal = Meal.objects.get(id=meal_id)
 
+        calories, proteins, carbs, fat = number_of_servings * (current_meal.calories, current_meal.proteins, current_meal.carbs, current_meal.fat)
+
         MealHistory.objects.create(day=day, type_of_meal=type_of_meal, client=current_client,
                                    meal=current_meal, number_of_servings=number_of_servings)
 
@@ -378,11 +381,15 @@ def update_food_log(request, meal_history):
 
             current_meal = Meal.objects.get(id=meal_id)
 
+            # TODO: update nutrients
+            populate_nutrient_values_meal_history(meal_history, meal)
+
             meal_history.update(meal=current_meal)
 
         if "number_of_servings" in data:
             number_of_servings = data.get("number_of_servings")
             meal_history.update(number_of_servings=number_of_servings)
+            populate_nutrient_values_meal_history(meal_history, number_of_servings)
 
     except Exception:
         state, message = False, "Error while updating Food log!"
@@ -495,10 +502,12 @@ def add_new_meal(data, username, role="admin"):
         return False, error_message
 
     try:
-        # add ingredients quantities
+        # add ingredients quantities and nutrient values
         for ingredient_json in ingredients:
             ingredient = Ingredient.objects.get(id=ingredient_json["id"])
-            Quantity.objects.create(meal=meal, ingredient=ingredient, quantity=ingredient_json["quantity"])
+            quantity = ingredient_json["quantity"]
+            Quantity.objects.create(meal=meal, ingredient=ingredient, quantity=quantity)
+            populate_nutrient_values(meal, ingredient, quantity)
 
     except Ingredient.DoesNotExist:
         meal.delete()
