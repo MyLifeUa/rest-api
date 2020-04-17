@@ -49,4 +49,7 @@ urlpatterns = [
 
     # Check token is valid
     path("check-token", check_token, name="check-token"),
+    
+    # Health Statistics
+    url("^health-stats/nutrients/ratio/(?P<date>.+)", nutrients_ratio, name="nutrients-ratio"),
 ]
