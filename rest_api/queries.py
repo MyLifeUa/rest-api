@@ -321,10 +321,14 @@ def add_food_log(data, email):
 
         current_meal = Meal.objects.get(id=meal_id)
 
-        calories, proteins, carbs, fat = number_of_servings * (current_meal.calories, current_meal.proteins, current_meal.carbs, current_meal.fat)
+        calories = number_of_servings * current_meal.calories 
+        proteins = number_of_servings * current_meal.proteins
+        carbs  = number_of_servings * current_meal.carbs
+        fat = number_of_servings * current_meal.fat
 
         MealHistory.objects.create(day=day, type_of_meal=type_of_meal, client=current_client,
-                                   meal=current_meal, number_of_servings=number_of_servings)
+                                   meal=current_meal, number_of_servings=number_of_servings,
+                                   calories=calories, proteins=proteins, carbs=carbs, fat=fat)
 
     except Exception:
         message = "Error while creating new food log!"
