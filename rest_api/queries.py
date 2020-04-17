@@ -297,7 +297,6 @@ def get_doctor(email):
 
 
 def add_food_log(data, email):
-    # TODO: add calc of nutrient values based on meal
     day = data.get("day")
     type_of_meal = data.get("type_of_meal")
     meal_id = data.get("meal")
@@ -360,7 +359,6 @@ def get_food_log(email, day):
 
 
 def update_food_log(request, meal_history):
-    # TODO: add calc of nutrient values based on meal
     data = request.data
     state = True
     message = "Food log successfully updated!"
@@ -385,7 +383,6 @@ def update_food_log(request, meal_history):
 
             current_meal = Meal.objects.get(id=meal_id)
 
-            # TODO: update nutrients
             populate_nutrient_values_meal_history(meal_history, meal=meal)
 
             meal_history.update(meal=current_meal)
@@ -485,7 +482,6 @@ def get_ingredient(ingredient_id):
 
 
 def add_new_meal(data, username, role="admin"):
-    # TODO: calc nutrient values here
     name = data.get("name")
     category = data.get("category")
     ingredients = data.get("ingredients")
@@ -525,7 +521,6 @@ def add_new_meal(data, username, role="admin"):
 def get_meals(username):
     client = Client.objects.get(user__auth_user__username=username)
     return True, [MealSerializer(meal).data for meal in Meal.objects.filter(Q(client__isnull=True) | Q(client=client))]
-    # TODO: ceck if, with the new fields in Meal, we can get nutrition information
 
 
 def add_doctor_patient_association(data, email):

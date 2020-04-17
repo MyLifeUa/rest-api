@@ -52,7 +52,6 @@ class Meal(models.Model):
     # https://docs.djangoproject.com/en/3.0/topics/db/models/#extra-fields-on-many-to-many-relationships
     ingredients = models.ManyToManyField(Ingredient, through="Quantity")
     client = models.ForeignKey(Client, on_delete=models.CASCADE, null=True, blank=True)
-    # TODO: add nutrient values
     calories = models.FloatField(default=0)
     proteins = models.FloatField(default=0)
     fat = models.FloatField(default=0)
@@ -75,7 +74,6 @@ class MealHistory(models.Model):
     fat = models.FloatField(default=0)
     carbs = models.FloatField(default=0)
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
-    # TODO: update nutrient values with integration from Meals
 
 
 class Exercise(models.Model):
