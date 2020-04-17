@@ -3,7 +3,6 @@ from django.urls import path
 
 from .views import *
 
-
 urlpatterns = [
     # Access
     path("login", login, name="login"),
@@ -47,4 +46,7 @@ urlpatterns = [
 
     # Image Classification
     path("image-classification", classify_image, name="classify-image"),
+
+    # Check token is valid
+    path("check-token", check_token, name="check-token"),
 ]
