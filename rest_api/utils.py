@@ -65,10 +65,10 @@ def is_valid_date(date, date_pattern):
 
 
 def get_total_nutrients(meal_history):
-    total_calories = sum(entry.calories for entry in meal_history)
-    total_carbs = sum(entry.carbs for entry in meal_history)
-    total_fat = sum(entry.fat for entry in meal_history)
-    total_proteins = sum(entry.proteins for entry in meal_history)
+    total_calories = round(sum(entry.calories for entry in meal_history), 0)
+    total_carbs = round(sum(entry.carbs for entry in meal_history), 0)
+    total_fat = round(sum(entry.fat for entry in meal_history), 0)
+    total_proteins = round(sum(entry.proteins for entry in meal_history), 0)
 
     dict = {
         "calories": {"total": total_calories},
@@ -108,14 +108,14 @@ def get_calories_daily_goal(client):
     else:
         daily_cal_goal -= 500
 
-    return daily_cal_goal
+    return round(daily_cal_goal, 0)
 
 
 def get_daily_goals(client):
     calories_goal = get_calories_daily_goal(client)
-    carbs_goal = 0.5 * calories_goal / 4
-    fat_goal = 0.3 * calories_goal / 9
-    protein_goal = 0.2 * calories_goal / 4
+    carbs_goal = round(0.5 * calories_goal / 4, 0)
+    fat_goal = round(0.3 * calories_goal / 9, 0)
+    protein_goal = round(0.2 * calories_goal / 4, 0)
 
     return {"calories": calories_goal, "carbs": carbs_goal, "fat": fat_goal, "proteins": protein_goal}
 
@@ -137,6 +137,36 @@ def get_nutrients_info(client, info_dict):
     info_dict["carbs"]["goals"] = {"total": round(goals["carbs"], 0), "ratio": 50}
     info_dict["fat"]["goals"] = {"total": round(goals["fat"], 0), "ratio": 30}
     info_dict["proteins"]["goals"] = {"total": round(goals["proteins"], 0), "ratio": 20}
-    info_dict["calories"]["goals"] = goals["calories"]
+    info_dict["calories"]["goals"] = round(goals["calories"], 0)
+
+    return info_dict
+
+
+def get_nutrients_left_values(client, info_dict):
+    total_calories = info_dict["calories"]["total"]
+    total_carbs = info_dict["carbs"]["total"]
+    total_fat = info_dict["fat"]["total"]
+    total_proteins = info_dict["proteins"]["total"]
+
+    goals = get_daily_goals(client)
+
+    carbs_goal = round(goals["carbs"], 0)
+    fat_goal = round(goals["fat"], 0)
+    calories_goal = round(goals["calories"], 0)
+    proteins_goal = round(goals["proteins"], 0)
+
+    left_carbs = total_carbs - carbs_goal
+    left_calories = total_calories - calories_goal
+    left_fat = total_fat - fat_goal
+    left_proteins = total_proteins - proteins_goal
+
+    info_dict["carbs"]["goal"] = carbs_goal
+    info_dict["carbs"]["left"] = left_carbs
+    info_dict["fat"]["goal"] = fat_goal
+    info_dict["fat"]["left"] = left_fat
+    info_dict["proteins"]["goal"] = proteins_goal
+    info_dict["proteins"]["left"] = left_proteins
+    info_dict["calories"]["goal"] = calories_goal
+    info_dict["calories"]["left"] = left_calories
 
     return info_dict

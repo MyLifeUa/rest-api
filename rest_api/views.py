@@ -789,3 +789,23 @@ def nutrients_ratio(request, date):
             state, status = ("Success", HTTP_200_OK) if state else ("Success", HTTP_204_NO_CONTENT)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+
+@api_view(["GET"])
+def nutrients_total(request, date):
+    token, username, role = who_am_i(request)
+
+    # default possibility
+    state = "Error"
+    message = "You don't have permissions to access this information."
+    status = HTTP_403_FORBIDDEN
+
+    if verify_authorization(role, "client") or verify_authorization(role, "doctor"):
+        message = "Invalid date: It should be in the format YYYY-mm-dd"
+        status = HTTP_400_BAD_REQUEST
+
+        if is_valid_date(date, "%Y-%m-%d"):
+            state, message = queries.get_nutrients_total(username, date)
+            state, status = ("Success", HTTP_200_OK) if state else ("Success", HTTP_204_NO_CONTENT)
+
+    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
