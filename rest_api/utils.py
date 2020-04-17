@@ -113,9 +113,9 @@ def get_calories_daily_goal(client):
 
 def get_daily_goals(client):
     calories_goal = get_calories_daily_goal(client)
-    carbs_goal = 0.5 * calories_goal
-    fat_goal = 0.3 * calories_goal
-    protein_goal = 0.2 * calories_goal
+    carbs_goal = 0.5 * calories_goal / 4
+    fat_goal = 0.3 * calories_goal / 9
+    protein_goal = 0.2 * calories_goal / 4
 
     return {"calories": calories_goal, "carbs": carbs_goal, "fat": fat_goal, "proteins": protein_goal}
 
@@ -134,9 +134,9 @@ def get_nutrients_info(client, info_dict):
 
     goals = get_daily_goals(client)
 
-    info_dict["carbs"]["goals"] = {"total": round(goals["carbs"], 0), "ratio": 0.5}
-    info_dict["fat"]["goals"] = {"total": round(goals["fat"], 0), "ratio": 0.3}
-    info_dict["proteins"]["goals"] = {"total": round(goals["proteins"], 0), "ratio": 0.2}
+    info_dict["carbs"]["goals"] = {"total": round(goals["carbs"], 0), "ratio": 50}
+    info_dict["fat"]["goals"] = {"total": round(goals["fat"], 0), "ratio": 30}
+    info_dict["proteins"]["goals"] = {"total": round(goals["proteins"], 0), "ratio": 20}
     info_dict["calories"]["goals"] = goals["calories"]
 
     return info_dict
