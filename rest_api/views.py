@@ -69,6 +69,17 @@ def check_email(request, email):
     return Response({"state": state, "message": message}, status=status)
 
 
+@api_view(["GET"])
+def check_token(request):
+    token, username, role = who_am_i(request)
+
+    status = HTTP_200_OK
+    state = "Success"
+    message = "Token is active"
+
+    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+
 @swagger_auto_schema(method="post", request_body=doc.AdminSerializer)
 @api_view(["POST"])
 def new_admin(request):
@@ -755,5 +766,3 @@ def classify_image(request):
         state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
-
-
