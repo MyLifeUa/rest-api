@@ -635,3 +635,39 @@ def get_client_doctor(username):
         state, message = False, "Error while adding fitbit token."
 
     return state, message
+
+
+def get_nutrients_ratio(username, day):
+    client = Client.objects.get(user__auth_user__username=username)
+
+    meal_history = MealHistory.objects.filter(day=day, client=client)
+
+    if not meal_history.exists():
+        state = False
+        message = "The specified day has no history yet."
+
+    else:
+        initial_info = get_total_nutrients(meal_history)
+
+        message = get_nutrients_info(client, initial_info)
+        state = True
+
+    return state, message
+
+
+def get_nutrients_total(username, day):
+    client = Client.objects.get(user__auth_user__username=username)
+
+    meal_history = MealHistory.objects.filter(day=day, client=client)
+
+    if not meal_history.exists():
+        state = False
+        message = "The specified day has no history yet."
+
+    else:
+        initial_info = get_total_nutrients(meal_history)
+
+        message = get_nutrients_left_values(client, initial_info)
+        state = True
+
+    return state, message
