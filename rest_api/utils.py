@@ -1,9 +1,9 @@
-from datetime import datetime, date
-
+from datetime import datetime, date, timedelta
+from django.db.models import Sum
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 
-from rest_api.models import Doctor, CustomAdmin, Client
+from rest_api.models import Doctor, CustomAdmin, Client, MealHistory
 
 
 def get_role(username, request=None):
@@ -173,3 +173,39 @@ def get_nutrients_left_values(client, info_dict):
     info_dict["calories"]["left"] = left_calories
 
     return info_dict
+
+
+def get_nutrient_history(client, metric, period):
+    end_date = date.today()
+    num_days = 0
+    if period == "week":
+        num_days = 7
+    elif period == "month":
+        num_days = 30
+    elif period == "3-months":
+        num_days = 3 * 30
+
+    start_date = end_date - timedelta(days=num_days)
+
+    history = MealHistory.objects.filter(client=client, day__gt=start_date, day__lte=end_date).values_list("day")
+
+    if metric == "calories":
+        history_per_day = history.annotate(Sum("calories"))
+    elif metric == "fat":
+        history_per_day = history.annotate(Sum("fat"))
+    elif metric == "carbs":
+        history_per_day = history.annotate(Sum("carbs"))
+    elif metric == "proteins":
+        history_per_day = history.annotate(Sum("proteins"))
+
+    total_history = [{"day": str(start_date + timedelta(days=x)), str(metric): 0} for x in range(1, num_days+1)]
+    day_array = [entry["day"] for entry in total_history]
+
+    for entry in history_per_day:
+        day, metric_value = entry
+        day = str(day)
+        empty_history_idx = day_array.index(day)
+        total_history[empty_history_idx] = {"day": day, str(metric): metric_value}
+
+    return total_history
+

@@ -7,7 +7,8 @@ from my_life_rest_api.settings import ML_URL
 from .models import *
 from .constants import *
 from .serializers import *
-from .utils import get_total_nutrients, get_nutrients_info, get_calories_daily_goal, get_nutrients_left_values
+from .utils import get_total_nutrients, get_nutrients_info, get_calories_daily_goal, get_nutrients_left_values, \
+    get_nutrient_history
 
 
 def add_user(data, is_superuser=False):
@@ -663,4 +664,18 @@ def get_nutrients_total(username, day):
 
 
 def get_nutrients_history(username, params):
-    return None, None
+    metric = params["metric"]
+    if metric not in ["calories", "fat", "carbs", "proteins"]:
+        state = False
+        message = "Invalid metric!"
+        return state, message
+
+    period = params["period"]
+    if period not in ["week", "month", "3-months"]:
+        state = False
+        message = "Invalid period!"
+        return state, message
+
+    client = Client.objects.get(user__auth_user__username=username)
+
+    return True, get_nutrient_history(client, metric, period)
