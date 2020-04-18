@@ -837,12 +837,15 @@ def nutrients_history(request, email):
 
     params = {"metric": metric, "period": period}
 
+    query_username = None
+
     if is_self(role, "client", username, email):
-        state, message = queries.get_nutrients_history(username, params)
-        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+        query_username = username
 
     elif verify_authorization(role, "doctor") and is_client_doctor(username, email):
-        state, message = queries.get_nutrients_history(email, params)
-        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+        query_username = email
+
+    state, message = queries.get_nutrients_history(query_username, params)
+    state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
