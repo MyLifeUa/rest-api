@@ -765,7 +765,6 @@ def classify_image(request):
     data = request.data
 
     if verify_authorization(role, "client"):
-
         image_b64 = data["image_b64"] if "image_b64" in data else ""
 
         state, message = queries.classify_image(image_b64)
@@ -778,7 +777,7 @@ def classify_image(request):
 def nutrients_ratio(request, email, date):
     token, username, role = who_am_i(request)
 
-    message = "Invalid date: It should be in the format YYYY-mm-dd"
+    message = "Invalid date: It should be in the format yyyy-mm-dd"
     status = HTTP_400_BAD_REQUEST
 
     if is_valid_date(date, "%Y-%m-%d"):
@@ -796,8 +795,6 @@ def nutrients_ratio(request, email, date):
             state, message = queries.get_nutrients_ratio(email, date)
             state, status = ("Success", HTTP_200_OK) if state else ("Success", HTTP_204_NO_CONTENT)
 
-
-
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
 
@@ -805,17 +802,22 @@ def nutrients_ratio(request, email, date):
 def nutrients_total(request, email, date):
     token, username, role = who_am_i(request)
 
-    # default possibility
-    state = "Error"
-    message = "You don't have permissions to access this information."
-    status = HTTP_403_FORBIDDEN
+    message = "Invalid date: It should be in the format yyyy-mm-dd"
+    status = HTTP_400_BAD_REQUEST
 
-    if verify_authorization(role, "client") or verify_authorization(role, "doctor"):
-        message = "Invalid date: It should be in the format YYYY-mm-dd"
-        status = HTTP_400_BAD_REQUEST
+    if is_valid_date(date, "%Y-%m-%d"):
 
-        if is_valid_date(date, "%Y-%m-%d"):
+        # default possibility
+        state = "Error"
+        message = "You don't have permissions to access this information."
+        status = HTTP_403_FORBIDDEN
+
+        if is_self(role, "client", username, email):
             state, message = queries.get_nutrients_total(username, date)
+            state, status = ("Success", HTTP_200_OK) if state else ("Success", HTTP_204_NO_CONTENT)
+
+        elif verify_authorization(role, "doctor") and is_client_doctor(username, email):
+            state, message = queries.get_nutrients_total(email, date)
             state, status = ("Success", HTTP_200_OK) if state else ("Success", HTTP_204_NO_CONTENT)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
