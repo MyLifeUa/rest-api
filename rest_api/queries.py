@@ -7,8 +7,7 @@ from my_life_rest_api.settings import ML_URL
 from .models import *
 from .constants import *
 from .serializers import *
-from .utils import get_total_nutrients, get_nutrients_info, get_calories_daily_goal, get_nutrients_left_values, \
-    get_nutrient_history
+from .utils import *
 
 
 def add_user(data, is_superuser=False):
