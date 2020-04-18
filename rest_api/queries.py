@@ -612,14 +612,24 @@ def classify_image(image_b64):
         response = get(url=ML_URL, params=params)
 
         state = False
-        message = "Error while trying to classifying food"
+        message = "Error while trying to classify food"
 
         if response.status_code == 200:
             data = eval(response.text)
 
             if data:  # check if list is not empty
                 state = True
-                message = {"food": data[-1]["label"]}  # get the last element (the one ml module has most confident)
+                food = data[-1]["label"] # get the last element (the one ml module has most confident)
+                message = {"food": food}  
+
+                meal = Meal.objects.get(name=food)
+                if meal:
+                    message.put("nutrient_info", {
+                        "calories" : meal.calories,
+                        "proteins" : meal.proteins,
+                        "carbs" : meal.carbs,
+                        "fat" : meal.fat
+                    })
 
     return state, message
 
