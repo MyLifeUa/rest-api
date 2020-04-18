@@ -1,6 +1,5 @@
 from django.contrib.auth import authenticate
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.cache import cache_control
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
@@ -584,8 +583,12 @@ def get_food_log(request, day):
     status = HTTP_403_FORBIDDEN
 
     if verify_authorization(role, "client"):
-        state, message = queries.get_food_log(username, day)
-        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+        message = "Invalid date: It should be in the format YYYY-mm-dd"
+        status = HTTP_400_BAD_REQUEST
+
+        if is_valid_date(day, "%Y-%m-%d"):
+            state, message = queries.get_food_log(username, day)
+            state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
@@ -762,10 +765,59 @@ def classify_image(request):
     data = request.data
 
     if verify_authorization(role, "client"):
-
         image_b64 = data["image_b64"] if "image_b64" in data else ""
 
         state, message = queries.classify_image(image_b64)
         state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+
+@api_view(["GET"])
+def nutrients_ratio(request, email, date):
+    token, username, role = who_am_i(request)
+
+    message = "Invalid date: It should be in the format yyyy-mm-dd"
+    status = HTTP_400_BAD_REQUEST
+
+    if is_valid_date(date, "%Y-%m-%d"):
+
+        # default possibility
+        state = "Error"
+        message = "You don't have permissions to access this information."
+        status = HTTP_403_FORBIDDEN
+
+        if is_self(role, "client", username, email):
+            state, message = queries.get_nutrients_ratio(username, date)
+            state, status = ("Success", HTTP_200_OK) if state else ("Success", HTTP_204_NO_CONTENT)
+
+        elif verify_authorization(role, "doctor") and is_client_doctor(username, email):
+            state, message = queries.get_nutrients_ratio(email, date)
+            state, status = ("Success", HTTP_200_OK) if state else ("Success", HTTP_204_NO_CONTENT)
+
+    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+
+@api_view(["GET"])
+def nutrients_total(request, email, date):
+    token, username, role = who_am_i(request)
+
+    message = "Invalid date: It should be in the format yyyy-mm-dd"
+    status = HTTP_400_BAD_REQUEST
+
+    if is_valid_date(date, "%Y-%m-%d"):
+
+        # default possibility
+        state = "Error"
+        message = "You don't have permissions to access this information."
+        status = HTTP_403_FORBIDDEN
+
+        if is_self(role, "client", username, email):
+            state, message = queries.get_nutrients_total(username, date)
+            state, status = ("Success", HTTP_200_OK) if state else ("Success", HTTP_204_NO_CONTENT)
+
+        elif verify_authorization(role, "doctor") and is_client_doctor(username, email):
+            state, message = queries.get_nutrients_total(email, date)
+            state, status = ("Success", HTTP_200_OK) if state else ("Success", HTTP_204_NO_CONTENT)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
