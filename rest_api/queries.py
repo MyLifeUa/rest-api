@@ -660,3 +660,7 @@ def get_nutrients_total(username, day):
         state = True
 
     return state, message
+
+
+def get_nutrients_history(username, params):
+    return None, None
