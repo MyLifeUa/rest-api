@@ -89,8 +89,7 @@ def delete_user(user):
     except Error:
         state, message = False, "Error while deleting user"
 
-    finally:
-        return state, message
+    return state, message
 
 
 def add_admin(data):
