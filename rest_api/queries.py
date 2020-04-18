@@ -7,6 +7,7 @@ from my_life_rest_api.settings import ML_URL
 from .models import *
 from .constants import *
 from .serializers import *
+from .utils import get_total_nutrients, get_nutrients_info, get_calories_daily_goal, get_nutrients_left_values
 
 
 def add_user(data, is_superuser=False):
@@ -621,5 +622,41 @@ def get_client_doctor(username):
         message = DoctorSerializer(doctor).data if doctor is not None else None
     except Exception:
         state, message = False, "Error while adding fitbit token."
+
+    return state, message
+
+
+def get_nutrients_ratio(username, day):
+    client = Client.objects.get(user__auth_user__username=username)
+
+    meal_history = MealHistory.objects.filter(day=day, client=client)
+
+    if not meal_history.exists():
+        state = False
+        message = "The specified day has no history yet."
+
+    else:
+        initial_info = get_total_nutrients(meal_history)
+
+        message = get_nutrients_info(client, initial_info)
+        state = True
+
+    return state, message
+
+
+def get_nutrients_total(username, day):
+    client = Client.objects.get(user__auth_user__username=username)
+
+    meal_history = MealHistory.objects.filter(day=day, client=client)
+
+    if not meal_history.exists():
+        state = False
+        message = "The specified day has no history yet."
+
+    else:
+        initial_info = get_total_nutrients(meal_history)
+
+        message = get_nutrients_left_values(client, initial_info)
+        state = True
 
     return state, message
