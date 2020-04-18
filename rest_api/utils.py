@@ -48,6 +48,9 @@ def is_doctor_admin(doctor_username, admin_username):
 
 
 def is_client_doctor(doctor_username, client_username):
+    if not get_role(client_username) == "client":
+        return False
+
     doctor = Doctor.objects.get(user__auth_user__username=doctor_username)
     client = Client.objects.get(user__auth_user__username=client_username)
     return client.doctor == doctor
