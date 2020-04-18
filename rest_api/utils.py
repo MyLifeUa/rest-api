@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 
-from rest_api.models import Doctor, CustomAdmin, Client
+from rest_api.models import Doctor, CustomAdmin, Client, Meal
 
 
 def get_role(username, request=None):
@@ -54,13 +54,14 @@ def is_client_doctor(doctor_username, client_username):
 def populate_nutrient_values(meal, ingredient=None, quantity=None):
     # if already have ingredient and quantity, use those
     if ingredient is not None and quantity is not None: 
-        new_calories = meal.calories + quantity * ingredient.calories / 100
+        old_meal = meal[0]
+        new_calories = old_meal.calories + quantity * ingredient.calories / 100
         meal.update(calories=new_calories)
-        new_proteins = meal.proteins + quantity * ingredient.proteins / 100
+        new_proteins = old_meal.proteins + quantity * ingredient.proteins / 100
         meal.update(proteins=new_proteins)
-        new_fat = meal.fat = quantity * ingredient.fat / 100
+        new_fat = old_meal.fat = quantity * ingredient.fat / 100
         meal.update(fat=new_fat)
-        new_carbs = meal.carbs = quantity * ingredient.carbs / 100
+        new_carbs = old_meal.carbs = quantity * ingredient.carbs / 100
         meal.update(carbs=new_carbs)
     # else query
     else:
@@ -72,9 +73,10 @@ def populate_nutrient_values(meal, ingredient=None, quantity=None):
 
 def populate_nutrient_values_meal_history(meal_history, meal=None, number_of_servings=None):
     if meal is None:
-        meal = meal_history.meal
+        meal = meal_history[0].number_of_servings
+        # meal = Meal.objects.get(id=meal_history[0].meal.id)
     if number_of_servings is None:
-        number_of_servings = meal_history.number_of_servings
+        number_of_servings = meal_history[0].number_of_servings
     meal_history.update(calories = number_of_servings * meal.fat)
     meal_history.update(proteins = number_of_servings * meal.proteins)
     meal_history.update(carbs = number_of_servings * meal.carbs)
