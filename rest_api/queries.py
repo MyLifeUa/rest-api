@@ -89,8 +89,7 @@ def delete_user(user):
     except Error:
         state, message = False, "Error while deleting user"
 
-    finally:
-        return state, message
+    return state, message
 
 
 def add_admin(data):
@@ -673,3 +672,21 @@ def get_nutrients_total(username, day):
         state = True
 
     return state, message
+
+
+def get_nutrients_history(username, params):
+    metric = params["metric"]
+    if metric not in ["calories", "fat", "carbs", "proteins"]:
+        state = False
+        message = "Invalid metric!"
+        return state, message
+
+    period = params["period"]
+    if period not in ["week", "month", "3-months"]:
+        state = False
+        message = "Invalid period!"
+        return state, message
+
+    client = Client.objects.get(user__auth_user__username=username)
+
+    return True, get_nutrient_history(client, metric, period)
