@@ -269,8 +269,17 @@ def get_body_history_values(api, metric, period):
     elif period == "3-months":
         period = "3m"
 
-    response = api.time_series(f"activities/{metric}", period=period)
+    response = api.time_series(f"activities/{metric}", period=period)[f"activities-{metric}"]
 
-    history = {"metric": metric, "history": response[f"activities-{metric}"]}
+    if metric == "heart":
+        response = [{"dateTime": e["dateTime"],
+                     "value": e["value"]["restingHeartRate"] if "restingHeartRate" in e["value"] else 0} for e in
+                    response]
+
+    history = {"metric": metric, "history": response}
+
+    if metric in ["steps", "distance", "calories", "floors"]:
+        goals = api.activities_daily_goal()["goals"]
+        history["goal"] = goals["caloriesOut"] if metric == "calories" else goals[str(metric)]
 
     return history

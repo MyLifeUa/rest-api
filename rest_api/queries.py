@@ -702,7 +702,7 @@ def get_nutrients_history(username, params):
 
 def get_body_history(username, params):
     metric = params["metric"]
-    if metric not in ["steps", "distance", "calories", "floors"]:
+    if metric not in ["steps", "distance", "calories", "floors", "heart"]:
         state = False
         message = "Invalid metric!"
         return state, message
