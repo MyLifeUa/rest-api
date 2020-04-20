@@ -65,6 +65,39 @@ def is_client_doctor(doctor_username, client_username):
     return client.doctor == doctor
 
 
+# populate meal nutrient values with values from ingredient passed or ingredients queried
+def populate_nutrient_values(meal, ingredient=None, quantity=None):
+    # if already have ingredient and quantity, use those
+    if ingredient is not None and quantity is not None:
+        old_meal = meal[0]
+        new_calories = old_meal.calories + quantity * ingredient.calories / 100
+        meal.update(calories=new_calories)
+        new_proteins = old_meal.proteins + quantity * ingredient.proteins / 100
+        meal.update(proteins=new_proteins)
+        new_fat = old_meal.fat + quantity * ingredient.fat / 100
+        meal.update(fat=new_fat)
+        new_carbs = old_meal.carbs + quantity * ingredient.carbs / 100
+        meal.update(carbs=new_carbs)
+    # else query
+    else:
+        entries = meal.quantity_set.all()
+        meal.update(calories=sum(entry.quantity * entry.ingredient.calories / 100 for entry in entries))
+        meal.update(proteins=sum(entry.quantity * entry.ingredient.proteins / 100 for entry in entries))
+        meal.update(fat=sum(entry.quantity * entry.ingredient.fat / 100 for entry in entries))
+        meal.update(carbs=sum(entry.quantity * entry.ingredient.carbs / 100 for entry in entries))
+
+
+def populate_nutrient_values_meal_history(meal_history, meal=None, number_of_servings=None):
+    if meal is None:
+        meal = meal_history[0].meal
+    if number_of_servings is None:
+        number_of_servings = meal_history[0].number_of_servings
+    meal_history.update(calories=number_of_servings * meal.calories)
+    meal_history.update(proteins=number_of_servings * meal.proteins)
+    meal_history.update(carbs=number_of_servings * meal.carbs)
+    meal_history.update(fat=number_of_servings * meal.fat)
+
+
 def is_valid_date(date, date_pattern):
     ret_val = True
 

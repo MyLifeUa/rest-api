@@ -319,8 +319,15 @@ def add_food_log(data, email):
 
         current_meal = Meal.objects.get(id=meal_id)
 
-        MealHistory.objects.create(day=day, type_of_meal=type_of_meal, client=current_client,
-                                   meal=current_meal, number_of_servings=number_of_servings)
+        number_of_servings = float(number_of_servings)
+        calories = number_of_servings * current_meal.calories
+        proteins = number_of_servings * current_meal.proteins
+        carbs = number_of_servings * current_meal.carbs
+        fat = number_of_servings * current_meal.fat
+
+        MealHistory.objects.create(day=day, type_of_meal=type_of_meal, client=current_client, meal=current_meal,
+                                   number_of_servings=number_of_servings, calories=calories, proteins=proteins,
+                                   carbs=carbs, fat=fat)
 
     except Exception:
         message = "Error while creating new food log!"
@@ -382,11 +389,14 @@ def update_food_log(request, meal_history):
 
             current_meal = Meal.objects.get(id=meal_id)
 
+            populate_nutrient_values_meal_history(meal_history, meal=current_meal)
+
             meal_history.update(meal=current_meal)
 
         if "number_of_servings" in data:
-            number_of_servings = data.get("number_of_servings")
+            number_of_servings = float(data.get("number_of_servings"))
             meal_history.update(number_of_servings=number_of_servings)
+            populate_nutrient_values_meal_history(meal_history, number_of_servings=number_of_servings)
 
     except Exception:
         state, message = False, "Error while updating Food log!"
@@ -498,10 +508,13 @@ def add_new_meal(data, username, role="admin"):
         return False, error_message
 
     try:
-        # add ingredients quantities
+        # add ingredients quantities and nutrient values
         for ingredient_json in ingredients:
             ingredient = Ingredient.objects.get(id=ingredient_json["id"])
-            Quantity.objects.create(meal=meal, ingredient=ingredient, quantity=ingredient_json["quantity"])
+            quantity = ingredient_json["quantity"]
+            Quantity.objects.create(meal=meal, ingredient=ingredient, quantity=quantity)
+            populate_nutrient_values(Meal.objects.filter(id=meal.id), Ingredient.objects.get(id=ingredient.id),
+                                     quantity)
 
     except Ingredient.DoesNotExist:
         meal.delete()
@@ -606,14 +619,21 @@ def classify_image(image_b64):
         response = get(url=ML_URL, params=params)
 
         state = False
-        message = "Error while trying to classifying food"
+        message = "Error while trying to classify food"
 
         if response.status_code == 200:
             data = eval(response.text)
 
             if data:  # check if list is not empty
-                state = True
-                message = {"food": data[-1]["label"]}  # get the last element (the one ml module has most confident)
+                food = data[-1]["label"]  # get the last element (the one ml module has most confident)
+
+                try:
+                    meal = Meal.objects.get(name__iexact=food)
+                    message = MealSerializer(meal).data
+                    state = True
+
+                except Meal.DoesNotExist:
+                    message = "Recognized meal does not exist in the system!"
 
     return state, message
 
