@@ -346,6 +346,8 @@ def get_food_log(email, day):
 
     meal_history = MealHistory.objects.filter(day=day, client=current_client)
 
+    # TODO: group meal history by moments on day. return goal and consumed calories
+
     state, message = True, [MealHistorySerializer(r).data for r in meal_history]
 
     return state, message
