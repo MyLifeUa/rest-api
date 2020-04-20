@@ -3,7 +3,7 @@ from django.db.models import Sum
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 
-from rest_api.models import Doctor, CustomAdmin, Client, Meal, MealHistory
+from rest_api.models import Doctor, CustomAdmin, Client, MealHistory
 
 FAT_IMPORTANCE = 9
 CARBS_IMPORTANCE = 4
