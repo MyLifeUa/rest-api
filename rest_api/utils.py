@@ -269,8 +269,8 @@ def get_body_history_values(api, metric, period):
     elif period == "3-months":
         period = "3m"
 
-    metric = f"activities/{metric}"
+    response = api.time_series(f"activities/{metric}", period=period)
 
-    history = api.time_series(metric, period=period)
+    history = {"metric": metric, "history": response[f"activities-{metric}"]}
 
     return history
