@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 
 from rest_api.models import Doctor, CustomAdmin, Client, MealHistory
+from rest_api.serializers import MealHistorySerializer, MealSerializer
 
 FAT_IMPORTANCE = 9
 CARBS_IMPORTANCE = 4
@@ -227,3 +228,23 @@ def get_nutrient_history(client, metric, period):
         goal = calories_goal * PROTEINS_RATIO / PROTEINS_IMPORTANCE
 
     return {"goal": round(goal, 0), "history": total_history}
+
+
+def group_meals(meal_history):
+    # types_of_meal = list(set([meal.type_of_meal for meal in meal_history]))
+    types_of_meal = ['breakfast', 'lunch', 'dinner', 'snack']
+    # types_of_meal = MealHistory.objects.filter(day=day, client=client).values()
+
+    data = {}
+
+    for type_of_meal in types_of_meal:
+        data[type_of_meal] = [MealHistorySerializer(meal).data for meal in meal_history if meal.type_of_meal == type_of_meal]
+
+    return data
+
+    # for meal in meal_history:
+    #     print(meal.type_of_meal)
+    #     print(MealHistorySerializer(meal).data)
+
+    # print(types_of_meal)
+    # return types_of_meal
