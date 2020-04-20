@@ -239,14 +239,13 @@ def get_nutrient_history(client, metric, period):
     elif metric == "proteins":
         history_per_day = history.annotate(Sum("proteins"))
 
-    total_history = [{"day": str(start_date + timedelta(days=x)), str(metric): 0} for x in range(1, num_days + 1)]
+    total_history = [{"day": str(start_date + timedelta(days=x)), "value": 0} for x in range(1, num_days + 1)]
     day_array = [entry["day"] for entry in total_history]
 
     for entry in history_per_day:
-        day, metric_value = entry
-        day = str(day)
+        day, value = str(entry[0]), entry[1]
         empty_history_idx = day_array.index(day)
-        total_history[empty_history_idx] = {"day": day, str(metric): metric_value}
+        total_history[empty_history_idx] = {"day": day, "value": value}
 
     calories_goal = get_calories_daily_goal(client)
     goal = None
@@ -260,3 +259,27 @@ def get_nutrient_history(client, metric, period):
         goal = calories_goal * PROTEINS_RATIO / PROTEINS_IMPORTANCE
 
     return {"goal": round(goal, 0), "history": total_history}
+
+
+def get_body_history_values(api, metric, period):
+    if period == "week":
+        period = "1w"
+    elif period == "month":
+        period = "1m"
+    elif period == "3-months":
+        period = "3m"
+
+    response = api.time_series(f"activities/{metric}", period=period)[f"activities-{metric}"]
+
+    if metric == "heart":
+        response = [{"dateTime": e["dateTime"],
+                     "value": e["value"]["restingHeartRate"] if "restingHeartRate" in e["value"] else 0} for e in
+                    response]
+
+    history = {"metric": metric, "history": response}
+
+    if metric in ["steps", "distance", "calories", "floors"]:
+        goals = api.activities_daily_goal()["goals"]
+        history["goal"] = goals["caloriesOut"] if metric == "calories" else goals[str(metric)]
+
+    return history
