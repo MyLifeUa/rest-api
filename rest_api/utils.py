@@ -270,7 +270,7 @@ def group_meals(meal_history, client):
 
     total_calories = round(sum(meal.calories for meal in meal_history))
     calories_goal = get_calories_daily_goal(client)
-    calories_left = calories_goal - total_calories
+    calories_left = total_calories - calories_goal 
     data = { 
         "total_calories" : total_calories,
         "calories_goal" : calories_goal,
