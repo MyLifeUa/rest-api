@@ -111,11 +111,14 @@ class AdminSerializer(serializers.Serializer):
         return obj.hospital
 
 
-class MealSerializer(
-    serializers.Serializer):  # TODO Finish this implementation, started to implement the MealHistorySerializer
+class MealSerializer(serializers.Serializer):
     id = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
     category = serializers.SerializerMethodField()
+    calories = serializers.FloatField(required=True)
+    proteins = serializers.FloatField(required=True)
+    fat = serializers.FloatField(required=True)
+    carbs = serializers.FloatField(required=True)
 
     def get_id(self, obj):
         return obj.id
@@ -134,6 +137,10 @@ class MealHistorySerializer(serializers.Serializer):
     meal_name = serializers.SerializerMethodField()
     number_of_servings = serializers.SerializerMethodField()
     meal_category = serializers.SerializerMethodField()
+    calories = serializers.FloatField(required=True)
+    proteins = serializers.FloatField(required=True)
+    fat = serializers.FloatField(required=True)
+    carbs = serializers.FloatField(required=True)
 
     def get_id(self, obj):
         return obj.id

@@ -52,6 +52,10 @@ class Meal(models.Model):
     # https://docs.djangoproject.com/en/3.0/topics/db/models/#extra-fields-on-many-to-many-relationships
     ingredients = models.ManyToManyField(Ingredient, through="Quantity")
     client = models.ForeignKey(Client, on_delete=models.CASCADE, null=True, blank=True)
+    calories = models.FloatField(default=0)
+    proteins = models.FloatField(default=0)
+    fat = models.FloatField(default=0)
+    carbs = models.FloatField(default=0)
 
 
 class Quantity(models.Model):
