@@ -54,4 +54,5 @@ urlpatterns = [
     url("^health-stats/nutrients/ratio/(?P<email>.+)/(?P<date>.+)", nutrients_ratio, name="nutrients-ratio"),
     url("^health-stats/nutrients/total/(?P<email>.+)/(?P<date>.+)", nutrients_total, name="nutrients-total"),
     url("^health-stats/nutrients/history/(?P<email>.+)", nutrients_history, name="nutrients-history"),
+    url("^health-stats/body/history/(?P<email>.+)", body_history, name="body-history"),
 ]
