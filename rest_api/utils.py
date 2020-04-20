@@ -1,9 +1,11 @@
 from datetime import datetime, date, timedelta
-from django.db.models import Sum
+
 from django.contrib.auth.models import User
+from django.db.models import Sum
 from rest_framework.authtoken.models import Token
 
 from rest_api.models import Doctor, CustomAdmin, Client, MealHistory
+from rest_api.serializers import MealHistorySerializer
 
 FAT_IMPORTANCE = 9
 CARBS_IMPORTANCE = 4
@@ -259,6 +261,22 @@ def get_nutrient_history(client, metric, period):
         goal = calories_goal * PROTEINS_RATIO / PROTEINS_IMPORTANCE
 
     return {"goal": round(goal, 0), "history": total_history}
+
+
+def group_meals(meal_history, client):
+    types_of_meal = ["breakfast", "lunch", "dinner", "snack"]
+
+    total_calories = round(sum(meal.calories for meal in meal_history))
+    calories_goal = get_calories_daily_goal(client)
+    calories_left = total_calories - calories_goal
+    data = {"total_calories": total_calories, "calories_goal": calories_goal, "calories_left": calories_left}
+
+    for type_of_meal in types_of_meal:
+        meals = [MealHistorySerializer(meal).data for meal in meal_history if
+                 meal.type_of_meal.lower() == type_of_meal.lower()]
+        data[type_of_meal] = {"total_calories": round(sum(entry["calories"] for entry in meals), 0), "meals": meals}
+
+    return data
 
 
 def get_body_history_values(api, metric, period):

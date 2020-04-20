@@ -1,12 +1,12 @@
 import fitbit
 from django.contrib.auth.models import Group
-from requests import get
-from django.db.models import Q
 from django.db import Error
+from django.db.models import Q
+from requests import get
 
 from my_life_rest_api.settings import ML_URL
-from .models import *
 from .constants import *
+from .models import *
 from .serializers import *
 from .utils import *
 
@@ -381,7 +381,9 @@ def get_food_log(email, day):
 
     meal_history = MealHistory.objects.filter(day=day, client=current_client)
 
-    state, message = True, [MealHistorySerializer(r).data for r in meal_history]
+    data = group_meals(meal_history, current_client)
+
+    state, message = True, data
 
     return state, message
 
