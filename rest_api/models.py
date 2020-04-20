@@ -47,7 +47,7 @@ class Ingredient(models.Model):
 
 
 class Meal(models.Model):
-    name = models.CharField(max_length=30)
+    name = models.CharField(max_length=50)
     category = models.CharField(max_length=30)
     # https://docs.djangoproject.com/en/3.0/topics/db/models/#extra-fields-on-many-to-many-relationships
     ingredients = models.ManyToManyField(Ingredient, through="Quantity")
