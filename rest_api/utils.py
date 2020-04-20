@@ -1,10 +1,11 @@
 from datetime import datetime, date, timedelta
-from django.db.models import Sum
+
 from django.contrib.auth.models import User
+from django.db.models import Sum
 from rest_framework.authtoken.models import Token
 
 from rest_api.models import Doctor, CustomAdmin, Client, MealHistory
-from rest_api.serializers import MealHistorySerializer, MealSerializer
+from rest_api.serializers import MealHistorySerializer
 
 FAT_IMPORTANCE = 9
 CARBS_IMPORTANCE = 4
