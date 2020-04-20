@@ -614,14 +614,21 @@ def classify_image(image_b64):
         response = get(url=ML_URL, params=params)
 
         state = False
-        message = "Error while trying to classifying food"
+        message = "Error while trying to classify food"
 
         if response.status_code == 200:
             data = eval(response.text)
 
             if data:  # check if list is not empty
-                state = True
-                message = {"food": data[-1]["label"]}  # get the last element (the one ml module has most confident)
+                food = data[-1]["label"]  # get the last element (the one ml module has most confident)
+
+                try:
+                    meal = Meal.objects.get(name__iexact=food)
+                    message = MealSerializer(meal).data
+                    state = True
+
+                except Meal.DoesNotExist:
+                    message = "Recognized meal does not exist in the system!"
 
     return state, message
 
