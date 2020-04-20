@@ -821,3 +821,28 @@ def nutrients_total(request, email, date):
             state, status = ("Success", HTTP_200_OK) if state else ("Success", HTTP_204_NO_CONTENT)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+
+@api_view(["GET"])
+def nutrients_history(request, email):
+    token, username, role = who_am_i(request)
+
+    # default possibility
+    state = "Error"
+    message = "You don't have permissions to access this information."
+    status = HTTP_403_FORBIDDEN
+
+    metric = request.GET.get("metric", "calories")
+    period = request.GET.get("period", "week")
+
+    params = {"metric": metric, "period": period}
+
+    if is_self(role, "client", username, email):
+        state, message = queries.get_nutrients_history(username, params)
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+    elif verify_authorization(role, "doctor") and is_client_doctor(username, email):
+        state, message = queries.get_nutrients_history(email, params)
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)

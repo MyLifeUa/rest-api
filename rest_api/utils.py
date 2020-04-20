@@ -1,9 +1,17 @@
-from datetime import datetime, date
-
+from datetime import datetime, date, timedelta
+from django.db.models import Sum
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 
-from rest_api.models import Doctor, CustomAdmin, Client
+from rest_api.models import Doctor, CustomAdmin, Client, MealHistory
+
+FAT_IMPORTANCE = 9
+CARBS_IMPORTANCE = 4
+PROTEINS_IMPORTANCE = 4
+
+FAT_RATIO = 0.3
+CARBS_RATIO = 0.5
+PROTEINS_RATIO = 0.2
 
 
 def get_role(username, request=None):
@@ -116,18 +124,18 @@ def get_calories_daily_goal(client):
 
 def get_daily_goals(client):
     calories_goal = get_calories_daily_goal(client)
-    carbs_goal = round(0.5 * calories_goal / 4, 0)
-    fat_goal = round(0.3 * calories_goal / 9, 0)
-    protein_goal = round(0.2 * calories_goal / 4, 0)
+    carbs_goal = round(CARBS_RATIO * calories_goal / CARBS_IMPORTANCE, 0)
+    fat_goal = round(FAT_RATIO * calories_goal / FAT_IMPORTANCE, 0)
+    protein_goal = round(PROTEINS_RATIO * calories_goal / PROTEINS_IMPORTANCE, 0)
 
     return {"calories": calories_goal, "carbs": carbs_goal, "fat": fat_goal, "proteins": protein_goal}
 
 
 def get_nutrients_info(client, info_dict):
     total_calories = info_dict["calories"]["total"]
-    total_carbs = 4 * info_dict["carbs"]["total"]
-    total_fat = 9 * info_dict["fat"]["total"]
-    total_proteins = 4 * info_dict["proteins"]["total"]
+    total_carbs = CARBS_IMPORTANCE * info_dict["carbs"]["total"]
+    total_fat = FAT_IMPORTANCE * info_dict["fat"]["total"]
+    total_proteins = PROTEINS_IMPORTANCE * info_dict["proteins"]["total"]
     total_others = total_calories - (total_carbs + total_fat + total_proteins)
 
     info_dict["carbs"]["ratio"] = round(total_carbs / total_calories * 100, 0)
@@ -137,9 +145,9 @@ def get_nutrients_info(client, info_dict):
 
     goals = get_daily_goals(client)
 
-    info_dict["carbs"]["goals"] = {"total": round(goals["carbs"], 0), "ratio": 50}
-    info_dict["fat"]["goals"] = {"total": round(goals["fat"], 0), "ratio": 30}
-    info_dict["proteins"]["goals"] = {"total": round(goals["proteins"], 0), "ratio": 20}
+    info_dict["carbs"]["goals"] = {"total": round(goals["carbs"], 0), "ratio": CARBS_IMPORTANCE * 100}
+    info_dict["fat"]["goals"] = {"total": round(goals["fat"], 0), "ratio": FAT_RATIO * 100}
+    info_dict["proteins"]["goals"] = {"total": round(goals["proteins"], 0), "ratio": PROTEINS_RATIO * 100}
     info_dict["calories"]["goals"] = round(goals["calories"], 0)
 
     return info_dict
@@ -173,3 +181,49 @@ def get_nutrients_left_values(client, info_dict):
     info_dict["calories"]["left"] = left_calories
 
     return info_dict
+
+
+def get_nutrient_history(client, metric, period):
+    end_date = date.today()
+    num_days = 0
+    if period == "week":
+        num_days = 7
+    elif period == "month":
+        num_days = 30
+    elif period == "3-months":
+        num_days = 3 * 30
+
+    start_date = end_date - timedelta(days=num_days)
+
+    history = MealHistory.objects.filter(client=client, day__gt=start_date, day__lte=end_date).values_list("day")
+
+    if metric == "calories":
+        history_per_day = history.annotate(Sum("calories"))
+    elif metric == "fat":
+        history_per_day = history.annotate(Sum("fat"))
+    elif metric == "carbs":
+        history_per_day = history.annotate(Sum("carbs"))
+    elif metric == "proteins":
+        history_per_day = history.annotate(Sum("proteins"))
+
+    total_history = [{"day": str(start_date + timedelta(days=x)), str(metric): 0} for x in range(1, num_days + 1)]
+    day_array = [entry["day"] for entry in total_history]
+
+    for entry in history_per_day:
+        day, metric_value = entry
+        day = str(day)
+        empty_history_idx = day_array.index(day)
+        total_history[empty_history_idx] = {"day": day, str(metric): metric_value}
+
+    calories_goal = get_calories_daily_goal(client)
+    goal = None
+    if metric == "calories":
+        goal = calories_goal
+    elif metric == "fat":
+        goal = calories_goal * FAT_RATIO / FAT_IMPORTANCE
+    elif metric == "carbs":
+        goal = calories_goal * CARBS_RATIO / CARBS_IMPORTANCE
+    elif metric == "proteins":
+        goal = calories_goal * PROTEINS_RATIO / PROTEINS_IMPORTANCE
+
+    return {"goal": round(goal, 0), "history": total_history}
