@@ -319,15 +319,16 @@ def add_food_log(data, email):
 
         current_meal = Meal.objects.get(id=meal_id)
 
-        calories = number_of_servings * current_meal.calories 
+        number_of_servings = float(number_of_servings)
+        calories = number_of_servings * current_meal.calories
         proteins = number_of_servings * current_meal.proteins
-        carbs  = number_of_servings * current_meal.carbs
+        carbs = number_of_servings * current_meal.carbs
         fat = number_of_servings * current_meal.fat
 
-        MealHistory.objects.create(day=day, type_of_meal=type_of_meal, client=current_client,
-                                   meal=current_meal, number_of_servings=number_of_servings,
-                                   calories=calories, proteins=proteins, carbs=carbs, fat=fat)
-        
+        MealHistory.objects.create(day=day, type_of_meal=type_of_meal, client=current_client, meal=current_meal,
+                                   number_of_servings=number_of_servings, calories=calories, proteins=proteins,
+                                   carbs=carbs, fat=fat)
+
     except Exception:
         message = "Error while creating new food log!"
         return False, message
@@ -382,12 +383,12 @@ def update_food_log(request, meal_history):
 
             current_meal = Meal.objects.get(id=meal_id)
 
-            populate_nutrient_values_meal_history(meal_history, meal=meal)
+            populate_nutrient_values_meal_history(meal_history, meal=current_meal)
 
             meal_history.update(meal=current_meal)
 
         if "number_of_servings" in data:
-            number_of_servings = data.get("number_of_servings")
+            number_of_servings = float(data.get("number_of_servings"))
             meal_history.update(number_of_servings=number_of_servings)
             populate_nutrient_values_meal_history(meal_history, number_of_servings=number_of_servings)
 
@@ -506,7 +507,8 @@ def add_new_meal(data, username, role="admin"):
             ingredient = Ingredient.objects.get(id=ingredient_json["id"])
             quantity = ingredient_json["quantity"]
             Quantity.objects.create(meal=meal, ingredient=ingredient, quantity=quantity)
-            populate_nutrient_values(Meal.objects.filter(id=meal.id), Ingredient.objects.get(id=ingredient.id), quantity)
+            populate_nutrient_values(Meal.objects.filter(id=meal.id), Ingredient.objects.get(id=ingredient.id),
+                                     quantity)
 
     except Ingredient.DoesNotExist:
         meal.delete()
