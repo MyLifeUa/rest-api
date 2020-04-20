@@ -355,7 +355,6 @@ def get_food_log(email, day):
 
     data = group_meals(meal_history, current_client)
 
-    # state, message = True, [MealHistorySerializer(r).data for r in meal_history]
     state, message = True, data
 
     return state, message

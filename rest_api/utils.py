@@ -264,27 +264,16 @@ def get_nutrient_history(client, metric, period):
 
 
 def group_meals(meal_history, client):
-    # types_of_meal = list(set([meal.type_of_meal for meal in meal_history]))
     types_of_meal = ['breakfast', 'lunch', 'dinner', 'snack']
-    # types_of_meal = MealHistory.objects.filter(day=day, client=client).values()
 
     total_calories = round(sum(meal.calories for meal in meal_history))
     calories_goal = get_calories_daily_goal(client)
-    calories_left = total_calories - calories_goal 
-    data = { 
-        "total_calories" : total_calories,
-        "calories_goal" : calories_goal,
-        "calories_left" : calories_left,
-    }
+    calories_left = total_calories - calories_goal
+    data = {"total_calories": total_calories, "calories_goal": calories_goal, "calories_left": calories_left}
 
     for type_of_meal in types_of_meal:
-        meals = [MealHistorySerializer(meal).data for meal in meal_history if meal.type_of_meal.lower() == type_of_meal.lower()]
-        data[type_of_meal] = {
-            "total_calories" : round(sum(entry["calories"] for entry in meals), 0),
-            "total_proteins" : round(sum(entry["proteins"] for entry in meals), 0),
-            "total_fat" : round(sum(entry["fat"] for entry in meals), 0),
-            "total_carbs" : round(sum(entry["carbs"] for entry in meals), 0),
-            "meals": meals
-        }
+        meals = [MealHistorySerializer(meal).data for meal in meal_history if
+                 meal.type_of_meal.lower() == type_of_meal.lower()]
+        data[type_of_meal] = {"total_calories": round(sum(entry["calories"] for entry in meals), 0), "meals": meals}
 
     return data
