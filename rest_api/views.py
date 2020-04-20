@@ -15,7 +15,6 @@ from rest_framework.status import (
 
 from rest_api import queries, documentation_serializers as doc
 from rest_api.authentication import token_expire_handler
-from .models import MealHistory
 from .serializers import *
 from .utils import *
 
