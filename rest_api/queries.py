@@ -1,3 +1,4 @@
+import fitbit
 from django.contrib.auth.models import Group
 from requests import get
 from django.db.models import Q
@@ -222,12 +223,39 @@ def update_client(request, email):
 
 
 def get_client(email):
-    client = Client.objects.filter(user__auth_user__username=email)
-    if not client.exists():
-        state, message = False, "User does not exist or user is not a client!"
-        return state, message
+    try:
+        client = Client.objects.get(user__auth_user__username=email)
 
-    state, message = True, ClientSerializer(client[0]).data
+        message = ClientSerializer(client).data
+        message["steps"] = None
+        message["heart_rate"] = None
+        message["distance"] = None
+
+        fitbit_access_token = client.fitbit_access_token
+        fitbit_refresh_token = client.fitbit_refresh_token
+
+        if fitbit_access_token is not None and fitbit_refresh_token is not None:
+            fitbit_api = fitbit.Fitbit(CLIENT_FITBIT_ID, CLIENT_FITBIT_SECRET, system="en_UK", oauth2=True,
+                                       access_token=fitbit_access_token, refresh_token=fitbit_refresh_token)
+
+            message["steps"] = fitbit_api.time_series("activities/steps", period="1d")["activities-steps"][0]["value"]
+            message["distance"] = fitbit_api.time_series("activities/distance", period="1d")["activities-distance"][0][
+                "value"]
+
+            heart_rate = fitbit_api.time_series("activities/heart", period="1d")["activities-heart"][0]["value"]
+            message["heart_rate"] = heart_rate["restingHeartRate"] if "restingHeartRate" in heart_rate else 0
+
+        state = True
+
+    except Client.DoesNotExist:
+        state = False
+        message = "User does not exist or user is not a client!"
+
+    except Exception as e:
+        print(e)
+        state = False
+        message = "Error while trying to fetch client information"
+
     return state, message
 
 
@@ -699,3 +727,40 @@ def get_nutrients_history(username, params):
     client = Client.objects.get(user__auth_user__username=username)
 
     return True, get_nutrient_history(client, metric, period)
+
+
+def get_body_history(username, params):
+    metric = params["metric"]
+    if metric not in ["steps", "distance", "calories", "floors", "heart"]:
+        state = False
+        message = "Invalid metric!"
+        return state, message
+
+    period = params["period"]
+    if period not in ["week", "month", "3-months"]:
+        state = False
+        message = "Invalid period!"
+        return state, message
+
+    client = Client.objects.get(user__auth_user__username=username)
+
+    fitbit_access_token = client.fitbit_access_token
+    fitbit_refresh_token = client.fitbit_refresh_token
+
+    if fitbit_access_token is None or fitbit_refresh_token is None:
+        state = False
+        message = "You have not integrated your Fitbit device yet!"
+        return state, message
+
+    try:
+        fitbit_api = fitbit.Fitbit(CLIENT_FITBIT_ID, CLIENT_FITBIT_SECRET, system="en_UK", oauth2=True,
+                                   access_token=fitbit_access_token, refresh_token=fitbit_refresh_token)
+
+        message = get_body_history_values(fitbit_api, metric, period)
+        state = True
+
+    except Exception as e:
+        print(e)
+        state, message = False, "Error while accessing fitbit information."
+
+    return state, message
