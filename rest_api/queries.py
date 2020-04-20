@@ -223,12 +223,42 @@ def update_client(request, email):
 
 
 def get_client(email):
-    client = Client.objects.filter(user__auth_user__username=email)
-    if not client.exists():
-        state, message = False, "User does not exist or user is not a client!"
-        return state, message
+    try:
+        client = Client.objects.get(user__auth_user__username=email)
 
-    state, message = True, ClientSerializer(client[0]).data
+        message = ClientSerializer(client).data
+        message["steps"] = None
+        message["heart_rate"] = None
+        message["distance"] = None
+
+        fitbit_access_token = client.fitbit_access_token
+        fitbit_refresh_token = client.fitbit_refresh_token
+
+        fitbit_access_token = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyMkJINjUiLCJzdWIiOiI4QllHTjciLCJpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJzY29wZXMiOiJyc29jIHJhY3QgcnNldCBybG9jIHJ3ZWkgcmhyIHJwcm8gcm51dCByc2xlIiwiZXhwIjoxNTg3NDA0NTAwLCJpYXQiOjE1ODczNzU3MDB9.iTuEpkpOyff49T_rdT3v75UCAxZceM28DhY22FyP8fc"
+        fitbit_refresh_token = "04fb393bbfd7bebf38453a2f370abaf96f5a2d6b31d8bca2cdb4da7d0158971d"
+
+        if fitbit_access_token is not None and fitbit_refresh_token is not None:
+            fitbit_api = fitbit.Fitbit(CLIENT_FITBIT_ID, CLIENT_FITBIT_SECRET, system="en_UK", oauth2=True,
+                                       access_token=fitbit_access_token, refresh_token=fitbit_refresh_token)
+
+            message["steps"] = fitbit_api.time_series("activities/steps", period="1d")["activities-steps"][0]["value"]
+            message["distance"] = fitbit_api.time_series("activities/distance", period="1d")["activities-distance"][0][
+                "value"]
+
+            heart_rate = fitbit_api.time_series("activities/heart", period="1d")["activities-heart"][0]["value"]
+            message["heart_rate"] = heart_rate["restingHeartRate"] if "restingHeartRate" in heart_rate else 0
+
+        state = True
+
+    except Client.DoesNotExist:
+        state = False
+        message = "User does not exist or user is not a client!"
+
+    except Exception as e:
+        print(e)
+        state = False
+        message = "Error while trying to fetch client information"
+
     return state, message
 
 

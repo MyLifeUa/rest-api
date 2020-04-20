@@ -114,14 +114,14 @@ def get_total_nutrients(meal_history):
     total_fat = round(sum(entry.fat for entry in meal_history), 0)
     total_proteins = round(sum(entry.proteins for entry in meal_history), 0)
 
-    dict = {
+    nutrients_info = {
         "calories": {"total": total_calories},
         "carbs": {"total": total_carbs},
         "fat": {"total": total_fat},
         "proteins": {"total": total_proteins},
     }
 
-    return dict
+    return nutrients_info
 
 
 def get_client_age(birth_date):
