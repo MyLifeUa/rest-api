@@ -718,9 +718,6 @@ def get_body_history(username, params):
     fitbit_access_token = client.fitbit_access_token
     fitbit_refresh_token = client.fitbit_refresh_token
 
-    fitbit_access_token = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyMkJINjUiLCJzdWIiOiI4QllHTjciLCJpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJzY29wZXMiOiJyc29jIHJhY3QgcnNldCBybG9jIHJ3ZWkgcmhyIHJwcm8gcm51dCByc2xlIiwiZXhwIjoxNTg3NDA0NTAwLCJpYXQiOjE1ODczNzU3MDB9.iTuEpkpOyff49T_rdT3v75UCAxZceM28DhY22FyP8fc"
-    fitbit_refresh_token = "04fb393bbfd7bebf38453a2f370abaf96f5a2d6b31d8bca2cdb4da7d0158971d"
-
     if fitbit_access_token is None or fitbit_refresh_token is None:
         state = False
         message = "You have not integrated your Fitbit device yet!"
