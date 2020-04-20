@@ -3,7 +3,6 @@ from django.urls import path
 
 from .views import *
 
-
 urlpatterns = [
     # Access
     path("login", login, name="login"),
@@ -27,7 +26,7 @@ urlpatterns = [
     url("^food-logs/(?P<food_log_filter>.+)", food_log_rud, name="food-log-rud"),
 
     # Ingredients
-    path("ingredients", new_ingredient, name="new-ingredient"),
+    path("ingredients", ingredients, name="new-ingredient"),
     path("ingredients/<int:ingredient_id>", ingredient_rud, name="ingredient-rud"),
 
     # Meals
@@ -39,11 +38,23 @@ urlpatterns = [
     # List doctors from an hospital
     path("hospital-doctors", list_hospital_doctors, name="list-hospital-doctors"),
 
-    # Check email already exists
+    # Check email is taken
     url("^check-email/(?P<email>.+)", check_email, name="check-email"),
 
     # Add fitbit token
     path("fitbit-token", add_fitbit_token, name="add-fitbit-token"),
+
+    # Image Classification
+    path("image-classification", classify_image, name="classify-image"),
+
+    # Check token is valid
+    path("check-token", check_token, name="check-token"),
+
+    # Health Statistics
+    url("^health-stats/nutrients/ratio/(?P<email>.+)/(?P<date>.+)", nutrients_ratio, name="nutrients-ratio"),
+    url("^health-stats/nutrients/total/(?P<email>.+)/(?P<date>.+)", nutrients_total, name="nutrients-total"),
+    url("^health-stats/nutrients/history/(?P<email>.+)", nutrients_history, name="nutrients-history"),
+    url("^health-stats/body/history/(?P<email>.+)", body_history, name="body-history"),
 
     # Reload Database
     path("reload-db", reload_db, name="reload-db"),

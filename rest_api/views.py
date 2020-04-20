@@ -12,6 +12,7 @@ from rest_framework.status import (
     HTTP_201_CREATED,
     HTTP_204_NO_CONTENT,
 )
+
 from rest_api import queries, documentation_serializers as doc
 from rest_api.authentication import token_expire_handler
 from .utils import *
@@ -65,6 +66,17 @@ def check_email(request, email):
     message = True if email_exists else False
 
     return Response({"state": state, "message": message}, status=status)
+
+
+@api_view(["GET"])
+def check_token(request):
+    token, username, role = who_am_i(request)
+
+    status = HTTP_200_OK
+    state = "Success"
+    message = "Token is active"
+
+    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
 
 @swagger_auto_schema(method="post", request_body=doc.AdminSerializer)
@@ -571,14 +583,25 @@ def get_food_log(request, day):
     status = HTTP_403_FORBIDDEN
 
     if verify_authorization(role, "client"):
-        state, message = queries.get_food_log(username, day)
-        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+        message = "Invalid date: It should be in the format YYYY-mm-dd"
+        status = HTTP_400_BAD_REQUEST
+
+        if is_valid_date(day, "%Y-%m-%d"):
+            state, message = queries.get_food_log(username, day)
+            state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
 
 @swagger_auto_schema(method="post", request_body=doc.IngredientSerializer)
-@api_view(["POST"])
+@api_view(["POST", "GET"])
+def ingredients(request):
+    if request.method == "POST":
+        return new_ingredient(request)
+    elif request.method == "GET":
+        return get_ingredients(request)
+
+
 def new_ingredient(request):
     token, username, role = who_am_i(request)
 
@@ -592,6 +615,20 @@ def new_ingredient(request):
 
     state, message = queries.add_ingredient(data)
     state, status = ("Success", HTTP_201_CREATED) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+
+def get_ingredients(request):
+    token, username, role = who_am_i(request)
+
+    state = "Error"
+    message = "You don't have permissions to access the list of ingredients."
+    status = HTTP_403_FORBIDDEN
+
+    if verify_authorization(role, "client"):
+        state, message = queries.get_ingredients()
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
@@ -637,7 +674,7 @@ def get_ingredient(request, ingredient_id):
 
 
 @swagger_auto_schema(method="post", request_body=doc.MealSerializer)
-@api_view(["POST", "GET"])
+@api_view(["GET", "POST"])
 def meals(request):
     if request.method == "POST":
         return new_meal(request)
@@ -665,12 +702,12 @@ def get_meals(request):
     token, username, role = who_am_i(request)
 
     state = "Error"
-    message = "You don't have permissions to access the list of doctors."
+    message = "You don't have permissions to access the list of meals."
     status = HTTP_403_FORBIDDEN
 
     if verify_authorization(role, "client"):
         state, message = queries.get_meals(username)
-        state, status = ("Success", HTTP_201_CREATED) if state else ("Error", HTTP_400_BAD_REQUEST)
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
@@ -712,6 +749,126 @@ def add_fitbit_token(request):
 
     state, message = queries.add_fitbit_token(data, username)
     state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+
+@api_view(["POST"])
+def classify_image(request):
+    token, username, role = who_am_i(request)
+
+    # default possibility
+    state = "Error"
+    message = "You don't have permissions to access the list of doctors."
+    status = HTTP_403_FORBIDDEN
+
+    data = request.data
+
+    if verify_authorization(role, "client"):
+        image_b64 = data["image_b64"] if "image_b64" in data else ""
+
+        state, message = queries.classify_image(image_b64)
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+
+@api_view(["GET"])
+def nutrients_ratio(request, email, date):
+    token, username, role = who_am_i(request)
+
+    message = "Invalid date: It should be in the format yyyy-mm-dd"
+    status = HTTP_400_BAD_REQUEST
+
+    if is_valid_date(date, "%Y-%m-%d"):
+
+        # default possibility
+        state = "Error"
+        message = "You don't have permissions to access this information."
+        status = HTTP_403_FORBIDDEN
+
+        if is_self(role, "client", username, email):
+            state, message = queries.get_nutrients_ratio(username, date)
+            state, status = ("Success", HTTP_200_OK) if state else ("Success", HTTP_204_NO_CONTENT)
+
+        elif verify_authorization(role, "doctor") and is_client_doctor(username, email):
+            state, message = queries.get_nutrients_ratio(email, date)
+            state, status = ("Success", HTTP_200_OK) if state else ("Success", HTTP_204_NO_CONTENT)
+
+    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+
+@api_view(["GET"])
+def nutrients_total(request, email, date):
+    token, username, role = who_am_i(request)
+
+    message = "Invalid date: It should be in the format yyyy-mm-dd"
+    status = HTTP_400_BAD_REQUEST
+
+    if is_valid_date(date, "%Y-%m-%d"):
+
+        # default possibility
+        state = "Error"
+        message = "You don't have permissions to access this information."
+        status = HTTP_403_FORBIDDEN
+
+        if is_self(role, "client", username, email):
+            state, message = queries.get_nutrients_total(username, date)
+            state, status = ("Success", HTTP_200_OK) if state else ("Success", HTTP_204_NO_CONTENT)
+
+        elif verify_authorization(role, "doctor") and is_client_doctor(username, email):
+            state, message = queries.get_nutrients_total(email, date)
+            state, status = ("Success", HTTP_200_OK) if state else ("Success", HTTP_204_NO_CONTENT)
+
+    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+
+@api_view(["GET"])
+def nutrients_history(request, email):
+    token, username, role = who_am_i(request)
+
+    # default possibility
+    state = "Error"
+    message = "You don't have permissions to access this information."
+    status = HTTP_403_FORBIDDEN
+
+    metric = request.GET.get("metric", "calories")
+    period = request.GET.get("period", "week")
+
+    params = {"metric": metric, "period": period}
+
+    if is_self(role, "client", username, email):
+        state, message = queries.get_nutrients_history(username, params)
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+    elif verify_authorization(role, "doctor") and is_client_doctor(username, email):
+        state, message = queries.get_nutrients_history(email, params)
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+
+@api_view(["GET"])
+def body_history(request, email):
+    token, username, role = who_am_i(request)
+
+    # default possibility
+    state = "Error"
+    message = "You don't have permissions to access this information."
+    status = HTTP_403_FORBIDDEN
+
+    metric = request.GET.get("metric", "steps")
+    period = request.GET.get("period", "week")
+
+    params = {"metric": metric, "period": period}
+
+    if is_self(role, "client", username, email):
+        state, message = queries.get_body_history(username, params)
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+    elif verify_authorization(role, "doctor") and is_client_doctor(username, email):
+        state, message = queries.get_body_history(email, params)
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 

@@ -12,6 +12,7 @@ djangorestframework = ">=3.10.3"
 requests = "*"
 drf-yasg = "*"
 django-cors-headers = "*"
+fitbit = "*"
 
 [requires]
 python_version = "3.7"

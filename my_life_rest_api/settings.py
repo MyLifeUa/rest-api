@@ -133,6 +133,6 @@ STATIC_URL = "/static/"
 
 CORS_ORIGIN_ALLOW_ALL = True
 
-STATIC_URL = "/static/"
+TOKEN_EXPIRED_AFTER_SECONDS = 24 * 60 * 60
 
-TOKEN_EXPIRED_AFTER_SECONDS = 300
+ML_URL = "http://darkflow:5000/predict"

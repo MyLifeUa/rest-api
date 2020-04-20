@@ -1,10 +1,14 @@
+import fitbit
 from django.contrib.auth.models import Group
+from requests import get
 from django.db.models import Q
 from django.db import Error
 
+from my_life_rest_api.settings import ML_URL
 from .models import *
 from .constants import *
 from .serializers import *
+from .utils import *
 
 
 def add_user(data, is_superuser=False):
@@ -86,8 +90,7 @@ def delete_user(user):
     except Error:
         state, message = False, "Error while deleting user"
 
-    finally:
-        return state, message
+    return state, message
 
 
 def add_admin(data):
@@ -220,12 +223,39 @@ def update_client(request, email):
 
 
 def get_client(email):
-    client = Client.objects.filter(user__auth_user__username=email)
-    if not client.exists():
-        state, message = False, "User does not exist or user is not a client!"
-        return state, message
+    try:
+        client = Client.objects.get(user__auth_user__username=email)
 
-    state, message = True, ClientSerializer(client[0]).data
+        message = ClientSerializer(client).data
+        message["steps"] = None
+        message["heart_rate"] = None
+        message["distance"] = None
+
+        fitbit_access_token = client.fitbit_access_token
+        fitbit_refresh_token = client.fitbit_refresh_token
+
+        if fitbit_access_token is not None and fitbit_refresh_token is not None:
+            fitbit_api = fitbit.Fitbit(CLIENT_FITBIT_ID, CLIENT_FITBIT_SECRET, system="en_UK", oauth2=True,
+                                       access_token=fitbit_access_token, refresh_token=fitbit_refresh_token)
+
+            message["steps"] = fitbit_api.time_series("activities/steps", period="1d")["activities-steps"][0]["value"]
+            message["distance"] = fitbit_api.time_series("activities/distance", period="1d")["activities-distance"][0][
+                "value"]
+
+            heart_rate = fitbit_api.time_series("activities/heart", period="1d")["activities-heart"][0]["value"]
+            message["heart_rate"] = heart_rate["restingHeartRate"] if "restingHeartRate" in heart_rate else 0
+
+        state = True
+
+    except Client.DoesNotExist:
+        state = False
+        message = "User does not exist or user is not a client!"
+
+    except Exception as e:
+        print(e)
+        state = False
+        message = "Error while trying to fetch client information"
+
     return state, message
 
 
@@ -317,8 +347,15 @@ def add_food_log(data, email):
 
         current_meal = Meal.objects.get(id=meal_id)
 
-        MealHistory.objects.create(day=day, type_of_meal=type_of_meal, client=current_client,
-                                   meal=current_meal, number_of_servings=number_of_servings)
+        number_of_servings = float(number_of_servings)
+        calories = number_of_servings * current_meal.calories
+        proteins = number_of_servings * current_meal.proteins
+        carbs = number_of_servings * current_meal.carbs
+        fat = number_of_servings * current_meal.fat
+
+        MealHistory.objects.create(day=day, type_of_meal=type_of_meal, client=current_client, meal=current_meal,
+                                   number_of_servings=number_of_servings, calories=calories, proteins=proteins,
+                                   carbs=carbs, fat=fat)
 
     except Exception:
         message = "Error while creating new food log!"
@@ -374,11 +411,14 @@ def update_food_log(request, meal_history):
 
             current_meal = Meal.objects.get(id=meal_id)
 
+            populate_nutrient_values_meal_history(meal_history, meal=current_meal)
+
             meal_history.update(meal=current_meal)
 
         if "number_of_servings" in data:
-            number_of_servings = data.get("number_of_servings")
+            number_of_servings = float(data.get("number_of_servings"))
             meal_history.update(number_of_servings=number_of_servings)
+            populate_nutrient_values_meal_history(meal_history, number_of_servings=number_of_servings)
 
     except Exception:
         state, message = False, "Error while updating Food log!"
@@ -454,6 +494,10 @@ def delete_ingredient(ingredient_id):
     return state, message
 
 
+def get_ingredients():
+    return True, [IngredientSerializer(ingredient).data for ingredient in Ingredient.objects.all()]
+
+
 def get_ingredient(ingredient_id):
     try:
         ingredient = Ingredient.objects.get(id=ingredient_id)
@@ -486,10 +530,13 @@ def add_new_meal(data, username, role="admin"):
         return False, error_message
 
     try:
-        # add ingredients quantities
+        # add ingredients quantities and nutrient values
         for ingredient_json in ingredients:
             ingredient = Ingredient.objects.get(id=ingredient_json["id"])
-            Quantity.objects.create(meal=meal, ingredient=ingredient, quantity=ingredient_json["quantity"])
+            quantity = ingredient_json["quantity"]
+            Quantity.objects.create(meal=meal, ingredient=ingredient, quantity=quantity)
+            populate_nutrient_values(Meal.objects.filter(id=meal.id), Ingredient.objects.get(id=ingredient.id),
+                                     quantity)
 
     except Ingredient.DoesNotExist:
         meal.delete()
@@ -584,6 +631,35 @@ def add_fitbit_token(data, email):
     return state, message
 
 
+def classify_image(image_b64):
+    if image_b64 == "":
+        state = False
+        message = "Missing parameters"
+
+    else:
+        params = {"image_b64": image_b64}
+        response = get(url=ML_URL, params=params)
+
+        state = False
+        message = "Error while trying to classify food"
+
+        if response.status_code == 200:
+            data = eval(response.text)
+
+            if data:  # check if list is not empty
+                food = data[-1]["label"]  # get the last element (the one ml module has most confident)
+
+                try:
+                    meal = Meal.objects.get(name__iexact=food)
+                    message = MealSerializer(meal).data
+                    state = True
+
+                except Meal.DoesNotExist:
+                    message = "Recognized meal does not exist in the system!"
+
+    return state, message
+
+
 def get_client_doctor(username):
     client = Client.objects.get(user__auth_user__username=username)
 
@@ -593,6 +669,97 @@ def get_client_doctor(username):
         message = DoctorSerializer(doctor).data if doctor is not None else None
     except Exception:
         state, message = False, "Error while adding fitbit token."
+
+    return state, message
+
+
+def get_nutrients_ratio(username, day):
+    client = Client.objects.get(user__auth_user__username=username)
+
+    meal_history = MealHistory.objects.filter(day=day, client=client)
+
+    if not meal_history.exists():
+        state = False
+        message = "The specified day has no history yet."
+
+    else:
+        initial_info = get_total_nutrients(meal_history)
+
+        message = get_nutrients_info(client, initial_info)
+        state = True
+
+    return state, message
+
+
+def get_nutrients_total(username, day):
+    client = Client.objects.get(user__auth_user__username=username)
+
+    meal_history = MealHistory.objects.filter(day=day, client=client)
+
+    if not meal_history.exists():
+        state = False
+        message = "The specified day has no history yet."
+
+    else:
+        initial_info = get_total_nutrients(meal_history)
+
+        message = get_nutrients_left_values(client, initial_info)
+        state = True
+
+    return state, message
+
+
+def get_nutrients_history(username, params):
+    metric = params["metric"]
+    if metric not in ["calories", "fat", "carbs", "proteins"]:
+        state = False
+        message = "Invalid metric!"
+        return state, message
+
+    period = params["period"]
+    if period not in ["week", "month", "3-months"]:
+        state = False
+        message = "Invalid period!"
+        return state, message
+
+    client = Client.objects.get(user__auth_user__username=username)
+
+    return True, get_nutrient_history(client, metric, period)
+
+
+def get_body_history(username, params):
+    metric = params["metric"]
+    if metric not in ["steps", "distance", "calories", "floors", "heart"]:
+        state = False
+        message = "Invalid metric!"
+        return state, message
+
+    period = params["period"]
+    if period not in ["week", "month", "3-months"]:
+        state = False
+        message = "Invalid period!"
+        return state, message
+
+    client = Client.objects.get(user__auth_user__username=username)
+
+    fitbit_access_token = client.fitbit_access_token
+    fitbit_refresh_token = client.fitbit_refresh_token
+
+    if fitbit_access_token is None or fitbit_refresh_token is None:
+        state = False
+        message = "You have not integrated your Fitbit device yet!"
+        return state, message
+
+    try:
+        fitbit_api = fitbit.Fitbit(CLIENT_FITBIT_ID, CLIENT_FITBIT_SECRET, system="en_UK", oauth2=True,
+                                   access_token=fitbit_access_token, refresh_token=fitbit_refresh_token)
+
+        message = get_body_history_values(fitbit_api, metric, period)
+        state = True
+
+    except Exception as e:
+        print(e)
+        state, message = False, "Error while accessing fitbit information."
 
     return state, message
 
