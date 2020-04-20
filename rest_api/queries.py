@@ -619,18 +619,15 @@ def classify_image(image_b64):
             data = eval(response.text)
 
             if data:  # check if list is not empty
-                state = True
-                food = data[-1]["label"] # get the last element (the one ml module has most confident)
-                message = {"food": food}  
+                food = data[-1]["label"]  # get the last element (the one ml module has most confident)
 
-                meal = Meal.objects.get(name=food)
-                if meal:
-                    message.put("nutrient_info", {
-                        "calories" : meal.calories,
-                        "proteins" : meal.proteins,
-                        "carbs" : meal.carbs,
-                        "fat" : meal.fat
-                    })
+                try:
+                    meal = Meal.objects.get(name__iexact=food)
+                    message = MealSerializer(meal).data
+                    state = True
+
+                except Meal.DoesNotExist:
+                    message = "Recognized meal does not exist in the system!"
 
     return state, message
 
