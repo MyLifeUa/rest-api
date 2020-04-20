@@ -234,9 +234,6 @@ def get_client(email):
         fitbit_access_token = client.fitbit_access_token
         fitbit_refresh_token = client.fitbit_refresh_token
 
-        fitbit_access_token = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyMkJINjUiLCJzdWIiOiI4QllHTjciLCJpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJzY29wZXMiOiJyc29jIHJhY3QgcnNldCBybG9jIHJ3ZWkgcmhyIHJwcm8gcm51dCByc2xlIiwiZXhwIjoxNTg3NDA0NTAwLCJpYXQiOjE1ODczNzU3MDB9.iTuEpkpOyff49T_rdT3v75UCAxZceM28DhY22FyP8fc"
-        fitbit_refresh_token = "04fb393bbfd7bebf38453a2f370abaf96f5a2d6b31d8bca2cdb4da7d0158971d"
-
         if fitbit_access_token is not None and fitbit_refresh_token is not None:
             fitbit_api = fitbit.Fitbit(CLIENT_FITBIT_ID, CLIENT_FITBIT_SECRET, system="en_UK", oauth2=True,
                                        access_token=fitbit_access_token, refresh_token=fitbit_refresh_token)
