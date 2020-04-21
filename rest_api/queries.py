@@ -234,9 +234,13 @@ def get_client(email):
         fitbit_access_token = client.fitbit_access_token
         fitbit_refresh_token = client.fitbit_refresh_token
 
+        fitbit_access_token = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyMkJHVlgiLCJzdWIiOiI4QllHTjciLCJpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJzY29wZXMiOiJyYWN0IHJociBycHJvIHJzbGUiLCJleHAiOjE1ODc0OTA3MTcsImlhdCI6MTU4NzQ2MTkxN30.vX9a6gJeF0pgIEB1nNzWea4VmjcdqFr1JKwBUratUVk"
+        fitbit_refresh_token = "4972fd1ee07a43125ce0b74d7d6b2b8535748e1708d7fbc6ae2a17ca14b4faaf"
+
         if fitbit_access_token is not None and fitbit_refresh_token is not None:
             fitbit_api = fitbit.Fitbit(CLIENT_FITBIT_ID, CLIENT_FITBIT_SECRET, system="en_UK", oauth2=True,
-                                       access_token=fitbit_access_token, refresh_token=fitbit_refresh_token)
+                                       access_token=fitbit_access_token, refresh_token=fitbit_refresh_token,
+                                       refresh_cb=client.refresh_cb)
 
             message["steps"] = fitbit_api.time_series("activities/steps", period="1d")["activities-steps"][0]["value"]
             message["distance"] = fitbit_api.time_series("activities/distance", period="1d")["activities-distance"][0][
@@ -753,7 +757,8 @@ def get_body_history(username, params):
 
     try:
         fitbit_api = fitbit.Fitbit(CLIENT_FITBIT_ID, CLIENT_FITBIT_SECRET, system="en_UK", oauth2=True,
-                                   access_token=fitbit_access_token, refresh_token=fitbit_refresh_token)
+                                   access_token=fitbit_access_token, refresh_token=fitbit_refresh_token,
+                                   refresh_cb=client.refresh_cb)
 
         message = get_body_history_values(fitbit_api, metric, period)
         state = True
