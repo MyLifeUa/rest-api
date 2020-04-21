@@ -251,8 +251,7 @@ def get_client(email):
         state = False
         message = "User does not exist or user is not a client!"
 
-    except Exception as e:
-        print(e)
+    except Exception:
         state = False
         message = "Error while trying to fetch client information"
 
@@ -759,8 +758,7 @@ def get_body_history(username, params):
         message = get_body_history_values(fitbit_api, metric, period)
         state = True
 
-    except Exception as e:
-        print(e)
+    except Exception:
         state, message = False, "Error while accessing fitbit information."
 
     return state, message
