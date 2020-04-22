@@ -892,9 +892,9 @@ def reload_database():
             "weight_goal": 80,
             "current_weight": 90,
             "sex": "M",
-            "email": "miguel.pedroso@gmail.com",
+            "email": "miguel.pedroseiro@gmail.com",
             "first_name": "Miguel",
-            "last_name": "Pedroso",
+            "last_name": "Pedroseiro",
             "password": "pedrosorules",
             "birth_date": "1980-10-04",
             "phone_number": "936735367"
@@ -1167,6 +1167,7 @@ def reload_database():
         success, state = add_doctor_patient_association({"client": "miguel.silva@gmail.com"},
                                                         email="joao.pereira@gmail.com")
         cur_success = cur_success and success
+
 
         #######################################
         #          CREATE INGREDIENTS         #
