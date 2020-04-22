@@ -252,8 +252,7 @@ def get_client(email):
         state = False
         message = "User does not exist or user is not a client!"
 
-    except Exception as e:
-        print(e)
+    except Exception:
         state = False
         message = "Error while trying to fetch client information"
 
@@ -1203,6 +1202,5 @@ def reload_database():
 
         return cur_success
 
-    except Exception as e:
-        print(e)
+    except Exception:
         return False
