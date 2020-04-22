@@ -931,10 +931,10 @@ def reload_database():
         #            CREATE MEALS             #
         #######################################
         meal = {"name": "Pizza", "category": "Fast Food",
-                "ingredients": [{"id": water.id, "quantity": 335}, {"id": flour.id, "quantity": 325},
-                                {"id": sugar.id, "quantity": 6}, {"id": salt.id, "quantity": 10},
-                                {"id": oil.id, "quantity": 10}, {"id": tomato_sauce.id, "quantity": 125},
-                                {"id": pepper.id, "quantity": 15}, {"id": mozzarella_cheese.id, "quantity": 125}]}
+                "ingredients": [{"id": water.id, "quantity": 42}, {"id": flour.id, "quantity": 39.4},
+                                {"id": sugar.id, "quantity": 0.8}, {"id": salt.id, "quantity": 1.25},
+                                {"id": oil.id, "quantity": 1.25}, {"id": tomato_sauce.id, "quantity": 15.63},
+                                {"id": pepper.id, "quantity": 1.88}, {"id": mozzarella_cheese.id, "quantity": 15.7}]}
         success, state = add_new_meal(meal, None)
         cur_success = cur_success and success
 
