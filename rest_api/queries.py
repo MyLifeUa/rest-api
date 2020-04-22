@@ -776,41 +776,46 @@ def reload_database():
         #######################################
         #            WIPE DATABASE            #
         #######################################
+        User.objects.all().delete()
         Ingredient.objects.all().delete()
         Meal.objects.all().delete()
-        CustomUser.objects.all().delete()
+
+        #######################################
+        #          CREATE DJANGO ADMIN      #
+        #######################################
+        User.objects.create_superuser("admin", "admin@ua.pt", "admin")
 
         #######################################
         #          CREATE USERS - ADMINS      #
         #######################################
         success, state = add_admin({
-            "hospital" : "Hospital São João",
-            "email" : "antonio.martins@saojoao.pt",
-            "first_name" : "António",
-            "last_name" : "Martins",
-            "password" : "letmein",
-            "birth_date" : "1970-10-01",
-            "phone_number" : "910845367"
+            "hospital": "Hospital São João",
+            "email": "antonio.martins@saojoao.pt",
+            "first_name": "António",
+            "last_name": "Martins",
+            "password": "letmein",
+            "birth_date": "1970-10-01",
+            "phone_number": "910845367"
         })
         cur_success = success
         success, state = add_admin({
-            "hospital" : "Hospital Santo António",
-            "email" : "rui.almeida@santoantonio.pt",
-            "first_name" : "Rui",
-            "last_name" : "Almeida",
-            "password" : "qwerty",
-            "birth_date" : "1971-03-04",
-            "phone_number" : "910547367"
+            "hospital": "Hospital Santo António",
+            "email": "rui.almeida@santoantonio.pt",
+            "first_name": "Rui",
+            "last_name": "Almeida",
+            "password": "qwerty",
+            "birth_date": "1971-03-04",
+            "phone_number": "910547367"
         })
         cur_success = cur_success and success
         success, state = add_admin({
-            "hospital" : "Hospital da Luz",
-            "email" : "pedro.silva@luz.pt",
-            "first_name" : "Pedro",
-            "last_name" : "Silva",
-            "password" : "ola",
-            "birth_date" : "1980-12-03",
-            "phone_number" : "910443377"
+            "hospital": "Hospital da Luz",
+            "email": "pedro.silva@luz.pt",
+            "first_name": "Pedro",
+            "last_name": "Silva",
+            "password": "ola",
+            "birth_date": "1980-12-03",
+            "phone_number": "910443377"
         })
         cur_success = cur_success and success
 
@@ -818,42 +823,42 @@ def reload_database():
         #          CREATE USERS - CLIENTS     #
         #######################################
         success, state = add_client({
-            "height" : 180,
-            "weight_goal" : 75,
-            "current_weight" : 90,
-            "sex" : "M",
-            "email" : "vasco.almeida@gmail.com",
-            "first_name" : "Vasco",
-            "last_name" : "Almeida",
-            "password" : "olaola",
-            "birth_date" : "1975-11-05",
-            "phone_number" : "936545567"
+            "height": 180,
+            "weight_goal": 75,
+            "current_weight": 90,
+            "sex": "M",
+            "email": "vasco.almeida@gmail.com",
+            "first_name": "Vasco",
+            "last_name": "Almeida",
+            "password": "olaola",
+            "birth_date": "1975-11-05",
+            "phone_number": "936545567"
         })
         cur_success = cur_success and success
         success, state = add_client({
-            "height" : 170,
-            "weight_goal" : 70,
-            "current_weight" : 85,
-            "sex" : "F",
-            "email" : "ana.almeida@gmail.com",
-            "first_name" : "Ana",
-            "last_name" : "Almeida",
-            "password" : "olaolaola",
-            "birth_date" : "1977-09-03",
-            "phone_number" : "936735367"
+            "height": 170,
+            "weight_goal": 70,
+            "current_weight": 85,
+            "sex": "F",
+            "email": "ana.almeida@gmail.com",
+            "first_name": "Ana",
+            "last_name": "Almeida",
+            "password": "olaolaola",
+            "birth_date": "1977-09-03",
+            "phone_number": "936735367"
         })
         cur_success = cur_success and success
         success, state = add_client({
-            "height" : 190,
-            "weight_goal" : 80,
-            "current_weight" : 100,
-            "sex" : "M",
-            "email" : "miguel.silva@gmail.com",
-            "first_name" : "Miguel",
-            "last_name" : "Silva",
-            "password" : "12345ola",
-            "birth_date" : "1990-10-04",
-            "phone_number" : "966735367"
+            "height": 190,
+            "weight_goal": 80,
+            "current_weight": 100,
+            "sex": "M",
+            "email": "miguel.silva@gmail.com",
+            "first_name": "Miguel",
+            "last_name": "Silva",
+            "password": "12345ola",
+            "birth_date": "1990-10-04",
+            "phone_number": "966735367"
         })
         cur_success = cur_success and success
 
@@ -861,61 +866,85 @@ def reload_database():
         #          CREATE USERS - DOCTORS     #
         #######################################
         success, state = add_doctor({
-            "email" : "andre.almeida@gmail.com",
-            "first_name" : "André",
-            "last_name" : "Almeida",
-            "password" : "qwerty12345",
-            "birth_date" : "1980-05-10",
-            "phone_number" : "966565565"
-        }, 
-        hospital='Hospital São João')
+            "email": "andre.almeida@gmail.com",
+            "first_name": "André",
+            "last_name": "Almeida",
+            "password": "qwerty12345",
+            "birth_date": "1980-05-10",
+            "phone_number": "966565565"
+        },
+            hospital='Hospital São João')
         cur_success = cur_success and success
         success, state = add_doctor({
-            "email" : "rui.pereira@gmail.com",
-            "first_name" : "Rui",
-            "last_name" : "Pereira",
-            "password" : "asdfgh",
-            "birth_date" : "1985-05-04",
-            "phone_number" : "964275097"
-        }, 
-        hospital='Hospital Santo António')
+            "email": "rui.pereira@gmail.com",
+            "first_name": "Rui",
+            "last_name": "Pereira",
+            "password": "asdfgh",
+            "birth_date": "1985-05-04",
+            "phone_number": "964275097"
+        },
+            hospital='Hospital Santo António')
         cur_success = cur_success and success
         success, state = add_doctor({
-            "email" : "joao.pereira@gmail.com",
-            "first_name" : "João",
-            "last_name" : "Pereira",
-            "password" : "987654",
-            "birth_date" : "1985-09-16",
-            "phone_number" : "914608627"
-        }, 
-        hospital='Hospital da Luz')
+            "email": "joao.pereira@gmail.com",
+            "first_name": "João",
+            "last_name": "Pereira",
+            "password": "987654",
+            "birth_date": "1985-09-16",
+            "phone_number": "914608627"
+        },
+            hospital='Hospital da Luz')
         cur_success = cur_success and success
 
         #######################################
         #    CREATE USERS - DOCTOR-PATIENT    #
         #######################################
-        success, state = add_doctor_patient_association({
-            "client" : "vasco.almeida@gmail.com",
-        }, 
-        email="andre.almeida@gmail.com")
+        success, state = add_doctor_patient_association({"client": "vasco.almeida@gmail.com"},
+                                                        email="andre.almeida@gmail.com")
         cur_success = cur_success and success
-        success, state = add_doctor_patient_association({
-            "client" : "ana.almeida@gmail.com",
-        }, 
-        email="rui.pereira@gmail.com")
+        success, state = add_doctor_patient_association({"client": "ana.almeida@gmail.com"},
+                                                        email="rui.pereira@gmail.com")
         cur_success = cur_success and success
-        success, state = add_doctor_patient_association({
-            "client" : "miguel.silva@gmail.com",
-        }, 
-        email="joao.pereira@gmail.com")
+        success, state = add_doctor_patient_association({"client": "miguel.silva@gmail.com"},
+                                                        email="joao.pereira@gmail.com")
         cur_success = cur_success and success
 
         #######################################
         #          CREATE INGREDIENTS         #
         #######################################
+        flour = Ingredient.objects.create(name="Flour", calories=364, carbs=76.3, fat=1, proteins=10.3)
+        water = Ingredient.objects.create(name="Water", calories=0, carbs=0, fat=0, proteins=0)
+        sugar = Ingredient.objects.create(name="Sugar", calories=389, carbs=99.8, fat=0, proteins=0)
+        salt = Ingredient.objects.create(name="Salt", calories=0, carbs=0, fat=0, proteins=0)
+        oil = Ingredient.objects.create(name="Oil", calories=884, carbs=0, fat=100, proteins=0)
+        tomato_sauce = Ingredient.objects.create(name="Tomato Sauce", calories=82, carbs=18.9, fat=0.5, proteins=4.3)
+        pepper = Ingredient.objects.create(name="Pepper", calories=251, carbs=64, fat=3.3, proteins=10.4)
+        mozzarella_cheese = Ingredient.objects.create(name="Mozzarella Cheese", calories=300, carbs=2.2, fat=22.4,
+                                                      proteins=22.2)
+        pork = Ingredient.objects.create(name="Pork", calories=275, carbs=0.8, fat=10, proteins=19)
+        egg = Ingredient.objects.create(name="Egg", calories=143, carbs=0.7, fat=9.5, proteins=12.6)
+        garlic = Ingredient.objects.create(name="Garlic", calories=149, carbs=33.1, fat=0.5, proteins=6.4)
+        onion = Ingredient.objects.create(name="Onion", calories=32, carbs=7.5, fat=0.1, proteins=0.8)
+        cheese = Ingredient.objects.create(name="Cheese", calories=264, carbs=0, fat=21.1, proteins=18.5)
 
+        #######################################
+        #            CREATE MEALS             #
+        #######################################
+        meal = {"name": "Pizza", "category": "Fast Food",
+                "ingredients": [{"id": water.id, "quantity": 335}, {"id": flour.id, "quantity": 325},
+                                {"id": sugar.id, "quantity": 6}, {"id": salt.id, "quantity": 10},
+                                {"id": oil.id, "quantity": 10}, {"id": tomato_sauce.id, "quantity": 125},
+                                {"id": pepper.id, "quantity": 15}, {"id": mozzarella_cheese.id, "quantity": 125}]}
+        success, state = add_new_meal(meal, None)
+        cur_success = cur_success and success
 
-        
+        meal = {"name": "Hamburger", "category": "Fast Food",
+                "ingredients": [{"id": pork.id, "quantity": 85}, {"id": salt.id, "quantity": 10},
+                                {"id": pepper.id, "quantity": 10}, {"id": egg.id, "quantity": 50},
+                                {"id": garlic.id, "quantity": 5}, {"id": onion.id, "quantity": 15},
+                                {"id": cheese.id, "quantity": 28}]}
+        success, state = add_new_meal(meal, None)
+        cur_success = cur_success and success
 
         return cur_success
 
