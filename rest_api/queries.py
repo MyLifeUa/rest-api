@@ -234,9 +234,14 @@ def get_client(email):
         fitbit_access_token = client.fitbit_access_token
         fitbit_refresh_token = client.fitbit_refresh_token
 
+        print(fitbit_access_token)
+
         if fitbit_access_token is not None and fitbit_refresh_token is not None:
             fitbit_api = fitbit.Fitbit(CLIENT_FITBIT_ID, CLIENT_FITBIT_SECRET, system="en_UK", oauth2=True,
-                                       access_token=fitbit_access_token, refresh_token=fitbit_refresh_token)
+                                       access_token=fitbit_access_token, refresh_token=fitbit_refresh_token,
+                                       refresh_cb=client.refresh_cb)
+
+            print(fitbit_access_token)
 
             message["steps"] = fitbit_api.time_series("activities/steps", period="1d")["activities-steps"][0]["value"]
             message["distance"] = fitbit_api.time_series("activities/distance", period="1d")["activities-distance"][0][
@@ -754,13 +759,13 @@ def get_body_history(username, params):
 
     try:
         fitbit_api = fitbit.Fitbit(CLIENT_FITBIT_ID, CLIENT_FITBIT_SECRET, system="en_UK", oauth2=True,
-                                   access_token=fitbit_access_token, refresh_token=fitbit_refresh_token)
+                                   access_token=fitbit_access_token, refresh_token=fitbit_refresh_token,
+                                   refresh_cb=client.refresh_cb)
 
         message = get_body_history_values(fitbit_api, metric, period)
         state = True
 
-    except Exception as e:
-        print(e)
+    except Exception:
         state, message = False, "Error while accessing fitbit information."
 
     return state, message

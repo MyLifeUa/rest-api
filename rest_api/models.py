@@ -37,6 +37,13 @@ class Client(models.Model):
     weight_goal = models.FloatField()
     doctor = models.ForeignKey(Doctor, on_delete=models.SET_NULL, null=True, blank=True)
 
+    def refresh_cb(self, token):
+        print("UPDATE FIRED")
+        print(token)
+        self.fitbit_access_token = token["access_token"]
+        self.fitbit_refresh_token = token["refresh_token"]
+        self.save()
+
 
 class Ingredient(models.Model):
     calories = models.FloatField(default=0)
