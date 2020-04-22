@@ -856,7 +856,7 @@ def reload_database():
         #######################################
         #          CREATE USERS - DOCTORS     #
         #######################################
-        add_client({
+        add_doctor({
             "email" : "andre.almeida@gmail.com",
             "first_name" : "André",
             "last_name" : "Almeida",
@@ -865,7 +865,7 @@ def reload_database():
             "phone_number" : "966565565"
         }, 
         hospital='Hospital São João')
-        add_client({
+        add_doctor({
             "email" : "rui.pereira@gmail.com",
             "first_name" : "Rui",
             "last_name" : "Pereira",
@@ -874,7 +874,7 @@ def reload_database():
             "phone_number" : "964275097"
         }, 
         hospital='Hospital Santo António')
-        add_client({
+        add_doctor({
             "email" : "joao.pereira@gmail.com",
             "first_name" : "João",
             "last_name" : "Pereira",
@@ -883,6 +883,22 @@ def reload_database():
             "phone_number" : "914608627"
         }, 
         hospital='Hospital da Luz')
+
+        #######################################
+        #    CREATE USERS - DOCTOR-PATIENT    #
+        #######################################
+        add_doctor_patient_association({
+            "client" : "vasco.almeida@gmail.com",
+        }, 
+        email="andre.almeida@gmail.com")
+        add_doctor_patient_association({
+            "client" : "ana.almeida@gmail.com",
+        }, 
+        email="rui.pereira@gmail.com")
+        add_doctor_patient_association({
+            "client" : "miguel.silva@gmail.com",
+        }, 
+        email="joao.pereira@gmail.com")
 
         #######################################
         #          CREATE INGREDIENTS         #
