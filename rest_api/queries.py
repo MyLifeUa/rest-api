@@ -778,9 +778,7 @@ def reload_database():
         #######################################
         Ingredient.objects.all().delete()
         Meal.objects.all().delete()
-        Client.objects.all().delete()
-        Doctor.objects.all().delete()
-        CustomAdmin.objects.all().delete()
+        CustomUser.objects.all().delete()
 
         #######################################
         #          CREATE USERS - ADMINS      #
