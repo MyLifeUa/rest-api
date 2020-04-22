@@ -79,22 +79,3 @@ class MealHistory(models.Model):
     fat = models.FloatField(default=0)
     carbs = models.FloatField(default=0)
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
-
-
-class Exercise(models.Model):
-    name = models.CharField(max_length=50)
-    target_body_area = models.CharField(max_length=25)
-    difficulty = models.IntegerField()
-
-
-class Set(models.Model):
-    exercise = models.ForeignKey(Exercise, on_delete=models.SET_NULL, null=True, blank=True)
-    number_of_reps = models.IntegerField()
-    time = models.FloatField()
-
-
-class Workout(models.Model):
-    workout_sets = models.ManyToManyField(Set)
-    rest_time = models.DurationField()  # https://docs.djangoproject.com/en/3.0/ref/models/fields/#durationfield
-    difficulty = models.IntegerField()
-    client = models.ForeignKey(Client, on_delete=models.CASCADE)
