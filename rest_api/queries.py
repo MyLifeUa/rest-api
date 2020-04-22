@@ -1168,7 +1168,6 @@ def reload_database():
                                                         email="joao.pereira@gmail.com")
         cur_success = cur_success and success
 
-
         #######################################
         #          CREATE INGREDIENTS         #
         #######################################
