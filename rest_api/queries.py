@@ -773,10 +773,118 @@ def reload_database():
         #######################################
         Ingredient.objects.all().delete()
         Meal.objects.all().delete()
+        Client.objects.all().delete()
+        Doctor.objects.all().delete()
+        CustomAdmin.objects.all().delete()
+
+        #######################################
+        #          CREATE USERS - ADMINS      #
+        #######################################
+        add_admin({
+            "hospital" : "Hospital São João",
+            "email" : "antonio.martins@saojoao.pt",
+            "first_name" : "António",
+            "last_name" : "Martins",
+            "password" : "letmein",
+            "birth_date" : "01-10-1970",
+            "phone_number" : "910845367"
+        })
+        add_admin({
+            "hospital" : "Hospital Santo António",
+            "email" : "rui.almeida@santoantonio.pt",
+            "first_name" : "Rui",
+            "last_name" : "Almeida",
+            "password" : "qwerty",
+            "birth_date" : "04-03-1971",
+            "phone_number" : "910547367"
+        })
+        add_admin({
+            "hospital" : "Hospital da Luz",
+            "email" : "pedro.silva@luz.pt",
+            "first_name" : "Pedro",
+            "last_name" : "Silva",
+            "password" : "ola",
+            "birth_date" : "03-12-1980",
+            "phone_number" : "910443377"
+        })
+
+        #######################################
+        #          CREATE USERS - CLIENTS     #
+        #######################################
+        add_client({
+            "height" : 180,
+            "weight_goal" : 75,
+            "current_weight" : 90,
+            "sex" : "M",
+            "email" : "vasco.almeida@gmail.com",
+            "first_name" : "Vasco",
+            "last_name" : "Almeida",
+            "password" : "olaola",
+            "birth_date" : "05-11-1975",
+            "phone_number" : "936545567"
+        })
+        add_client({
+            "height" : 170,
+            "weight_goal" : 70,
+            "current_weight" : 85,
+            "sex" : "F",
+            "email" : "ana.almeida@gmail.com",
+            "first_name" : "Ana",
+            "last_name" : "Almeida",
+            "password" : "olaolaola",
+            "birth_date" : "03-09-1977",
+            "phone_number" : "936735367"
+        })
+        add_client({
+            "height" : 190,
+            "weight_goal" : 80,
+            "current_weight" : 100,
+            "sex" : "M",
+            "email" : "miguel.silva@gmail.com",
+            "first_name" : "Miguel",
+            "last_name" : "Silva",
+            "password" : "12345ola",
+            "birth_date" : "04-10-1990",
+            "phone_number" : "966735367"
+        })
+
+        #######################################
+        #          CREATE USERS - DOCTORS     #
+        #######################################
+        add_client({
+            "email" : "andre.almeida@gmail.com",
+            "first_name" : "André",
+            "last_name" : "Almeida",
+            "password" : "qwerty12345",
+            "birth_date" : "10-05-1980",
+            "phone_number" : "966565565"
+        }, 
+        hospital='Hospital São João')
+        add_client({
+            "email" : "rui.pereira@gmail.com",
+            "first_name" : "Rui",
+            "last_name" : "Pereira",
+            "password" : "asdfgh",
+            "birth_date" : "04-05-1985",
+            "phone_number" : "964275097"
+        }, 
+        hospital='Hospital Santo António')
+        add_client({
+            "email" : "joao.pereira@gmail.com",
+            "first_name" : "João",
+            "last_name" : "Pereira",
+            "password" : "987654",
+            "birth_date" : "16-09-1985",
+            "phone_number" : "914608627"
+        }, 
+        hospital='Hospital da Luz')
 
         #######################################
         #          CREATE INGREDIENTS         #
         #######################################
+
+
+        
 
         return True
 
