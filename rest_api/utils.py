@@ -141,7 +141,7 @@ def get_calories_daily_goal(client):
     height = client.height
     age = get_client_age(client.user.birth_date)
 
-    if sex == "male":
+    if sex == "M":
         daily_cal_goal = (10 * weight) + (6.25 * height) - (5 * age) + 5
 
     else:
