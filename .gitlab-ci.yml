@@ -38,6 +38,7 @@ lint:
     - pip install pylint
     - pip install pylint_django
     - pylint --exit-zero --load-plugins pylint_django rest_api/
+  allow_failure: true
 
 test:
   stage: Test
