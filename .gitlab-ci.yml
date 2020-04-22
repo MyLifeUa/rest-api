@@ -37,7 +37,7 @@ lint:
   script:
     - pip install pylint
     - pip install pylint_django
-    - pylint --exit-zero --load-plugins pylint_django rest_api/
+    - pylint --exit-zero --load-plugins pylint_django --init-hook='import sys; sys.setrecursionlimit(8 * sys.getrecursionlimit())' rest_api/
 
 test:
   stage: Test

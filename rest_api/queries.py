@@ -252,8 +252,7 @@ def get_client(email):
         state = False
         message = "User does not exist or user is not a client!"
 
-    except Exception as e:
-        print(e)
+    except Exception:
         state = False
         message = "Error while trying to fetch client information"
 
@@ -765,3 +764,443 @@ def get_body_history(username, params):
         state, message = False, "Error while accessing fitbit information."
 
     return state, message
+
+
+def reload_database():
+    try:
+        #######################################
+        #            WIPE DATABASE            #
+        #######################################
+        User.objects.all().delete()
+        Ingredient.objects.all().delete()
+        Meal.objects.all().delete()
+
+        #######################################
+        #          CREATE DJANGO ADMIN      #
+        #######################################
+        User.objects.create_superuser("admin", "admin@ua.pt", "admin")
+
+        #######################################
+        #          CREATE USERS - ADMINS      #
+        #######################################
+        success, state = add_admin({
+            "hospital": "Hospital São João",
+            "email": "antonio.martins@saojoao.pt",
+            "first_name": "António",
+            "last_name": "Martins",
+            "password": "letmein",
+            "birth_date": "1970-10-01",
+            "phone_number": "910845367"
+        })
+        cur_success = success
+        success, state = add_admin({
+            "hospital": "Hospital Santo António",
+            "email": "rui.almeida@santoantonio.pt",
+            "first_name": "Rui",
+            "last_name": "Almeida",
+            "password": "qwerty",
+            "birth_date": "1971-03-04",
+            "phone_number": "910547367"
+        })
+        cur_success = cur_success and success
+        success, state = add_admin({
+            "hospital": "Hospital da Luz",
+            "email": "pedro.silva@luz.pt",
+            "first_name": "Pedro",
+            "last_name": "Silva",
+            "password": "ola",
+            "birth_date": "1980-12-03",
+            "phone_number": "910443377"
+        })
+        cur_success = cur_success and success
+
+        #######################################
+        #          CREATE USERS - CLIENTS     #
+        #######################################
+        success, state = add_client({
+            "height": 180,
+            "weight_goal": 75,
+            "current_weight": 90,
+            "sex": "M",
+            "email": "vasco.almeida@gmail.com",
+            "first_name": "Vasco",
+            "last_name": "Almeida",
+            "password": "olaola",
+            "birth_date": "1975-11-05",
+            "phone_number": "936545567"
+        })
+        cur_success = cur_success and success
+        success, state = add_client({
+            "height": 170,
+            "weight_goal": 70,
+            "current_weight": 85,
+            "sex": "F",
+            "email": "ana.almeida@gmail.com",
+            "first_name": "Ana",
+            "last_name": "Almeida",
+            "password": "olaolaola",
+            "birth_date": "1977-09-03",
+            "phone_number": "936735367"
+        })
+        cur_success = cur_success and success
+        success, state = add_client({
+            "height": 190,
+            "weight_goal": 80,
+            "current_weight": 100,
+            "sex": "M",
+            "email": "miguel.silva@gmail.com",
+            "first_name": "Miguel",
+            "last_name": "Silva",
+            "password": "12345ola",
+            "birth_date": "1990-10-04",
+            "phone_number": "966735367"
+        })
+        cur_success = cur_success and success
+        success, state = add_client({
+            "height": 184,
+            "weight_goal": 80,
+            "current_weight": 90,
+            "sex": "M",
+            "email": "miguel.oliveira@gmail.com",
+            "first_name": "Miguel",
+            "last_name": "Oliveira",
+            "password": "qwerty98765",
+            "birth_date": "1990-12-07",
+            "phone_number": "966434367"
+        })
+        cur_success = cur_success and success
+        success, state = add_client({
+            "height": 165,
+            "weight_goal": 70,
+            "current_weight": 90,
+            "sex": "M",
+            "email": "antonio.silva@gmail.com",
+            "first_name": "António",
+            "last_name": "Silva",
+            "password": "12345olaola",
+            "birth_date": "1991-10-04",
+            "phone_number": "965735367"
+        })
+        cur_success = cur_success and success
+        success, state = add_client({
+            "height": 168,
+            "weight_goal": 80,
+            "current_weight": 90,
+            "sex": "M",
+            "email": "miguel.pedroseiro@gmail.com",
+            "first_name": "Miguel",
+            "last_name": "Pedroseiro",
+            "password": "pedrosorules",
+            "birth_date": "1980-10-04",
+            "phone_number": "936735367"
+        })
+        cur_success = cur_success and success
+        success, state = add_client({
+            "height": 170,
+            "weight_goal": 60,
+            "current_weight": 75,
+            "sex": "F",
+            "email": "fatima.silva@gmail.com",
+            "first_name": "Fátima",
+            "last_name": "Silva",
+            "password": "qwertyola",
+            "birth_date": "1990-05-04",
+            "phone_number": "964755367"
+        })
+        cur_success = cur_success and success
+        success, state = add_client({
+            "height": 180,
+            "weight_goal": 70,
+            "current_weight": 75,
+            "sex": "F",
+            "email": "laura.silva@gmail.com",
+            "first_name": "Laura",
+            "last_name": "Silva",
+            "password": "12345ola",
+            "birth_date": "1998-10-04",
+            "phone_number": "916735367"
+        })
+        cur_success = cur_success and success
+        success, state = add_client({
+            "height": 195,
+            "weight_goal": 90,
+            "current_weight": 110,
+            "sex": "M",
+            "email": "pedro.pereira@gmail.com",
+            "first_name": "Pedro",
+            "last_name": "Pereira",
+            "password": "pedropedro",
+            "birth_date": "1980-11-04",
+            "phone_number": "966725567"
+        })
+        cur_success = cur_success and success
+        success, state = add_client({
+            "height": 160,
+            "weight_goal": 70,
+            "current_weight": 100,
+            "sex": "M",
+            "email": "miguel.pereira@gmail.com",
+            "first_name": "Miguel",
+            "last_name": "Pereira",
+            "password": "12345ola",
+            "birth_date": "1990-10-10",
+            "phone_number": "916735360"
+        })
+        cur_success = cur_success and success
+        success, state = add_client({
+            "height": 180,
+            "weight_goal": 70,
+            "current_weight": 100,
+            "sex": "F",
+            "email": "manuela.silva@gmail.com",
+            "first_name": "Manuela",
+            "last_name": "Silva",
+            "password": "12345ola",
+            "birth_date": "1990-10-10",
+            "phone_number": "912684259"
+        })
+        cur_success = cur_success and success
+        success, state = add_client({
+            "height": 172,
+            "weight_goal": 80,
+            "current_weight": 98,
+            "sex": "M",
+            "email": "antonio.almeida@gmail.com",
+            "first_name": "António",
+            "last_name": "Almeida",
+            "password": "12345ola",
+            "birth_date": "1990-10-11",
+            "phone_number": "968124520"
+        })
+        cur_success = cur_success and success
+        success, state = add_client({
+            "height": 174,
+            "weight_goal": 75,
+            "current_weight": 99,
+            "sex": "M",
+            "email": "paulo.silva@gmail.com",
+            "first_name": "Paulo",
+            "last_name": "Silva",
+            "password": "12345ola",
+            "birth_date": "1990-10-20",
+            "phone_number": "930407895"
+        })
+        cur_success = cur_success and success
+        success, state = add_client({
+            "height": 170,
+            "weight_goal": 80,
+            "current_weight": 110,
+            "sex": "M",
+            "email": "andre.silva@gmail.com",
+            "first_name": "André",
+            "last_name": "Silva",
+            "password": "12345ola",
+            "birth_date": "1990-06-04",
+            "phone_number": "910348305"
+        })
+        cur_success = cur_success and success
+        success, state = add_client({
+            "height": 165,
+            "weight_goal": 70,
+            "current_weight": 100,
+            "sex": "M",
+            "email": "miguel.matos@gmail.com",
+            "first_name": "Miguel",
+            "last_name": "Matos",
+            "password": "12345ola",
+            "birth_date": "1980-10-04",
+            "phone_number": "930438012"
+        })
+        cur_success = cur_success and success
+        success, state = add_client({
+            "height": 165,
+            "weight_goal": 70,
+            "current_weight": 100,
+            "sex": "M",
+            "email": "miguel.pedroso@gmail.com",
+            "first_name": "Miguel",
+            "last_name": "Pedroso",
+            "password": "12345ola",
+            "birth_date": "1980-06-04",
+            "phone_number": "915005009"
+        })
+        cur_success = cur_success and success
+        success, state = add_client({
+            "height": 165,
+            "weight_goal": 70,
+            "current_weight": 100,
+            "sex": "M",
+            "email": "alberto.matos@gmail.com",
+            "first_name": "Alberto",
+            "last_name": "Matos",
+            "password": "12345ola",
+            "birth_date": "1988-10-04",
+            "phone_number": "910002068"
+        })
+        cur_success = cur_success and success
+        success, state = add_client({
+            "height": 165,
+            "weight_goal": 70,
+            "current_weight": 100,
+            "sex": "M",
+            "email": "alberto.marques@gmail.com",
+            "first_name": "Alberto",
+            "last_name": "Marques",
+            "password": "12345ola",
+            "birth_date": "1980-10-06",
+            "phone_number": "930002789"
+        })
+        cur_success = cur_success and success
+        success, state = add_client({
+            "height": 165,
+            "weight_goal": 70,
+            "current_weight": 100,
+            "sex": "M",
+            "email": "agostinho.matos@gmail.com",
+            "first_name": "Agostinho",
+            "last_name": "Matos",
+            "password": "12345ola",
+            "birth_date": "1980-12-12",
+            "phone_number": "913000555"
+        })
+        cur_success = cur_success and success
+        success, state = add_client({
+            "height": 165,
+            "weight_goal": 70,
+            "current_weight": 100,
+            "sex": "F",
+            "email": "albertina.matos@gmail.com",
+            "first_name": "Albertina",
+            "last_name": "Matos",
+            "password": "12345ola",
+            "birth_date": "1978-10-04",
+            "phone_number": "908000458"
+        })
+        cur_success = cur_success and success
+
+        #######################################
+        #          CREATE USERS - DOCTORS     #
+        #######################################
+        success, state = add_doctor({
+            "email": "andre.almeida@gmail.com",
+            "first_name": "André",
+            "last_name": "Almeida",
+            "password": "qwerty12345",
+            "birth_date": "1980-05-10",
+            "phone_number": "966565565"
+        },
+            hospital='Hospital São João')
+        cur_success = cur_success and success
+        success, state = add_doctor({
+            "email": "rui.pereira@gmail.com",
+            "first_name": "Rui",
+            "last_name": "Pereira",
+            "password": "asdfgh",
+            "birth_date": "1985-05-04",
+            "phone_number": "964275097"
+        },
+            hospital='Hospital Santo António')
+        cur_success = cur_success and success
+        success, state = add_doctor({
+            "email": "joao.pereira@gmail.com",
+            "first_name": "João",
+            "last_name": "Pereira",
+            "password": "987654",
+            "birth_date": "1985-09-16",
+            "phone_number": "914608627"
+        },
+            hospital='Hospital da Luz')
+        cur_success = cur_success and success
+
+        #######################################
+        #    CREATE USERS - DOCTOR-PATIENT    #
+        #######################################
+        success, state = add_doctor_patient_association({"client": "vasco.almeida@gmail.com"},
+                                                        email="andre.almeida@gmail.com")
+        cur_success = cur_success and success
+        success, state = add_doctor_patient_association({"client": "albertina.matos@gmail.com"},
+                                                        email="andre.almeida@gmail.com")
+        cur_success = cur_success and success
+        success, state = add_doctor_patient_association({"client": "agostinho.matos@gmail.com"},
+                                                        email="andre.almeida@gmail.com")
+        cur_success = cur_success and success
+        success, state = add_doctor_patient_association({"client": "alberto.marques@gmail.com"},
+                                                        email="andre.almeida@gmail.com")
+        cur_success = cur_success and success
+        success, state = add_doctor_patient_association({"client": "alberto.matos@gmail.com"},
+                                                        email="andre.almeida@gmail.com")
+        cur_success = cur_success and success
+        success, state = add_doctor_patient_association({"client": "miguel.pedroso@gmail.com"},
+                                                        email="andre.almeida@gmail.com")
+        cur_success = cur_success and success
+        success, state = add_doctor_patient_association({"client": "miguel.matos@gmail.com"},
+                                                        email="andre.almeida@gmail.com")
+        cur_success = cur_success and success
+        success, state = add_doctor_patient_association({"client": "andre.silva@gmail.com"},
+                                                        email="andre.almeida@gmail.com")
+        cur_success = cur_success and success
+        success, state = add_doctor_patient_association({"client": "paulo.silva@gmail.com"},
+                                                        email="andre.almeida@gmail.com")
+        cur_success = cur_success and success
+        success, state = add_doctor_patient_association({"client": "antonio.almeida@gmail.com"},
+                                                        email="andre.almeida@gmail.com")
+        cur_success = cur_success and success
+
+        success, state = add_doctor_patient_association({"client": "ana.almeida@gmail.com"},
+                                                        email="rui.pereira@gmail.com")
+        cur_success = cur_success and success
+        success, state = add_doctor_patient_association({"client": "manuela.silva@gmail.com"},
+                                                        email="rui.pereira@gmail.com")
+        cur_success = cur_success and success
+        success, state = add_doctor_patient_association({"client": "miguel.pereira@gmail.com"},
+                                                        email="rui.pereira@gmail.com")
+        cur_success = cur_success and success
+        success, state = add_doctor_patient_association({"client": "pedro.pereira@gmail.com"},
+                                                        email="rui.pereira@gmail.com")
+        cur_success = cur_success and success
+
+        success, state = add_doctor_patient_association({"client": "miguel.silva@gmail.com"},
+                                                        email="joao.pereira@gmail.com")
+        cur_success = cur_success and success
+
+        #######################################
+        #          CREATE INGREDIENTS         #
+        #######################################
+        flour = Ingredient.objects.create(name="Flour", calories=364, carbs=76.3, fat=1, proteins=10.3)
+        water = Ingredient.objects.create(name="Water", calories=0, carbs=0, fat=0, proteins=0)
+        sugar = Ingredient.objects.create(name="Sugar", calories=389, carbs=99.8, fat=0, proteins=0)
+        salt = Ingredient.objects.create(name="Salt", calories=0, carbs=0, fat=0, proteins=0)
+        oil = Ingredient.objects.create(name="Oil", calories=884, carbs=0, fat=100, proteins=0)
+        tomato_sauce = Ingredient.objects.create(name="Tomato Sauce", calories=82, carbs=18.9, fat=0.5, proteins=4.3)
+        pepper = Ingredient.objects.create(name="Pepper", calories=251, carbs=64, fat=3.3, proteins=10.4)
+        mozzarella_cheese = Ingredient.objects.create(name="Mozzarella Cheese", calories=300, carbs=2.2, fat=22.4,
+                                                      proteins=22.2)
+        pork = Ingredient.objects.create(name="Pork", calories=275, carbs=0.8, fat=10, proteins=19)
+        egg = Ingredient.objects.create(name="Egg", calories=143, carbs=0.7, fat=9.5, proteins=12.6)
+        garlic = Ingredient.objects.create(name="Garlic", calories=149, carbs=33.1, fat=0.5, proteins=6.4)
+        onion = Ingredient.objects.create(name="Onion", calories=32, carbs=7.5, fat=0.1, proteins=0.8)
+        cheese = Ingredient.objects.create(name="Cheese", calories=264, carbs=0, fat=21.1, proteins=18.5)
+
+        #######################################
+        #            CREATE MEALS             #
+        #######################################
+        meal = {"name": "Pizza", "category": "Fast Food",
+                "ingredients": [{"id": water.id, "quantity": 42}, {"id": flour.id, "quantity": 39.4},
+                                {"id": sugar.id, "quantity": 0.8}, {"id": salt.id, "quantity": 1.25},
+                                {"id": oil.id, "quantity": 1.25}, {"id": tomato_sauce.id, "quantity": 15.63},
+                                {"id": pepper.id, "quantity": 1.88}, {"id": mozzarella_cheese.id, "quantity": 15.7}]}
+        success, state = add_new_meal(meal, None)
+        cur_success = cur_success and success
+
+        meal = {"name": "Hamburger", "category": "Fast Food",
+                "ingredients": [{"id": pork.id, "quantity": 85}, {"id": salt.id, "quantity": 10},
+                                {"id": pepper.id, "quantity": 10}, {"id": egg.id, "quantity": 50},
+                                {"id": garlic.id, "quantity": 5}, {"id": onion.id, "quantity": 15},
+                                {"id": cheese.id, "quantity": 28}]}
+        success, state = add_new_meal(meal, None)
+        cur_success = cur_success and success
+
+        return cur_success
+
+    except Exception:
+        return False
