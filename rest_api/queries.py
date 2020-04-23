@@ -226,6 +226,12 @@ def get_client(email):
     try:
         client = Client.objects.get(user__auth_user__username=email)
 
+    except Client.DoesNotExist:
+        state = False
+        message = "User does not exist or user is not a client!"
+        return state, message
+
+    try:
         message = ClientSerializer(client).data
         message["steps"] = None
         message["heart_rate"] = None
@@ -248,11 +254,10 @@ def get_client(email):
 
         state = True
 
-    except Client.DoesNotExist:
-        state = False
-        message = "User does not exist or user is not a client!"
-
     except Exception:
+        client.fitbit_access_token = None
+        client.fitbit_refresh_token = None
+        client.save()
         state = False
         message = "Error while trying to fetch client information"
 
@@ -761,6 +766,9 @@ def get_body_history(username, params):
         state = True
 
     except Exception:
+        client.fitbit_access_token = None
+        client.fitbit_refresh_token = None
+        client.save()
         state, message = False, "Error while accessing fitbit information."
 
     return state, message
