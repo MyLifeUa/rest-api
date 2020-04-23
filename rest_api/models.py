@@ -38,12 +38,9 @@ class Client(models.Model):
     doctor = models.ForeignKey(Doctor, on_delete=models.SET_NULL, null=True, blank=True)
 
     def refresh_cb(self, token):
-        print("TIGGER UPDATED")
-        print(token)
         self.fitbit_access_token = token["access_token"]
         self.fitbit_refresh_token = token["refresh_token"]
         self.save()
-        print("UPDATE FINISHED")
 
 
 class Ingredient(models.Model):

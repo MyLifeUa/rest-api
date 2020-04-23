@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('rest_api', '0005_auto_20200420_1406'),
     ]
