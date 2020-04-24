@@ -140,7 +140,7 @@ def update_admin(request, username):
         update_user(data, auth_user)
 
     except Exception:
-        state, message = False, "Error while updating client!"
+        state, message = False, "Error while updating admin!"
 
     return state, message
 
