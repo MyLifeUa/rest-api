@@ -83,7 +83,7 @@ def check_token(request):
 def new_admin(request):
     token, username, role = who_am_i(request)
 
-    if not verify_authorization(role, "admin"):
+    if not verify_authorization(role, "django-admin"):
         state = "Error"
         message = "You do not have permissions to add a new admin"
         status = HTTP_403_FORBIDDEN
@@ -292,7 +292,7 @@ def new_doctor(request):
         status = HTTP_400_BAD_REQUEST
         return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
-    admin_hospital = CustomAdmin.objects.get(auth_user__username=username).hospital
+    admin_hospital = HospitalAdmin.objects.get(auth_user__username=username).hospital
     state, message = queries.add_doctor(data, admin_hospital)
     state, status = ("Success", HTTP_201_CREATED) if state else ("Error", HTTP_400_BAD_REQUEST)
 

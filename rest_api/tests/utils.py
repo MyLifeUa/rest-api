@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User, Group
 
-from rest_api.models import CustomAdmin
+from rest_api.models import HospitalAdmin
 
 
 def login(client, username, pwd):
@@ -18,5 +18,5 @@ def create_user_and_login(client, role, username, email, password, hospital="Hos
         User.objects.create_superuser(username, email, password)
     elif role == "custom_admin":
         auth_user = User.objects.create_superuser(username, email, password)
-        CustomAdmin.objects.create(auth_user=auth_user, hospital=hospital)
+        HospitalAdmin.objects.create(auth_user=auth_user, hospital=hospital)
     login(client, username, password)
