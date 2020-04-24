@@ -22,14 +22,14 @@ def get_role(username, request=None):
         if username is None:
             username = request.user.username
 
-        if User.objects.get(username=username).groups.all()[0].name in ["admins_group"]:
+        if User.objects.get(username=username).is_superuser:
+            role = "django-admin"
+        elif User.objects.get(username=username).groups.all()[0].name in ["admins_group"]:
             role = "admin"
         elif User.objects.get(username=username).groups.all()[0].name in ["clients_group"]:
             role = "client"
         elif User.objects.get(username=username).groups.all()[0].name in ["doctors_group"]:
             role = "doctor"
-        elif User.objects.get(username=username).is_superuser:
-            role = "django-admin"
 
     except User.DoesNotExist:
         role = None

@@ -111,6 +111,15 @@ def add_admin(data):
         error_message = "Error while creating new admin!"
         return False, error_message
 
+    try:
+        admins_group, created = Group.objects.get_or_create(name="admins_group")
+        admins_group.user_set.add(user)
+
+    except Exception:
+        user.delete()
+        error_message = "Error while creating new admin!"
+        return False, error_message
+
     state_message = "Admin registered successfully!"
     return True, state_message
 
