@@ -153,7 +153,7 @@ def delete_admin(request, email):
     message = "You don't have permissions to delete this account"
     status = HTTP_403_FORBIDDEN
 
-    if is_self(role, "admin", username, email):
+    if is_self(role, "admin", username, email) or verify_authorization(role, "django-admin"):
         state, message = queries.delete_user(user)
         state, status = ("Success", HTTP_204_NO_CONTENT) if state else ("Error", HTTP_400_BAD_REQUEST)
 
