@@ -15,6 +15,7 @@ urlpatterns = [
     # Clients
     path("clients", new_client, name="new-client"),
     url("^clients/(?P<email>.+)", client_rud, name="client-rud"),
+    url("^client-photo/(?P<email>.+)", client_photo, name="client-photo"),
     path("doctor-clients", doctor_get_all_patients, name="doctor-clients"),
 
     # Doctors
