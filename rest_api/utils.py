@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.db.models import Sum
 from rest_framework.authtoken.models import Token
 
-from rest_api.models import Doctor, CustomAdmin, Client, MealHistory
+from rest_api.models import Doctor, HospitalAdmin, Client, MealHistory
 from rest_api.serializers import MealHistorySerializer
 
 FAT_IMPORTANCE = 9
@@ -23,6 +23,8 @@ def get_role(username, request=None):
             username = request.user.username
 
         if User.objects.get(username=username).is_superuser:
+            role = "django-admin"
+        elif User.objects.get(username=username).groups.all()[0].name in ["admins_group"]:
             role = "admin"
         elif User.objects.get(username=username).groups.all()[0].name in ["clients_group"]:
             role = "client"
@@ -53,7 +55,7 @@ def is_self(role, group, username, email):
 
 def is_doctor_admin(doctor_username, admin_username):
     doctor_hospital = Doctor.objects.get(user__auth_user__username=doctor_username).hospital
-    admin_hospital = CustomAdmin.objects.get(auth_user__username=admin_username).hospital
+    admin_hospital = HospitalAdmin.objects.get(auth_user__username=admin_username).hospital
     return admin_hospital == doctor_hospital
 
 

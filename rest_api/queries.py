@@ -11,13 +11,13 @@ from .serializers import *
 from .utils import *
 
 
-def add_user(data, is_superuser=False):
+def add_user(data, is_admin=False):
     email = data.get("email")
     first_name = data.get("first_name")
     last_name = data.get("last_name")
     password = data.get("password")
 
-    if not is_superuser:
+    if not is_admin:
         birth_date = data.get("birth_date")
 
         # treat nullable fields
@@ -29,10 +29,10 @@ def add_user(data, is_superuser=False):
         return False, error_message
 
     try:
-        if is_superuser:
+        if is_admin:
             # create a user
-            user = User.objects.create_superuser(username=email, email=email, first_name=first_name,
-                                                 last_name=last_name, password=password)
+            user = User.objects.create_user(username=email, email=email, first_name=first_name, last_name=last_name,
+                                            password=password)
 
         else:
             # create a user
@@ -96,7 +96,7 @@ def delete_user(user):
 def add_admin(data):
     hospital = data.get("hospital")
 
-    state, content = add_user(data, is_superuser=True)
+    state, content = add_user(data, is_admin=True)
     if not state:
         return state, content
 
@@ -104,7 +104,16 @@ def add_admin(data):
 
     try:
         # link the user to an admin
-        CustomAdmin.objects.create(auth_user=user, hospital=hospital)
+        HospitalAdmin.objects.create(auth_user=user, hospital=hospital)
+
+    except Exception:
+        user.delete()
+        error_message = "Error while creating new admin!"
+        return False, error_message
+
+    try:
+        admins_group, created = Group.objects.get_or_create(name="admins_group")
+        admins_group.user_set.add(user)
 
     except Exception:
         user.delete()
@@ -120,7 +129,7 @@ def update_admin(request, username):
     state = True
     message = "Admin successfully updated!"
 
-    admin = CustomAdmin.objects.filter(auth_user__username=username)
+    admin = HospitalAdmin.objects.filter(auth_user__username=username)
     if not admin.exists():
         state, message = False, "User does not exist or user is not a admin!"
         return state, message
@@ -131,13 +140,13 @@ def update_admin(request, username):
         update_user(data, auth_user)
 
     except Exception:
-        state, message = False, "Error while updating client!"
+        state, message = False, "Error while updating admin!"
 
     return state, message
 
 
 def get_admin(username):
-    admin = CustomAdmin.objects.filter(auth_user__username=username)
+    admin = HospitalAdmin.objects.filter(auth_user__username=username)
     if not admin.exists():
         state, message = False, "User does not exist or user is not a admin!"
         return state, message
@@ -613,7 +622,7 @@ def doctor_get_all_patients(username):
 
 
 def get_hospital_doctors(email):
-    admin_hospital = CustomAdmin.objects.get(auth_user__username=email).hospital
+    admin_hospital = HospitalAdmin.objects.get(auth_user__username=email).hospital
 
     doctors = Doctor.objects.filter(hospital=admin_hospital)
 
