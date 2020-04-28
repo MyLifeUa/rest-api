@@ -266,6 +266,27 @@ def get_client(request, email):
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
 
+@api_view(["GET"])
+def client_photo(request, email):
+    token, username, role = who_am_i(request)
+
+    # default possibility
+    state = "Error"
+    message = "You don't have permissions to access this account info"
+    status = HTTP_403_FORBIDDEN
+
+    if is_self(role, "client", username, email):
+        state, message = queries.get_client_photo(username)
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+    elif verify_authorization(role, "doctor") and is_client_doctor(username, email):
+        state, message = queries.get_client_photo(email)
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+    return Response({"role": role, "username": username, "state": state, "message": message, "token": token},
+                    status=status)
+
+
 @swagger_auto_schema(method="post", request_body=doc.DoctorSerializer)
 @api_view(["POST"])
 def new_doctor(request):
