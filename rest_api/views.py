@@ -873,12 +873,19 @@ def body_history(request, email):
 
 
 @api_view(["GET"])
-@permission_classes((AllowAny,))
 def reload_db(request):
-    state = queries.reload_database()
+    token, username, role = who_am_i(request)
 
-    state = "Success" if state else "Error"
-    status = HTTP_200_OK if state else HTTP_400_BAD_REQUEST
-    message = "DB reloaded with success!" if state else "Error while reloading DB!"
+    # default possibility
+    state = "Error"
+    message = "You don't have permissions to perform this action."
+    status = HTTP_403_FORBIDDEN
 
-    return Response({"state": state, "message": message}, status=status)
+    if verify_authorization(role, "django-admin"):
+        state = queries.reload_database()
+
+        state = "Success" if state else "Error"
+        status = HTTP_200_OK if state else HTTP_400_BAD_REQUEST
+        message = "DB reloaded with success!" if state else "Error while reloading DB!"
+
+    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
