@@ -15,6 +15,20 @@ FAT_RATIO = 0.3
 CARBS_RATIO = 0.5
 PROTEINS_RATIO = 0.2
 
+HEART_RATE_CHART = {
+    "M": {"18-25": {"49-61": "Excellent", "62-65": "Good", "66-73": "Average", "74-81": "Fair", "82": "Poor"},
+          "26-35": {"49-61": "Excellent", "62-65": "Good", "66-74": "Average", "75-81": "Fair", "82": "Poor"},
+          "36-45": {"50-62": "Excellent", "63-66": "Good", "67-75": "Average", "76-82": "Fair", "83": "Poor"},
+          "46-55": {"50-63": "Excellent", "64-67": "Good", "68-71": "Average", "72-83": "Fair", "84": "Poor"},
+          "56-65": {"51-61": "Excellent", "62-67": "Good", "68-71": "Average", "72-81": "Fair", "81": "Poor"},
+          "66+": {"50-61": "Excellent", "62-65": "Good", "66-69": "Average", "70-79": "Fair", "80": "Poor"}},
+    "F": {"18-25": {"54-65": "Excellent", "66-69": "Good", "70-78": "Average", "79-84": "Fair", "85": "Poor"},
+          "26-35": {"54-64": "Excellent", "65-68": "Good", "69-76": "Average", "77-82": "Fair", "83": "Poor"},
+          "36-45": {"54-64": "Excellent", "65-69": "Good", "70-78": "Average", "79-84": "Fair", "85": "Poor"},
+          "46-55": {"54-65": "Excellent", "66-69": "Good", "70-77": "Average", "78-83": "Fair", "84": "Poor"},
+          "56-65": {"54-64": "Excellent", "65-68": "Good", "69-73": "Average", "74-83": "Fair", "84": "Poor"},
+          "66+": {"55-64": "Excellent", "65-68": "Good", "69-72": "Average", "73-84": "Fair", "85": "Poor"}}}
+
 
 def get_role(username, request=None):
     role = None
@@ -303,3 +317,49 @@ def get_body_history_values(api, metric, period):
         history["goal"] = goals["caloriesOut"] if metric == "calories" else goals[str(metric)]
 
     return history
+
+
+def get_client_heart_rate_chart(client, api):
+    message = {"scale": None, "avg_heart_rate": None, "label": None}
+    sex = client.sex
+    age = get_client_age(client.user.birth_date)
+
+    heart_rate_chart_all_ages = HEART_RATE_CHART[sex]
+
+    if age <= 25:
+        heart_rate_chart = heart_rate_chart_all_ages["18-25"]
+    elif 26 <= age <= 35:
+        heart_rate_chart = heart_rate_chart_all_ages["26-35"]
+    elif 36 <= age <= 45:
+        heart_rate_chart = heart_rate_chart_all_ages["36-45"]
+    elif 46 <= age <= 55:
+        heart_rate_chart = heart_rate_chart_all_ages["46-55"]
+    elif 56 <= age <= 65:
+        heart_rate_chart = heart_rate_chart_all_ages["56-65"]
+    else:
+        heart_rate_chart = heart_rate_chart_all_ages["66+"]
+
+    message["scale"] = heart_rate_chart
+
+    response = api.time_series("activities/heart", period="1m")["activities-heart"]
+    heart_rate_history = [e["value"]["restingHeartRate"] for e in response if "restingHeartRate" in e["value"]]
+    history_len = len(heart_rate_history)
+    avg_heart_rate = sum(heart_rate_history) / history_len if history_len != 0 else 60
+    message["avg_heart_rate"] = avg_heart_rate
+
+    heart_rate_chart_indexes = heart_rate_chart.keys()
+    actual_index = None
+    for index in heart_rate_chart_indexes:
+        index_lst = index.split("-")
+        if len(index_lst) == 2:
+            min, max = index_lst
+            if int(min) <= avg_heart_rate <= int(max):
+                actual_index = index
+                break
+        else:
+            if avg_heart_rate >= int(index):
+                actual_index = index
+                break
+
+    message["label"] = heart_rate_chart[actual_index]
+    return message

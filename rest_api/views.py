@@ -306,7 +306,6 @@ def new_doctor(request):
             and "last_name" in data
             and "password" in data
             and "birth_date" in data
-
     ):
         state = "Error"
         message = "Missing parameters"
@@ -888,6 +887,26 @@ def body_history(request, email):
 
     elif verify_authorization(role, "doctor") and is_client_doctor(username, email):
         state, message = queries.get_body_history(email, params)
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+
+@api_view(["GET"])
+def body_avg_heart_rate(request, email):
+    token, username, role = who_am_i(request)
+
+    # default possibility
+    state = "Error"
+    message = "You don't have permissions to access this information."
+    status = HTTP_403_FORBIDDEN
+
+    if is_self(role, "client", username, email):
+        state, message = queries.get_body_avg_heart_rate(username)
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+    elif verify_authorization(role, "doctor") and is_client_doctor(username, email):
+        state, message = queries.get_body_avg_heart_rate(email)
         state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
