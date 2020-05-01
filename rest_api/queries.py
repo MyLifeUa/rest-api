@@ -258,12 +258,14 @@ def get_client(email):
             message["distance"] = fitbit_api.time_series("activities/distance", period="1d")["activities-distance"][0][
                 "value"]
 
-            heart_rate = fitbit_api.time_series("activities/heart", period="1d")["activities-heart"][0]["value"]
-            message["heart_rate"] = heart_rate["restingHeartRate"] if "restingHeartRate" in heart_rate else 0
-
+            data = fitbit_api.time_series("activities/heart", period="1m")["activities-heart"]
+            heart_rates = sorted(filter(lambda e: "restingHeartRate" in e["value"], data), key=lambda e: e["dateTime"],
+                                 reverse=True)
+            message["heart_rate"] = heart_rates[0]["value"]["restingHeartRate"]
         state = True
 
-    except Exception:
+    except Exception as e:
+        print(e)
         client.fitbit_access_token = None
         client.fitbit_refresh_token = None
         client.save()
