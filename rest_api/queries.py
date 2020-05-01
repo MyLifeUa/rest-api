@@ -817,8 +817,7 @@ def get_body_avg_heart_rate(username):
         message = get_client_heart_rate_chart(client, fitbit_api)
         state = True
 
-    except Exception as e:
-        print(e)
+    except Exception:
         client.fitbit_access_token = None
         client.fitbit_refresh_token = None
         client.save()
