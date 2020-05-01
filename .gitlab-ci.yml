@@ -31,7 +31,7 @@ format:
     - pip install black
     - black .
 
-lint:
+.lint:
   stage: Lint
   <<: *build
   script:

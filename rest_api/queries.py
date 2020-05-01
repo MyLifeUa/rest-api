@@ -274,6 +274,20 @@ def get_client(email):
     return state, message
 
 
+def get_client_photo(email):
+    try:
+        client = Client.objects.get(user__auth_user__username=email)
+        state = True
+        message = {"photo": client.user.photo}
+
+    except Client.DoesNotExist:
+        state = False
+        message = "User does not exist or user is not a client!"
+        return state, message
+
+    return state, message
+
+
 def add_doctor(data, hospital):
     state, content = add_user(data)
     if not state:
