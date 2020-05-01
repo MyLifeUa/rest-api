@@ -264,8 +264,7 @@ def get_client(email):
             message["heart_rate"] = heart_rates[0]["value"]["restingHeartRate"]
         state = True
 
-    except Exception as e:
-        print(e)
+    except Exception:
         client.fitbit_access_token = None
         client.fitbit_refresh_token = None
         client.save()
