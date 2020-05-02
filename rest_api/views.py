@@ -526,10 +526,14 @@ def new_food_log(request):
         status = HTTP_400_BAD_REQUEST
         return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
-    state, message = queries.add_food_log(data, username)
+    state, message, alerts = queries.add_food_log(data, username)
     state, status = ("Success", HTTP_201_CREATED) if state else ("Error", HTTP_400_BAD_REQUEST)
 
-    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+    final_response = {"role": role, "state": state, "message": message, "token": token}
+    if state and (alerts is not None or not alerts):
+        final_response["alerts"] = alerts
+
+    return Response(final_response, status=status)
 
 
 @swagger_auto_schema(method="put", request_body=doc.MealHistorySerializer)

@@ -363,3 +363,34 @@ def get_client_heart_rate_chart(client, api):
 
     message["label"] = heart_rate_chart[actual_index]
     return message
+
+
+def process_meal_history_insert(client, inserted_item):
+    goals = get_daily_goals(client)
+    calories_goal = goals["calories"]
+    fat_goal = goals["fat"]
+    carbs_goal = goals["carbs"]
+    proteins_goal = goals["proteins"]
+
+    calories = inserted_item.calories
+    fat = inserted_item.fat
+    carbs = inserted_item.carbs
+    proteins = inserted_item.proteins
+
+    alerts = {"bad": [], "good": []}
+
+    if calories > 0.5 * calories_goal:
+        alerts["bad"].append("Your calories goal today is {:.0f} and this has {:.0f}.".format(calories_goal, calories))
+    if fat > 0.5 * fat_goal:
+        alerts["bad"].append("Your fat goal today is {:.0f} grams and this has {:.0f} grams.".format(fat_goal, fat))
+    if carbs > 0.5 * carbs_goal:
+        alerts["bad"].append(
+            "Your carbs goal today is {:.0f} grams and this has {:.0f} grams.".format(carbs_goal, carbs))
+    if proteins > 0.5 * proteins_goal:
+        alerts["bad"].append(
+            "Your proteins goal today is {:.0f} grams and this has {:.0f} grams.".format(proteins_goal, proteins))
+
+    if proteins > 10:  # TODO: check with João Vasconcelos
+        alerts["good"].append("This food is high on protein.")
+
+    return alerts
