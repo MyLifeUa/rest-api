@@ -838,7 +838,7 @@ def new_expo_token(data, username):
 def get_client_expo_tokens(username):
     client = Client.objects.get(user__auth_user__username=username)
 
-    return True, [ExpoTokenSerializer(token).data for token in ExpoToken.objects.filter(client=client)]
+    return True, [token.token for token in ExpoToken.objects.filter(client=client)]
 
 
 def delete_client_expo_tokens(username):
