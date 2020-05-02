@@ -812,11 +812,11 @@ def nutrients_ratio(request, email, date):
 
         if is_self(role, "client", username, email):
             state, message = queries.get_nutrients_ratio(username, date)
-            state, status = ("Success", HTTP_200_OK) if state else ("Success", HTTP_204_NO_CONTENT)
+            state, status = ("Success", HTTP_200_OK)
 
         elif verify_authorization(role, "doctor") and is_client_doctor(username, email):
             state, message = queries.get_nutrients_ratio(email, date)
-            state, status = ("Success", HTTP_200_OK) if state else ("Success", HTTP_204_NO_CONTENT)
+            state, status = ("Success", HTTP_200_OK)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 

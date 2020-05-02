@@ -56,7 +56,7 @@ urlpatterns = [
     url("^health-stats/nutrients/total/(?P<email>.+)/(?P<date>.+)", nutrients_total, name="nutrients-total"),
     url("^health-stats/nutrients/history/(?P<email>.+)", nutrients_history, name="nutrients-history"),
     url("^health-stats/body/history/(?P<email>.+)", body_history, name="body-history"),
-    url("^health-stats/body/heart-rate/(?P<email>.+)", body_avg_heart_rate, name="body-history"),
+    url("^health-stats/body/heart-rate/(?P<email>.+)", body_avg_heart_rate, name="body-avg-heart-rate"),
     url("^health-stats/my-life/(?P<email>.+)", my_life_stat, name="stat-my-life"),
 
     # Expo Tokens

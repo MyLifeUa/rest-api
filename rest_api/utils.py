@@ -320,7 +320,7 @@ def get_body_history_values(api, metric, period):
 
 
 def get_client_heart_rate_chart(client, api):
-    message = {"scale": None, "avg_heart_rate": None, "label": None}
+    message = {"scale": None, "scale_sizes": None, "avg_heart_rate": None, "label": None}
     sex = client.sex
     age = get_client_age(client.user.birth_date)
 
@@ -345,22 +345,24 @@ def get_client_heart_rate_chart(client, api):
     heart_rate_history = [e["value"]["restingHeartRate"] for e in response if "restingHeartRate" in e["value"]]
     history_len = len(heart_rate_history)
     avg_heart_rate = sum(heart_rate_history) / history_len if history_len != 0 else 60
-    message["avg_heart_rate"] = avg_heart_rate
+    message["avg_heart_rate"] = round(avg_heart_rate, 1)
 
     heart_rate_chart_indexes = heart_rate_chart.keys()
+    scale_sizes = []
     actual_index = None
     for index in heart_rate_chart_indexes:
         index_lst = index.split("-")
         if len(index_lst) == 2:
             min, max = index_lst
+            scale_sizes.append(int(max) - int(min) + 1)
             if int(min) <= avg_heart_rate <= int(max):
                 actual_index = index
-                break
         else:
+            scale_sizes.append(100 - int(index) + 1)
             if avg_heart_rate >= int(index):
                 actual_index = index
-                break
 
+    message["scale_sizes"] = scale_sizes
     message["label"] = heart_rate_chart[actual_index]
     return message
 
