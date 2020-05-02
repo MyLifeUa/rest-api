@@ -912,7 +912,7 @@ def body_avg_heart_rate(request, email):
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
 
-@swagger_auto_schema(methods=["post"], request_body=doc.ExpoTokenSerializer)
+@swagger_auto_schema(methods=["post", "delete"], request_body=doc.ExpoTokenSerializer)
 @api_view(["GET", "POST", "DELETE"])
 def expo_tokens_post_and_get(request):
     if request.method == "POST":
@@ -967,7 +967,8 @@ def delete_client_expo_tokens(request):
     status = HTTP_403_FORBIDDEN
 
     if verify_authorization(role, "client"):
-        state, message = queries.delete_client_expo_tokens(username)
+        data = request.data
+        state, message = queries.delete_client_expo_tokens(data, username)
         state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
