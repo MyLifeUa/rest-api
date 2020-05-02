@@ -841,12 +841,18 @@ def get_client_expo_tokens(username):
     return True, [token.token for token in ExpoToken.objects.filter(client=client)]
 
 
-def delete_client_expo_tokens(username):
+def delete_client_expo_tokens(data, username):
+    token = data.get("expo_token")
     client = Client.objects.get(user__auth_user__username=username)
 
-    ExpoToken.objects.filter(client=client).delete()
+    if token is None:
+        ExpoToken.objects.filter(client=client).delete()
+        message = "All client's expo tokens were deleted successfully"
+    else:
+        ExpoToken.objects.filter(client=client, token=token).delete()
+        message = "Client's token was successfully deleted"
 
-    return True, "All client's expo tokens were deleted successfully"
+    return True, message
 
 
 def reload_database():
