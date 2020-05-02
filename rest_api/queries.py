@@ -358,11 +358,13 @@ def add_food_log(data, email):
     meal_id = data.get("meal")
     number_of_servings = data.get("number_of_servings")
 
+    alerts = None
+
     client = Client.objects.filter(user__auth_user__username=email)
 
     if not client.exists():
         state, message = False, "Client does not exist."
-        return state, message
+        return state, message, alerts
 
     current_client = Client.objects.get(user__auth_user__username=email)
 
@@ -372,7 +374,7 @@ def add_food_log(data, email):
 
         if not meal.exists():
             state, message = False, "Meal does not exist."
-            return state, message
+            return state, message, alerts
 
         current_meal = Meal.objects.get(id=meal_id)
 
@@ -382,16 +384,18 @@ def add_food_log(data, email):
         carbs = number_of_servings * current_meal.carbs
         fat = number_of_servings * current_meal.fat
 
-        MealHistory.objects.create(day=day, type_of_meal=type_of_meal, client=current_client, meal=current_meal,
-                                   number_of_servings=number_of_servings, calories=calories, proteins=proteins,
-                                   carbs=carbs, fat=fat)
+        inserted_item = MealHistory.objects.create(day=day, type_of_meal=type_of_meal, client=current_client,
+                                                   meal=current_meal, number_of_servings=number_of_servings,
+                                                   calories=calories, proteins=proteins, carbs=carbs, fat=fat)
+
+        alerts = process_meal_history_insert(current_client, inserted_item)
 
     except Exception:
         message = "Error while creating new food log!"
-        return False, message
+        return False, message, alerts
 
     message = "The food log was created with success"
-    return True, message
+    return True, message, alerts
 
 
 def delete_food_log(meal_history):
