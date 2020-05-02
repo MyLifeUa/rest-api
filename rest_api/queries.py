@@ -826,6 +826,29 @@ def get_body_avg_heart_rate(username):
     return state, message
 
 
+def new_expo_token(data, username):
+    client = Client.objects.get(user__auth_user__username=username)
+    expo_token = data["expo_token"]
+
+    ExpoToken.objects.create(client=client, token=expo_token)
+
+    return True, "Expo Token registered successfully"
+
+
+def get_client_expo_tokens(username):
+    client = Client.objects.get(user__auth_user__username=username)
+
+    return True, [ExpoTokenSerializer(token).data for token in ExpoToken.objects.filter(client=client)]
+
+
+def delete_client_expo_tokens(username):
+    client = Client.objects.get(user__auth_user__username=username)
+
+    ExpoToken.objects.filter(client=client).delete()
+
+    return True, "All client's expo tokens were deleted successfully"
+
+
 def reload_database():
     try:
         #######################################

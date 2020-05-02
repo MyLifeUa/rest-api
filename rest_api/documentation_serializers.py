@@ -128,3 +128,7 @@ class ClientEmailSerializer(serializers.Serializer):
 class ClientFitbitToken(serializers.Serializer):
     access_token = serializers.CharField(required=True)
     refresh_token = serializers.CharField(required=True)
+
+
+class ExpoTokenSerializer(serializers.Serializer):
+    expo_token = serializers.CharField(required=True)

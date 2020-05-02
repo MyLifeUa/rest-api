@@ -912,6 +912,67 @@ def body_avg_heart_rate(request, email):
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
 
+@swagger_auto_schema(methods=["post"], request_body=doc.ExpoTokenSerializer)
+@api_view(["GET", "POST", "DELETE"])
+def expo_tokens_post_and_get(request):
+    if request.method == "POST":
+        return new_expo_token(request)
+    elif request.method == "GET":
+        return get_client_expo_tokens(request)
+    elif request.method == "DELETE":
+        return delete_client_expo_tokens(request)
+
+
+def new_expo_token(request):
+    token, username, role = who_am_i(request)
+
+    state = "Error"
+    message = "You don't have permissions to access the list of meals."
+    status = HTTP_403_FORBIDDEN
+
+    if verify_authorization(role, "client"):
+
+        data = request.data
+        if "expo_token" not in data:
+            state = "Error"
+            message = "Missing parameter: 'expo_token'"
+            status = HTTP_400_BAD_REQUEST
+            return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+        state, message = queries.new_expo_token(data, username)
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+
+def get_client_expo_tokens(request):
+    token, username, role = who_am_i(request)
+
+    state = "Error"
+    message = "You don't have permissions to access the list of meals."
+    status = HTTP_403_FORBIDDEN
+
+    if verify_authorization(role, "client"):
+        state, message = queries.get_client_expo_tokens(username)
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+
+def delete_client_expo_tokens(request):
+    token, username, role = who_am_i(request)
+
+    state = "Error"
+    message = "You don't have permissions to access the list of meals."
+    status = HTTP_403_FORBIDDEN
+
+    if verify_authorization(role, "client"):
+        state, message = queries.delete_client_expo_tokens(username)
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+
 @api_view(["GET"])
 def reload_db(request):
     token, username, role = who_am_i(request)

@@ -171,3 +171,11 @@ class IngredientSerializer(serializers.Serializer):
 
     def get_id(self, obj):
         return obj.id
+
+
+class ExpoTokenSerializer(serializers.Serializer):
+    client_username = serializers.SerializerMethodField()
+    token = serializers.CharField(required=True)
+
+    def get_client_username(self, obj):
+        return obj.client.user.auth_user.email

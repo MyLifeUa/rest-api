@@ -58,6 +58,9 @@ urlpatterns = [
     url("^health-stats/body/history/(?P<email>.+)", body_history, name="body-history"),
     url("^health-stats/body/heart-rate/(?P<email>.+)", body_avg_heart_rate, name="body-history"),
 
+    # Expo Tokens
+    path("expo-tokens", expo_tokens_post_and_get, name="expo-tokens-get-and-post"),
+
     # Reload Database
     path("reload-db", reload_db, name="reload-db"),
 ]
