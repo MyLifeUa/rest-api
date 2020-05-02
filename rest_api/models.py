@@ -79,3 +79,8 @@ class MealHistory(models.Model):
     fat = models.FloatField(default=0)
     carbs = models.FloatField(default=0)
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
+
+
+class ExpoToken(models.Model):
+    token = models.TextField()
+    client = models.ForeignKey(Client, on_delete=models.CASCADE)
