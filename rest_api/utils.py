@@ -196,7 +196,7 @@ def get_nutrients_info(client, info_dict):
 
     goals = get_daily_goals(client)
 
-    info_dict["carbs"]["goals"] = {"total": round(goals["carbs"]), "ratio": CARBS_IMPORTANCE * 100}
+    info_dict["carbs"]["goals"] = {"total": round(goals["carbs"]), "ratio": CARBS_RATIO * 100}
     info_dict["fat"]["goals"] = {"total": round(goals["fat"]), "ratio": FAT_RATIO * 100}
     info_dict["proteins"]["goals"] = {"total": round(goals["proteins"]), "ratio": PROTEINS_RATIO * 100}
     info_dict["calories"]["goals"] = round(goals["calories"])
@@ -503,7 +503,7 @@ def process_meal_history_insert(client, inserted_item):
         alerts["bad"].append(
             "Your proteins goal today is {:.0f} grams and this has {:.0f} grams.".format(proteins_goal, proteins))
 
-    if proteins > 10:  # TODO: check with João Vasconcelos
+    if proteins > 10:
         alerts["good"].append("This food is high on protein.")
 
     return alerts
