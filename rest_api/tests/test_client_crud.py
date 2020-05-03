@@ -5,8 +5,7 @@ from rest_framework.status import (
     HTTP_200_OK,
     HTTP_201_CREATED,
     HTTP_400_BAD_REQUEST,
-    HTTP_403_FORBIDDEN,
-    HTTP_204_NO_CONTENT
+    HTTP_403_FORBIDDEN
 )
 from rest_framework.test import APITestCase
 
@@ -100,7 +99,7 @@ class ClientDeleteTest(APITestCase):
 
     def test_delete_self(self):
         response = self.client.delete("/clients/v@ua.pt")
-        self.assertEqual(response.status_code, HTTP_204_NO_CONTENT)
+        self.assertEqual(response.status_code, HTTP_200_OK)
 
 
 class GetClientTest(APITestCase):
