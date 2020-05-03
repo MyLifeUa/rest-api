@@ -196,9 +196,9 @@ def get_nutrients_info(client, info_dict):
 
     goals = get_daily_goals(client)
 
-    info_dict["carbs"]["goals"] = {"total": round(goals["carbs"]), "ratio": CARBS_RATIO * 100}
-    info_dict["fat"]["goals"] = {"total": round(goals["fat"]), "ratio": FAT_RATIO * 100}
-    info_dict["proteins"]["goals"] = {"total": round(goals["proteins"]), "ratio": PROTEINS_RATIO * 100}
+    info_dict["carbs"]["goals"] = {"total": round(goals["carbs"]), "ratio": round(CARBS_RATIO * 100)}
+    info_dict["fat"]["goals"] = {"total": round(goals["fat"]), "ratio": round(FAT_RATIO * 100)}
+    info_dict["proteins"]["goals"] = {"total": round(goals["proteins"]), "ratio": round(PROTEINS_RATIO * 100)}
     info_dict["calories"]["goals"] = round(goals["calories"])
 
     return info_dict
