@@ -836,8 +836,8 @@ def get_my_life_stat(username):
     fitbit_access_token = client.fitbit_access_token
     fitbit_refresh_token = client.fitbit_refresh_token
 
-    fitbit_access_token = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyMkJRNlciLCJzdWIiOiI4QllHTjciLCJpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJzY29wZXMiOiJyc29jIHJhY3QgcnNldCBybG9jIHJ3ZWkgcmhyIHJwcm8gcm51dCByc2xlIiwiZXhwIjoxNTg4NDc4NDIxLCJpYXQiOjE1ODg0NDk2MjF9.beuX4MlMM4PfX_jPENm36Dl16dEPnXX4TWgBteyBWsE"
-    fitbit_refresh_token = "09ee7d5abc973570ce7fd1e587ac4ff1b39b0a0d15cf2567049516ffb88f9109"
+    fitbit_access_token = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyMkJRNlciLCJzdWIiOiI4QllHTjciLCJpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJzY29wZXMiOiJyc29jIHJzZXQgcmFjdCBybG9jIHJ3ZWkgcmhyIHJudXQgcnBybyByc2xlIiwiZXhwIjoxNTg4NTI2MTcwLCJpYXQiOjE1ODg0OTczNzB9.1H1eBKa0PN12WeUtkUg1YhcI56WgsbmmGNFIFQInd80"
+    fitbit_refresh_token = "fd19114a7288a1949e95d1b7c269ac4795780d34ed291c63120ee62e8cf3a80f"
 
     if fitbit_access_token is None or fitbit_refresh_token is None:
         message = get_my_life_stats(client)
@@ -852,8 +852,7 @@ def get_my_life_stat(username):
             message = get_my_life_stats(client, fitbit_api)
             state = True
 
-        except Exception as e:
-            print(e)
+        except Exception:
             client.fitbit_access_token = None
             client.fitbit_refresh_token = None
             client.save()

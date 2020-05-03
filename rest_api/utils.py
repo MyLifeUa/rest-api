@@ -378,17 +378,17 @@ def get_my_life_stats(client, api=None):
 
     if api is None:
         current_week_my_life = get_my_life_value_nutrients_only(current_start_date, current_end_date, client)
-        if current_week_my_life == 0:
-            current_week_my_life = 0.1
-
         previous_week_my_life = get_my_life_value_nutrients_only(previous_start_date, previous_end_date, client)
-
-        if previous_week_my_life == 0:
-            previous_week_my_life = 0.1
 
     else:
         current_week_my_life = get_my_life_value_fitbit(current_start_date, current_end_date, client, api)
         previous_week_my_life = get_my_life_value_fitbit(previous_start_date, previous_end_date, client, api)
+
+    if current_week_my_life == 0:
+        current_week_my_life = 0.1
+
+    if previous_week_my_life == 0:
+        previous_week_my_life = 0.1
 
     increase = 100 * (current_week_my_life - previous_week_my_life) / previous_week_my_life
 
@@ -455,6 +455,8 @@ def evaluate_differece_ratio(client, diff_ratio):
         my_life_metric = (((diff_ratio - 16) * new_range) / old_range) + 4
 
     else:
+        if diff_ratio > 100:
+            diff_ratio = 100
         old_range = 100 - 26
         new_range = 2 - 0
         my_life_metric = (((100 - diff_ratio) * new_range) / old_range) + 0
