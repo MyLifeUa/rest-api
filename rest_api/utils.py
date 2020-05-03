@@ -377,12 +377,16 @@ def get_my_life_stats(client, api=None):
     previous_start_date = previous_end_date - timedelta(days=6)
 
     if api is None:
-        current_week_my_life = get_my_life_value_nutrients_only(current_start_date, current_end_date, client)
-        previous_week_my_life = get_my_life_value_nutrients_only(previous_start_date, previous_end_date, client)
+        current_week_my_life, current_week_my_life_label = get_my_life_value_nutrients_only(current_start_date,
+                                                                                            current_end_date, client)
+        previous_week_my_life, previous_week_my_life_label = get_my_life_value_nutrients_only(previous_start_date,
+                                                                                              previous_end_date, client)
 
     else:
-        current_week_my_life = get_my_life_value_fitbit(current_start_date, current_end_date, client, api)
-        previous_week_my_life = get_my_life_value_fitbit(previous_start_date, previous_end_date, client, api)
+        current_week_my_life, current_week_my_life_label = get_my_life_value_fitbit(current_start_date,
+                                                                                    current_end_date, client, api)
+        previous_week_my_life, previous_week_my_life_label = get_my_life_value_fitbit(previous_start_date,
+                                                                                      previous_end_date, client, api)
 
     if current_week_my_life == 0:
         current_week_my_life = 0.1
@@ -392,8 +396,13 @@ def get_my_life_stats(client, api=None):
 
     increase = 100 * (current_week_my_life - previous_week_my_life) / previous_week_my_life
 
-    return {"scale": "0-5", "current_week": current_week_my_life, "previous_week": previous_week_my_life,
-            "increase": round(increase)}
+    scale = {"0-2": "Poor", "2-4": "Average", "4-5": "Excellent"}
+    scale_sizes = [2, 2, 1]
+
+    return {"scale": scale, "scale_sizes": scale_sizes,
+            "current_week": {"value": current_week_my_life, "label": current_week_my_life_label},
+            "previous_week": {"value": previous_week_my_life, "label": previous_week_my_life_label},
+            "increase": round(increase), "sex": client.sex}
 
 
 def get_my_life_value_nutrients_only(start_date, end_date, client):
@@ -407,9 +416,9 @@ def get_my_life_value_nutrients_only(start_date, end_date, client):
     difference = total_week_calories - total_week_calories_goal
     diff_ratio = round(difference / total_week_calories_goal * 100) if total_week_calories_goal != 0 else 100
 
-    my_life_metric = evaluate_differece_ratio(client, diff_ratio)
+    my_life_metric, label = evaluate_differece_ratio(client, diff_ratio)
 
-    return round(my_life_metric, 1)
+    return round(my_life_metric, 1), label
 
 
 def get_my_life_value_fitbit(start_date, end_date, client, api):
@@ -428,9 +437,9 @@ def get_my_life_value_fitbit(start_date, end_date, client, api):
     difference = total_week_calories - total_week_fitbit_calories
     diff_ratio = round(difference / total_week_calories_goal * 100)
 
-    my_life_metric = evaluate_differece_ratio(client, diff_ratio)
+    my_life_metric, label = evaluate_differece_ratio(client, diff_ratio)
 
-    return round(my_life_metric, 1)
+    return round(my_life_metric, 1), label
 
 
 def evaluate_differece_ratio(client, diff_ratio):
@@ -443,16 +452,19 @@ def evaluate_differece_ratio(client, diff_ratio):
         old_range = 0 - (-100)
         new_range = 2 - 0
         my_life_metric = (((diff_ratio - (-100)) * new_range) / old_range) + 0
+        label = "Poor"
 
     elif 0 <= diff_ratio <= 15:
         old_range = 15 - 0
         new_range = 4 - 2
         my_life_metric = (((diff_ratio - 0) * new_range) / old_range) + 2
+        label = "Average"
 
     elif 16 <= diff_ratio <= 25:
         old_range = 25 - 16
         new_range = 5 - 4
         my_life_metric = (((diff_ratio - 16) * new_range) / old_range) + 4
+        label = "Excellent"
 
     else:
         if diff_ratio > 100:
@@ -460,8 +472,9 @@ def evaluate_differece_ratio(client, diff_ratio):
         old_range = 100 - 26
         new_range = 2 - 0
         my_life_metric = (((100 - diff_ratio) * new_range) / old_range) + 0
+        label = "Poor"
 
-    return my_life_metric
+    return my_life_metric, label
 
 
 def process_meal_history_insert(client, inserted_item):
