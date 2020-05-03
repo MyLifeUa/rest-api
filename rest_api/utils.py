@@ -320,9 +320,10 @@ def get_body_history_values(api, metric, period):
 
 
 def get_client_heart_rate_chart(client, api):
-    message = {"scale": None, "scale_sizes": None, "avg_heart_rate": None, "label": None}
     sex = client.sex
     age = get_client_age(client.user.birth_date)
+
+    message = {"scale": None, "scale_sizes": None, "avg_heart_rate": None, "label": None, "sex": sex}
 
     heart_rate_chart_all_ages = HEART_RATE_CHART[sex]
 
