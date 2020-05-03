@@ -916,6 +916,26 @@ def body_avg_heart_rate(request, email):
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
 
+@api_view(["GET"])
+def my_life_stat(request, email):
+    token, username, role = who_am_i(request)
+
+    # default possibility
+    state = "Error"
+    message = "You don't have permissions to access this information."
+    status = HTTP_403_FORBIDDEN
+
+    if is_self(role, "client", username, email):
+        state, message = queries.get_my_life_stat(username)
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+    elif verify_authorization(role, "doctor") and is_client_doctor(username, email):
+        state, message = queries.get_my_life_stat(email)
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+
 @swagger_auto_schema(methods=["post", "delete"], request_body=doc.ExpoTokenSerializer)
 @api_view(["GET", "POST", "DELETE"])
 def expo_tokens_post_and_get(request):

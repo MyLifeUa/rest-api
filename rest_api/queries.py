@@ -830,6 +830,34 @@ def get_body_avg_heart_rate(username):
     return state, message
 
 
+def get_my_life_stat(username):
+    client = Client.objects.get(user__auth_user__username=username)
+
+    fitbit_access_token = client.fitbit_access_token
+    fitbit_refresh_token = client.fitbit_refresh_token
+
+    if fitbit_access_token is None or fitbit_refresh_token is None:
+        message = get_my_life_stats(client)
+        state = True
+
+    else:
+        try:
+            fitbit_api = fitbit.Fitbit(CLIENT_FITBIT_ID, CLIENT_FITBIT_SECRET, system="en_UK", oauth2=True,
+                                       access_token=fitbit_access_token, refresh_token=fitbit_refresh_token,
+                                       refresh_cb=client.refresh_cb)
+
+            message = get_my_life_stats(client, fitbit_api)
+            state = True
+
+        except Exception:
+            client.fitbit_access_token = None
+            client.fitbit_refresh_token = None
+            client.save()
+            state, message = False, "Error while accessing fitbit information."
+
+    return state, message
+
+
 def new_expo_token(data, username):
     client = Client.objects.get(user__auth_user__username=username)
     expo_token = data["expo_token"]
