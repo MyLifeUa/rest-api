@@ -416,7 +416,7 @@ def get_my_life_value_nutrients_only(start_date, end_date, client):
     difference = total_week_calories - total_week_calories_goal
     diff_ratio = round(difference / total_week_calories_goal * 100) if total_week_calories_goal != 0 else 100
 
-    my_life_metric, label = evaluate_differece_ratio(client, diff_ratio)
+    my_life_metric, label = evaluate_difference_ratio(client, diff_ratio)
 
     return round(my_life_metric, 1), label
 
@@ -437,12 +437,12 @@ def get_my_life_value_fitbit(start_date, end_date, client, api):
     difference = total_week_calories - total_week_fitbit_calories
     diff_ratio = round(difference / total_week_calories_goal * 100)
 
-    my_life_metric, label = evaluate_differece_ratio(client, diff_ratio)
+    my_life_metric, label = evaluate_difference_ratio(client, diff_ratio)
 
     return round(my_life_metric, 1), label
 
 
-def evaluate_differece_ratio(client, diff_ratio):
+def evaluate_difference_ratio(client, diff_ratio):
     mult_factor = 1 if client.weight_goal > client.current_weight else -1
     diff_ratio *= mult_factor
 
