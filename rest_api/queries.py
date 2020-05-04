@@ -161,6 +161,9 @@ def add_client(data):
     current_weight = data.get("current_weight")
     sex = data.get("sex")
 
+    is_diabetic = data.get("is_diabetic", False)
+    has_high_colesterol = data.get("has_high_colesterol", False)
+
     state, content = add_user(data)
     if not state:
         return state, content
@@ -171,7 +174,8 @@ def add_client(data):
     try:
         # link the user to a client
         Client.objects.create(user=custom_user, height=height, current_weight=current_weight, weight_goal=weight_goal,
-                              sex=sex)
+                              sex=sex, 
+                              is_diabetic=is_diabetic, has_high_colesterol=has_high_colesterol)
 
     except Exception:
         user.delete()
