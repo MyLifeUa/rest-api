@@ -1,11 +1,14 @@
 from datetime import datetime, date, timedelta
 
+import requests
 from django.contrib.auth.models import User
 from django.db.models import Sum
 from rest_framework.authtoken.models import Token
 
 from rest_api.models import Doctor, HospitalAdmin, Client, MealHistory
 from rest_api.serializers import MealHistorySerializer
+
+API_URL = "https://%s.openfoodfacts.org"
 
 FAT_IMPORTANCE = 9
 CARBS_IMPORTANCE = 4
@@ -507,3 +510,22 @@ def process_meal_history_insert(client, inserted_item):
         alerts["good"].append("This food is high on protein.")
 
     return alerts
+
+
+def get_product(barcode, locale="world"):
+    url = build_url(geography=locale, parameters=barcode)
+    return fetch(url)
+
+
+def build_url(geography="world", parameters=None):
+    geo_url = API_URL % geography
+    base_url = "/".join([geo_url, "api", "v0", "product", parameters])
+    return base_url
+
+
+def fetch(path, json_file=True):
+    if json_file:
+        path = "%s.json" % path
+
+    response = requests.get(path)
+    return response.json()
