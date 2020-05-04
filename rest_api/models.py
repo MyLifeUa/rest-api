@@ -36,6 +36,8 @@ class Client(models.Model):
     current_weight = models.FloatField()
     weight_goal = models.FloatField()
     doctor = models.ForeignKey(Doctor, on_delete=models.SET_NULL, null=True, blank=True)
+    is_diabetic = models.BooleanField(default=False);
+    has_high_colesterol = models.BooleanField(default=False);
 
     def refresh_cb(self, token):
         self.fitbit_access_token = token["access_token"]

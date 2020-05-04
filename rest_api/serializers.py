@@ -25,6 +25,8 @@ class ClientSerializer(serializers.Serializer):
     sex = serializers.CharField()
     fitbit_access_token = serializers.CharField()
     fitbit_refresh_token = serializers.CharField()
+    is_diabetic = serializers.BooleanField();
+    has_high_colesterol = serializers.BooleanField();
 
     def get_id(self, obj):
         return obj.user.auth_user.id
