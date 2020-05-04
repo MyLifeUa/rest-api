@@ -48,6 +48,9 @@ urlpatterns = [
     # Image Classification
     path("image-classification", classify_image, name="classify-image"),
 
+    # Barcode Classification
+    path("barcode-classification", classify_barcode, name="classify-barcode"),
+
     # Check token is valid
     path("check-token", check_token, name="check-token"),
 

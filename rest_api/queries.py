@@ -695,6 +695,35 @@ def classify_image(image_b64):
     return state, message
 
 
+def classify_barcode(barcode):
+    if barcode == "":
+        state = False
+        message = "Missing parameter: 'barcode'"
+
+    else:
+        response = get_product(barcode)
+
+        state = False
+        message = "Product not found."
+
+        if response.get("status") == 1:
+            product_name = response.get("product").get("product_name")
+
+            message = "Error while trying to classify product"
+
+            if product_name is not None:
+
+                try:
+                    meal = Meal.objects.get(name__iexact=product_name)
+                    message = MealSerializer(meal).data
+                    state = True
+
+                except Meal.DoesNotExist:
+                    message = "Item does not exist in the system!"
+
+    return state, message
+
+
 def get_client_doctor(username):
     client = Client.objects.get(user__auth_user__username=username)
 
