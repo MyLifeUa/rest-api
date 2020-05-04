@@ -183,3 +183,9 @@ runserver.default_port = "<port>"   #9000
 | andre.almeida@gmail.com  | qwerty12345  |
 | rui.pereira@gmail.com  | asdfgh  |
 | joao.pereira@gmail.com  | 987654  |
+
+
+## Acknowledgments
+
+* The barcode functionality was built using the REST API of: https://world.openfoodfacts.org/data
+* The implementation of barcode functionality was done with the help of the repo available at: https://github.com/openfoodfacts/openfoodfacts-python
