@@ -1,3 +1,4 @@
+from driver import PostgresDriver
 
 if __name__ == '__main__':
     dolphin = PostgresDriver()
