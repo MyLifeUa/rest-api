@@ -15,15 +15,12 @@ job = cron.new(command=f'python3 {os.path.dirname(os.path.abspath(__file__))}/no
 job2 = cron.new(command=f'python3 {os.path.dirname(os.path.abspath(__file__))}/notification.py', comment="night_notification")
 
 # afternoon notification at 15:01
-job.hour.on(21)
-job.minute.on(44)
+job.hour.on(14)
+job.minute.on(1)
 
 # night notification at 21:01
-job2.hour.on(21)
-job2.minute.on(46)
-
-for job in cron:
-    print(cron)
+job2.hour.on(20)
+job2.minute.on(1)
 
 # save changes to crontab
 cron.write()
