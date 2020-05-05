@@ -26,4 +26,4 @@ for job in cron:
     print(cron)
 
 # save changes to crontab
-cron.write() 
+cron.write()
