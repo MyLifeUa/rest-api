@@ -6,9 +6,11 @@ username = os.getenv('USER')
 # get crontab
 cron = CronTab(user=username)
 
-for job in cron:
-    print(cron)
+# remove old notifications cronjobs
+cron.remove_all(comment='afternoon_notification')
+cron.remove_all(comment='night_notification')
 
+# create new cronjobs
 job = cron.new(command=f'python3 {os.path.dirname(os.path.abspath(__file__))}/notification.py', comment="afternoon_notification")
 job2 = cron.new(command=f'python3 {os.path.dirname(os.path.abspath(__file__))}/notification.py', comment="night_notification")
 
@@ -20,5 +22,8 @@ job.minute.on(1)
 job.hour.on(21)
 job.minute.on(1)
 
+for job in cron:
+    print(cron)
+
 # save changes to crontab
-#cron.write() 
+cron.write() 
