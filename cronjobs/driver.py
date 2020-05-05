@@ -8,7 +8,7 @@ class PostgresDriver:
         self.dbname = 'postgres' # self.get_env_value('DATABASE_NAME')
         self.user = 'postgres' # self.get_env_value('DATABASE_USER')
         self.password = 'postgres' # self.get_env_value('DATABASE_PASSWORD')
-        self.host = 'postgres' # self.get_env_value('DATABASE_HOST')
+        self.host = 'localhost' # self.get_env_value('DATABASE_HOST')
         self.port = 5432 # int(self.get_env_value('DATABASE_PORT'))
 
         try:
