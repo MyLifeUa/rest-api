@@ -21,6 +21,7 @@ if __name__ == '__main__':
     clients = sorted(dolphin.select_all("SELECT * FROM rest_api_client;"))
     logging.debug(f"Query result: \n{clients}")
 
+    notified = 0
     for client in clients:
         client_id = int(client[0])
         logging.debug(f"\nSELECT * FROM rest_api_mealhistory WHERE client={client_id};")
@@ -28,4 +29,9 @@ if __name__ == '__main__':
         logging.debug(f"Query result: \n{meals}")
 
         if not meals:
+            logging.debug(f"Sending notification to client {client_id}")
             logging.info("Do not forget to add your food logs!")
+            notified += 1
+    
+    logging.info(f"Notified {notified} users")
+    logging.info("Finish cronjob")
