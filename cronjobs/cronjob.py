@@ -3,6 +3,6 @@ from driver import PostgresDriver
 if __name__ == '__main__':
     dolphin = PostgresDriver()
 
-    clients = dolphin.select_all("SELECT * FROM Client")
+    clients = dolphin.select_all("SELECT * FROM rest_api_client")
 
     print(clients)
