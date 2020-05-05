@@ -5,11 +5,11 @@ class PostgresDriver:
 
     def __init__(self):
 
-        self.dbname = self.get_env_value('DATABASE_NAME')
-        self.user = self.get_env_value('DATABASE_USER')
-        self.password = self.get_env_value('DATABASE_PASSWORD')
-        self.host = self.get_env_value('DATABASE_HOST')
-        self.port = int(self.get_env_value('DATABASE_PORT'))
+        self.dbname = 'postgres' # self.get_env_value('DATABASE_NAME')
+        self.user = 'postgres' # self.get_env_value('DATABASE_USER')
+        self.password = 'postgres' # self.get_env_value('DATABASE_PASSWORD')
+        self.host = 'postgres' # self.get_env_value('DATABASE_HOST')
+        self.port = 5432 # int(self.get_env_value('DATABASE_PORT'))
 
         try:
             self.connection = psycopg2.connect(f"dbname={self.dbname} user={self.user} password={self.password} host={self.host} port={self.port}")
