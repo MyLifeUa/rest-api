@@ -1,6 +1,8 @@
 import os
 from crontab import CronTab
 
+username = os.getenv('USER')
+
 # get crontab
 cron = CronTab(user=username)
 
