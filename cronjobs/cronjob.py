@@ -1,16 +1,22 @@
 import os
 from crontab import CronTab
 
-username = os.getenv('USER')
-
+# get crontab
 cron = CronTab(user=username)
-
-job = cron.new(command=f'python3 /home/{username}/Documents/rest-api/cronjobs/text.py', comment="dateInfo")
-
-job.hour.on(18)
-job.minute.on(30)
 
 for job in cron:
     print(cron)
 
-cron.write()
+job = cron.new(command=f'python3 {os.path.dirname(os.path.abspath(__file__))}/notification.py', comment="afternoon_notification")
+job2 = cron.new(command=f'python3 {os.path.dirname(os.path.abspath(__file__))}/notification.py', comment="night_notification")
+
+# afternoon notification at 15:01
+job.hour.on(15)
+job.minute.on(1)
+
+# night notification at 21:01
+job.hour.on(21)
+job.minute.on(1)
+
+# save changes to crontab
+#cron.write() 

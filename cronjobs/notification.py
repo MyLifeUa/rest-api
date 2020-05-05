@@ -3,14 +3,12 @@ import logging
 from datetime import datetime
 from driver import PostgresDriver
 
-logging.basicConfig(level=logging.DEBUG, filename='notification.log', filemode='a', format='%(asctime)s %(levelname)s:%(message)s')
+logging.basicConfig(level=logging.DEBUG, filename=f'{os.path.dirname(os.path.abspath(__file__))}/notification.log', filemode='a', format='%(asctime)s %(levelname)s:%(message)s')
 
 if __name__ == '__main__':
     
     # start cronjob
     logging.info("Start cronjob")
-
-    print(os.path.dirname(os.path.abspath(__file__)))
 
     # today date
     today = datetime.today().strftime("%Y-%m-%d")
