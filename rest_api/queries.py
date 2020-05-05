@@ -229,7 +229,16 @@ def update_client(request, email):
             sex = data.get("sex")
             client.update(sex=sex)
 
-    except Exception:
+        if "is_diabetic" in data:
+            is_diabetic = data.get("is_diabetic")
+            client.update(is_diabetic=is_diabetic)
+
+        if "has_high_colesterol" in data:
+            has_high_colesterol = data.get("has_high_colesterol")
+            client.update(has_high_colesterol=has_high_colesterol)
+
+    except Exception as e:
+        print(e)
         state, message = False, "Error while updating client!"
 
     return state, message

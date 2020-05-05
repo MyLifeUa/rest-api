@@ -176,11 +176,29 @@ def get_calories_daily_goal(client):
     return round(daily_cal_goal)
 
 
+#TODO: improve this...
 def get_daily_goals(client):
+    if client.is_diabetic and client.has_high_colesterol:
+        carbs_ratio = CARBS_RATIO
+        fat_ratio = FAT_RATIO
+        proteins_ratio = PROTEINS_RATIO
+    elif client.is_diabetic:
+        carbs_ratio = 0.4
+        fat_ratio = 0.3
+        proteins_ratio = 0.3
+    elif client.has_high_colesterol:
+        carbs_ratio = 0.5
+        fat_ratio = 0.2
+        proteins_ratio = 0.3
+    else:
+        carbs_ratio = CARBS_RATIO
+        fat_ratio = FAT_RATIO
+        proteins_ratio = PROTEINS_RATIO
+
     calories_goal = get_calories_daily_goal(client)
-    carbs_goal = round(CARBS_RATIO * calories_goal / CARBS_IMPORTANCE)
-    fat_goal = round(FAT_RATIO * calories_goal / FAT_IMPORTANCE)
-    protein_goal = round(PROTEINS_RATIO * calories_goal / PROTEINS_IMPORTANCE)
+    carbs_goal = round(carbs_ratio * calories_goal / CARBS_IMPORTANCE)
+    fat_goal = round(fat_ratio * calories_goal / FAT_IMPORTANCE)
+    protein_goal = round(proteins_ratio * calories_goal / PROTEINS_IMPORTANCE)
 
     return {"calories": calories_goal, "carbs": carbs_goal, "fat": fat_goal, "proteins": protein_goal}
 
