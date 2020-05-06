@@ -25,6 +25,8 @@ class ClientSerializer(serializers.Serializer):
     sex = serializers.CharField()
     fitbit_access_token = serializers.CharField()
     fitbit_refresh_token = serializers.CharField()
+    is_diabetic = serializers.BooleanField();
+    has_high_colesterol = serializers.BooleanField();
 
     def get_id(self, obj):
         return obj.user.auth_user.id
@@ -171,3 +173,11 @@ class IngredientSerializer(serializers.Serializer):
 
     def get_id(self, obj):
         return obj.id
+
+
+class ExpoTokenSerializer(serializers.Serializer):
+    client_username = serializers.SerializerMethodField()
+    token = serializers.CharField(required=True)
+
+    def get_client_username(self, obj):
+        return obj.client.user.auth_user.email

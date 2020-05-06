@@ -1,11 +1,14 @@
 from datetime import datetime, date, timedelta
 
+import requests
 from django.contrib.auth.models import User
 from django.db.models import Sum
 from rest_framework.authtoken.models import Token
 
 from rest_api.models import Doctor, HospitalAdmin, Client, MealHistory
 from rest_api.serializers import MealHistorySerializer
+
+API_URL = "https://%s.openfoodfacts.org"
 
 FAT_IMPORTANCE = 9
 CARBS_IMPORTANCE = 4
@@ -127,10 +130,10 @@ def is_valid_date(date, date_pattern):
 
 
 def get_total_nutrients(meal_history):
-    total_calories = round(sum(entry.calories for entry in meal_history), 0)
-    total_carbs = round(sum(entry.carbs for entry in meal_history), 0)
-    total_fat = round(sum(entry.fat for entry in meal_history), 0)
-    total_proteins = round(sum(entry.proteins for entry in meal_history), 0)
+    total_calories = round(sum(entry.calories for entry in meal_history))
+    total_carbs = round(sum(entry.carbs for entry in meal_history))
+    total_fat = round(sum(entry.fat for entry in meal_history))
+    total_proteins = round(sum(entry.proteins for entry in meal_history))
 
     nutrients_info = {
         "calories": {"total": total_calories},
@@ -170,14 +173,32 @@ def get_calories_daily_goal(client):
     else:
         daily_cal_goal -= 500
 
-    return round(daily_cal_goal, 0)
+    return round(daily_cal_goal)
 
 
+#TODO: improve this...
 def get_daily_goals(client):
+    if client.is_diabetic and client.has_high_colesterol:
+        carbs_ratio = CARBS_RATIO
+        fat_ratio = FAT_RATIO
+        proteins_ratio = PROTEINS_RATIO
+    elif client.is_diabetic:
+        carbs_ratio = 0.4
+        fat_ratio = 0.3
+        proteins_ratio = 0.3
+    elif client.has_high_colesterol:
+        carbs_ratio = 0.5
+        fat_ratio = 0.2
+        proteins_ratio = 0.3
+    else:
+        carbs_ratio = CARBS_RATIO
+        fat_ratio = FAT_RATIO
+        proteins_ratio = PROTEINS_RATIO
+
     calories_goal = get_calories_daily_goal(client)
-    carbs_goal = round(CARBS_RATIO * calories_goal / CARBS_IMPORTANCE, 0)
-    fat_goal = round(FAT_RATIO * calories_goal / FAT_IMPORTANCE, 0)
-    protein_goal = round(PROTEINS_RATIO * calories_goal / PROTEINS_IMPORTANCE, 0)
+    carbs_goal = round(carbs_ratio * calories_goal / CARBS_IMPORTANCE)
+    fat_goal = round(fat_ratio * calories_goal / FAT_IMPORTANCE)
+    protein_goal = round(proteins_ratio * calories_goal / PROTEINS_IMPORTANCE)
 
     return {"calories": calories_goal, "carbs": carbs_goal, "fat": fat_goal, "proteins": protein_goal}
 
@@ -189,17 +210,17 @@ def get_nutrients_info(client, info_dict):
     total_proteins = PROTEINS_IMPORTANCE * info_dict["proteins"]["total"]
     total_others = total_calories - (total_carbs + total_fat + total_proteins)
 
-    info_dict["carbs"]["ratio"] = round(total_carbs / total_calories * 100, 0)
-    info_dict["fat"]["ratio"] = round(total_fat / total_calories * 100, 0)
-    info_dict["proteins"]["ratio"] = round(total_proteins / total_calories * 100, 0)
-    info_dict["others"] = {"ratio": round(total_others / total_calories * 100, 0)}
+    info_dict["carbs"]["ratio"] = round(total_carbs / total_calories * 100)
+    info_dict["fat"]["ratio"] = round(total_fat / total_calories * 100)
+    info_dict["proteins"]["ratio"] = round(total_proteins / total_calories * 100)
+    info_dict["others"] = {"ratio": round(total_others / total_calories * 100)}
 
     goals = get_daily_goals(client)
 
-    info_dict["carbs"]["goals"] = {"total": round(goals["carbs"], 0), "ratio": CARBS_IMPORTANCE * 100}
-    info_dict["fat"]["goals"] = {"total": round(goals["fat"], 0), "ratio": FAT_RATIO * 100}
-    info_dict["proteins"]["goals"] = {"total": round(goals["proteins"], 0), "ratio": PROTEINS_RATIO * 100}
-    info_dict["calories"]["goals"] = round(goals["calories"], 0)
+    info_dict["carbs"]["goals"] = {"total": round(goals["carbs"]), "ratio": round(CARBS_RATIO * 100)}
+    info_dict["fat"]["goals"] = {"total": round(goals["fat"]), "ratio": round(FAT_RATIO * 100)}
+    info_dict["proteins"]["goals"] = {"total": round(goals["proteins"]), "ratio": round(PROTEINS_RATIO * 100)}
+    info_dict["calories"]["goals"] = round(goals["calories"])
 
     return info_dict
 
@@ -212,10 +233,10 @@ def get_nutrients_left_values(client, info_dict):
 
     goals = get_daily_goals(client)
 
-    carbs_goal = round(goals["carbs"], 0)
-    fat_goal = round(goals["fat"], 0)
-    calories_goal = round(goals["calories"], 0)
-    proteins_goal = round(goals["proteins"], 0)
+    carbs_goal = round(goals["carbs"])
+    fat_goal = round(goals["fat"])
+    calories_goal = round(goals["calories"])
+    proteins_goal = round(goals["proteins"])
 
     left_carbs = total_carbs - carbs_goal
     left_calories = total_calories - calories_goal
@@ -276,7 +297,7 @@ def get_nutrient_history(client, metric, period):
     elif metric == "proteins":
         goal = calories_goal * PROTEINS_RATIO / PROTEINS_IMPORTANCE
 
-    return {"goal": round(goal, 0), "history": total_history}
+    return {"goal": round(goal), "history": total_history}
 
 
 def group_meals(meal_history, client):
@@ -290,7 +311,7 @@ def group_meals(meal_history, client):
     for type_of_meal in types_of_meal:
         meals = [MealHistorySerializer(meal).data for meal in meal_history if
                  meal.type_of_meal.lower() == type_of_meal.lower()]
-        data[type_of_meal] = {"total_calories": round(sum(entry["calories"] for entry in meals), 0), "meals": meals}
+        data[type_of_meal] = {"total_calories": round(sum(entry["calories"] for entry in meals)), "meals": meals}
 
     return data
 
@@ -320,9 +341,10 @@ def get_body_history_values(api, metric, period):
 
 
 def get_client_heart_rate_chart(client, api):
-    message = {"scale": None, "avg_heart_rate": None, "label": None}
     sex = client.sex
     age = get_client_age(client.user.birth_date)
+
+    message = {"scale": None, "scale_sizes": None, "avg_heart_rate": None, "label": None, "sex": sex}
 
     heart_rate_chart_all_ages = HEART_RATE_CHART[sex]
 
@@ -345,21 +367,183 @@ def get_client_heart_rate_chart(client, api):
     heart_rate_history = [e["value"]["restingHeartRate"] for e in response if "restingHeartRate" in e["value"]]
     history_len = len(heart_rate_history)
     avg_heart_rate = sum(heart_rate_history) / history_len if history_len != 0 else 60
-    message["avg_heart_rate"] = avg_heart_rate
+    message["avg_heart_rate"] = round(avg_heart_rate, 1)
 
     heart_rate_chart_indexes = heart_rate_chart.keys()
+    scale_sizes = []
     actual_index = None
     for index in heart_rate_chart_indexes:
         index_lst = index.split("-")
         if len(index_lst) == 2:
             min, max = index_lst
+            scale_sizes.append(int(max) - int(min) + 1)
             if int(min) <= avg_heart_rate <= int(max):
                 actual_index = index
-                break
         else:
+            scale_sizes.append(100 - int(index) + 1)
             if avg_heart_rate >= int(index):
                 actual_index = index
-                break
 
+    message["scale_sizes"] = scale_sizes
     message["label"] = heart_rate_chart[actual_index]
     return message
+
+
+def get_my_life_stats(client, api=None):
+    # current week
+    current_end_date = date.today()
+    current_start_date = current_end_date - timedelta(days=6)
+
+    # previous week
+    previous_end_date = date.today() - timedelta(days=7)
+    previous_start_date = previous_end_date - timedelta(days=6)
+
+    if api is None:
+        current_week_my_life, current_week_my_life_label = get_my_life_value_nutrients_only(current_start_date,
+                                                                                            current_end_date, client)
+        previous_week_my_life, previous_week_my_life_label = get_my_life_value_nutrients_only(previous_start_date,
+                                                                                              previous_end_date, client)
+
+    else:
+        current_week_my_life, current_week_my_life_label = get_my_life_value_fitbit(current_start_date,
+                                                                                    current_end_date, client, api)
+        previous_week_my_life, previous_week_my_life_label = get_my_life_value_fitbit(previous_start_date,
+                                                                                      previous_end_date, client, api)
+
+    if current_week_my_life == 0:
+        current_week_my_life = 0.1
+
+    if previous_week_my_life == 0:
+        previous_week_my_life = 0.1
+
+    increase = 100 * (current_week_my_life - previous_week_my_life) / previous_week_my_life
+
+    scale = {"0-2": "Poor", "2-4": "Average", "4-5": "Excellent"}
+    scale_sizes = [2, 2, 1]
+
+    return {"scale": scale, "scale_sizes": scale_sizes,
+            "current_week": {"value": current_week_my_life, "label": current_week_my_life_label},
+            "previous_week": {"value": previous_week_my_life, "label": previous_week_my_life_label},
+            "increase": round(increase), "sex": client.sex}
+
+
+def get_my_life_value_nutrients_only(start_date, end_date, client):
+    calories_goal = get_calories_daily_goal(client)
+
+    history = MealHistory.objects.filter(client=client, day__gt=start_date, day__lte=end_date).values_list("day")
+    calories_history = [round(entry[1]) for entry in history.annotate(Sum("calories"))]
+    total_week_calories = sum(calories_history)
+    total_week_calories_goal = calories_goal * len(calories_history)
+
+    difference = total_week_calories - total_week_calories_goal
+    diff_ratio = round(difference / total_week_calories_goal * 100) if total_week_calories_goal != 0 else 100
+
+    my_life_metric, label = evaluate_difference_ratio(client, diff_ratio)
+
+    return round(my_life_metric, 1), label
+
+
+def get_my_life_value_fitbit(start_date, end_date, client, api):
+    calories_goal = get_calories_daily_goal(client)
+    total_week_calories_goal = 7 * calories_goal
+
+    fitbit_history = api.time_series("activities/calories", base_date=str(end_date), period="1w")[
+        "activities-calories"]
+    fitbit_calories = [int(entry["value"]) for entry in fitbit_history]
+    total_week_fitbit_calories = sum(fitbit_calories) + (7 - len(fitbit_calories)) * calories_goal
+
+    history = MealHistory.objects.filter(client=client, day__gt=start_date, day__lte=end_date).values_list("day")
+    calories_history = [round(entry[1]) for entry in history.annotate(Sum("calories"))]
+    total_week_calories = sum(calories_history) + (7 - len(calories_history)) * calories_goal
+
+    difference = total_week_calories - total_week_fitbit_calories
+    diff_ratio = round(difference / total_week_calories_goal * 100)
+
+    my_life_metric, label = evaluate_difference_ratio(client, diff_ratio)
+
+    return round(my_life_metric, 1), label
+
+
+def evaluate_difference_ratio(client, diff_ratio):
+    mult_factor = 1 if client.weight_goal > client.current_weight else -1
+    diff_ratio *= mult_factor
+
+    if diff_ratio < 0:
+        if diff_ratio < -100:
+            diff_ratio = -100
+        old_range = 0 - (-100)
+        new_range = 2 - 0
+        my_life_metric = (((diff_ratio - (-100)) * new_range) / old_range) + 0
+        label = "Poor"
+
+    elif 0 <= diff_ratio <= 15:
+        old_range = 15 - 0
+        new_range = 4 - 2
+        my_life_metric = (((diff_ratio - 0) * new_range) / old_range) + 2
+        label = "Average"
+
+    elif 16 <= diff_ratio <= 25:
+        old_range = 25 - 16
+        new_range = 5 - 4
+        my_life_metric = (((diff_ratio - 16) * new_range) / old_range) + 4
+        label = "Excellent"
+
+    else:
+        if diff_ratio > 100:
+            diff_ratio = 100
+        old_range = 100 - 26
+        new_range = 2 - 0
+        my_life_metric = (((100 - diff_ratio) * new_range) / old_range) + 0
+        label = "Poor"
+
+    return my_life_metric, label
+
+
+def process_meal_history_insert(client, inserted_item):
+    goals = get_daily_goals(client)
+    calories_goal = goals["calories"]
+    fat_goal = goals["fat"]
+    carbs_goal = goals["carbs"]
+    proteins_goal = goals["proteins"]
+
+    calories = inserted_item.calories
+    fat = inserted_item.fat
+    carbs = inserted_item.carbs
+    proteins = inserted_item.proteins
+
+    alerts = {"bad": [], "good": []}
+
+    if calories > 0.5 * calories_goal:
+        alerts["bad"].append("Your calories goal today is {:.0f} and this has {:.0f}.".format(calories_goal, calories))
+    if fat > 0.5 * fat_goal:
+        alerts["bad"].append("Your fat goal today is {:.0f} grams and this has {:.0f} grams.".format(fat_goal, fat))
+    if carbs > 0.5 * carbs_goal:
+        alerts["bad"].append(
+            "Your carbs goal today is {:.0f} grams and this has {:.0f} grams.".format(carbs_goal, carbs))
+    if proteins > 0.5 * proteins_goal:
+        alerts["bad"].append(
+            "Your proteins goal today is {:.0f} grams and this has {:.0f} grams.".format(proteins_goal, proteins))
+
+    if proteins > 10:
+        alerts["good"].append("This food is high on protein.")
+
+    return alerts
+
+
+def get_product(barcode, locale="world"):
+    url = build_url(geography=locale, parameters=barcode)
+    return fetch(url)
+
+
+def build_url(geography="world", parameters=None):
+    geo_url = API_URL % geography
+    base_url = "/".join([geo_url, "api", "v0", "product", parameters])
+    return base_url
+
+
+def fetch(path, json_file=True):
+    if json_file:
+        path = "%s.json" % path
+
+    response = requests.get(path)
+    return response.json()

@@ -161,6 +161,9 @@ def add_client(data):
     current_weight = data.get("current_weight")
     sex = data.get("sex")
 
+    is_diabetic = data.get("is_diabetic", False)
+    has_high_colesterol = data.get("has_high_colesterol", False)
+
     state, content = add_user(data)
     if not state:
         return state, content
@@ -171,7 +174,8 @@ def add_client(data):
     try:
         # link the user to a client
         Client.objects.create(user=custom_user, height=height, current_weight=current_weight, weight_goal=weight_goal,
-                              sex=sex)
+                              sex=sex, 
+                              is_diabetic=is_diabetic, has_high_colesterol=has_high_colesterol)
 
     except Exception:
         user.delete()
@@ -225,7 +229,16 @@ def update_client(request, email):
             sex = data.get("sex")
             client.update(sex=sex)
 
-    except Exception:
+        if "is_diabetic" in data:
+            is_diabetic = data.get("is_diabetic")
+            client.update(is_diabetic=is_diabetic)
+
+        if "has_high_colesterol" in data:
+            has_high_colesterol = data.get("has_high_colesterol")
+            client.update(has_high_colesterol=has_high_colesterol)
+
+    except Exception as e:
+        print(e)
         state, message = False, "Error while updating client!"
 
     return state, message
@@ -358,11 +371,13 @@ def add_food_log(data, email):
     meal_id = data.get("meal")
     number_of_servings = data.get("number_of_servings")
 
+    alerts = None
+
     client = Client.objects.filter(user__auth_user__username=email)
 
     if not client.exists():
         state, message = False, "Client does not exist."
-        return state, message
+        return state, message, alerts
 
     current_client = Client.objects.get(user__auth_user__username=email)
 
@@ -372,7 +387,7 @@ def add_food_log(data, email):
 
         if not meal.exists():
             state, message = False, "Meal does not exist."
-            return state, message
+            return state, message, alerts
 
         current_meal = Meal.objects.get(id=meal_id)
 
@@ -382,16 +397,18 @@ def add_food_log(data, email):
         carbs = number_of_servings * current_meal.carbs
         fat = number_of_servings * current_meal.fat
 
-        MealHistory.objects.create(day=day, type_of_meal=type_of_meal, client=current_client, meal=current_meal,
-                                   number_of_servings=number_of_servings, calories=calories, proteins=proteins,
-                                   carbs=carbs, fat=fat)
+        inserted_item = MealHistory.objects.create(day=day, type_of_meal=type_of_meal, client=current_client,
+                                                   meal=current_meal, number_of_servings=number_of_servings,
+                                                   calories=calories, proteins=proteins, carbs=carbs, fat=fat)
+
+        alerts = process_meal_history_insert(current_client, inserted_item)
 
     except Exception:
         message = "Error while creating new food log!"
-        return False, message
+        return False, message, alerts
 
     message = "The food log was created with success"
-    return True, message
+    return True, message, alerts
 
 
 def delete_food_log(meal_history):
@@ -691,6 +708,35 @@ def classify_image(image_b64):
     return state, message
 
 
+def classify_barcode(barcode):
+    if barcode == "":
+        state = False
+        message = "Missing parameter: 'barcode'"
+
+    else:
+        response = get_product(barcode)
+
+        state = False
+        message = "Product not found."
+
+        if response.get("status") == 1:
+            product_name = response.get("product").get("product_name")
+
+            message = "Error while trying to classify product"
+
+            if product_name is not None:
+
+                try:
+                    meal = Meal.objects.get(name__iexact=product_name)
+                    message = MealSerializer(meal).data
+                    state = True
+
+                except Meal.DoesNotExist:
+                    message = "Item does not exist in the system!"
+
+    return state, message
+
+
 def get_client_doctor(username):
     client = Client.objects.get(user__auth_user__username=username)
 
@@ -824,6 +870,63 @@ def get_body_avg_heart_rate(username):
         state, message = False, "Error while accessing fitbit information."
 
     return state, message
+
+
+def get_my_life_stat(username):
+    client = Client.objects.get(user__auth_user__username=username)
+
+    fitbit_access_token = client.fitbit_access_token
+    fitbit_refresh_token = client.fitbit_refresh_token
+
+    if fitbit_access_token is None or fitbit_refresh_token is None:
+        message = get_my_life_stats(client)
+        state = True
+
+    else:
+        try:
+            fitbit_api = fitbit.Fitbit(CLIENT_FITBIT_ID, CLIENT_FITBIT_SECRET, system="en_UK", oauth2=True,
+                                       access_token=fitbit_access_token, refresh_token=fitbit_refresh_token,
+                                       refresh_cb=client.refresh_cb)
+
+            message = get_my_life_stats(client, fitbit_api)
+            state = True
+
+        except Exception:
+            client.fitbit_access_token = None
+            client.fitbit_refresh_token = None
+            client.save()
+            state, message = False, "Error while accessing fitbit information."
+
+    return state, message
+
+
+def new_expo_token(data, username):
+    client = Client.objects.get(user__auth_user__username=username)
+    expo_token = data["expo_token"]
+
+    ExpoToken.objects.create(client=client, token=expo_token)
+
+    return True, "Expo Token registered successfully"
+
+
+def get_client_expo_tokens(username):
+    client = Client.objects.get(user__auth_user__username=username)
+
+    return True, [token.token for token in ExpoToken.objects.filter(client=client)]
+
+
+def delete_client_expo_tokens(data, username):
+    token = data.get("expo_token")
+    client = Client.objects.get(user__auth_user__username=username)
+
+    if token is None:
+        ExpoToken.objects.filter(client=client).delete()
+        message = "All client's expo tokens were deleted successfully"
+    else:
+        ExpoToken.objects.filter(client=client, token=token).delete()
+        message = "Client's token was successfully deleted"
+
+    return True, message
 
 
 def reload_database():

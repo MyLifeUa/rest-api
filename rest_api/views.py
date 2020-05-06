@@ -10,7 +10,6 @@ from rest_framework.status import (
     HTTP_403_FORBIDDEN,
     HTTP_404_NOT_FOUND,
     HTTP_201_CREATED,
-    HTTP_204_NO_CONTENT,
 )
 
 from rest_api import queries, documentation_serializers as doc
@@ -155,7 +154,7 @@ def delete_admin(request, email):
 
     if is_self(role, "admin", username, email) or verify_authorization(role, "django-admin"):
         state, message = queries.delete_user(user)
-        state, status = ("Success", HTTP_204_NO_CONTENT) if state else ("Error", HTTP_400_BAD_REQUEST)
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
@@ -242,7 +241,7 @@ def delete_client(request, email):
 
     if is_self(role, "client", username, email):
         state, message = queries.delete_user(user)
-        state, status = ("Success", HTTP_204_NO_CONTENT) if state else ("Error", HTTP_400_BAD_REQUEST)
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
@@ -361,11 +360,11 @@ def delete_doctor(request, email):
 
     if is_self(role, "doctor", username, email):
         state, message = queries.delete_user(user)
-        state, status = ("Success", HTTP_204_NO_CONTENT) if state else ("Error", HTTP_400_BAD_REQUEST)
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     elif verify_authorization(role, "admin") and is_doctor_admin(email, username):
         state, message = queries.delete_user(user)
-        state, status = ("Success", HTTP_204_NO_CONTENT) if state else ("Error", HTTP_400_BAD_REQUEST)
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
@@ -463,11 +462,11 @@ def delete_doctor_patient_association(request):
 
     if is_self(role, "client", username, email):
         state, message = queries.delete_doctor_patient_association(email)
-        state, status = ("Success", HTTP_204_NO_CONTENT) if state else ("Error", HTTP_400_BAD_REQUEST)
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     elif is_self(role, "doctor", username, doctor_from_user.user.auth_user.username):
         state, message = queries.delete_doctor_patient_association(email)
-        state, status = ("Success", HTTP_204_NO_CONTENT) if state else ("Error", HTTP_400_BAD_REQUEST)
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
@@ -526,10 +525,14 @@ def new_food_log(request):
         status = HTTP_400_BAD_REQUEST
         return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
-    state, message = queries.add_food_log(data, username)
+    state, message, alerts = queries.add_food_log(data, username)
     state, status = ("Success", HTTP_201_CREATED) if state else ("Error", HTTP_400_BAD_REQUEST)
 
-    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+    final_response = {"role": role, "state": state, "message": message, "token": token}
+    if state and (alerts is not None or not alerts):
+        final_response["alerts"] = alerts
+
+    return Response(final_response, status=status)
 
 
 @swagger_auto_schema(method="put", request_body=doc.MealHistorySerializer)
@@ -588,7 +591,7 @@ def delete_food_log(request, food_log_id):
 
     if is_self(role, "client", username, meal_history.client.user.auth_user.username):
         state, message = queries.delete_food_log(meal_history)
-        state, status = ("Success", HTTP_204_NO_CONTENT) if state else ("Error", HTTP_400_BAD_REQUEST)
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
@@ -678,7 +681,7 @@ def delete_ingredient(request, ingredient_id):
     token, username, role = who_am_i(request)
 
     state, message = queries.delete_ingredient(ingredient_id)
-    status = HTTP_204_NO_CONTENT if state else HTTP_400_BAD_REQUEST
+    status = HTTP_200_OK if state else HTTP_400_BAD_REQUEST
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
@@ -778,7 +781,7 @@ def classify_image(request):
 
     # default possibility
     state = "Error"
-    message = "You don't have permissions to access the list of doctors."
+    message = "You don't have permissions to access this information."
     status = HTTP_403_FORBIDDEN
 
     data = request.data
@@ -787,6 +790,24 @@ def classify_image(request):
         image_b64 = data["image_b64"] if "image_b64" in data else ""
 
         state, message = queries.classify_image(image_b64)
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+
+@api_view(["GET"])
+def classify_barcode(request):
+    token, username, role = who_am_i(request)
+
+    # default possibility
+    state = "Error"
+    message = "You don't have permissions to access this information."
+    status = HTTP_403_FORBIDDEN
+
+    if verify_authorization(role, "client"):
+        barcode = request.GET.get("barcode", "")
+
+        state, message = queries.classify_barcode(barcode)
         state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
@@ -808,11 +829,11 @@ def nutrients_ratio(request, email, date):
 
         if is_self(role, "client", username, email):
             state, message = queries.get_nutrients_ratio(username, date)
-            state, status = ("Success", HTTP_200_OK) if state else ("Success", HTTP_204_NO_CONTENT)
+            state, status = ("Success", HTTP_200_OK)
 
         elif verify_authorization(role, "doctor") and is_client_doctor(username, email):
             state, message = queries.get_nutrients_ratio(email, date)
-            state, status = ("Success", HTTP_200_OK) if state else ("Success", HTTP_204_NO_CONTENT)
+            state, status = ("Success", HTTP_200_OK)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
@@ -833,11 +854,11 @@ def nutrients_total(request, email, date):
 
         if is_self(role, "client", username, email):
             state, message = queries.get_nutrients_total(username, date)
-            state, status = ("Success", HTTP_200_OK) if state else ("Success", HTTP_204_NO_CONTENT)
+            state, status = ("Success", HTTP_200_OK)
 
         elif verify_authorization(role, "doctor") and is_client_doctor(username, email):
             state, message = queries.get_nutrients_total(email, date)
-            state, status = ("Success", HTTP_200_OK) if state else ("Success", HTTP_204_NO_CONTENT)
+            state, status = ("Success", HTTP_200_OK)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
 
@@ -907,6 +928,88 @@ def body_avg_heart_rate(request, email):
 
     elif verify_authorization(role, "doctor") and is_client_doctor(username, email):
         state, message = queries.get_body_avg_heart_rate(email)
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+
+@api_view(["GET"])
+def my_life_stat(request, email):
+    token, username, role = who_am_i(request)
+
+    # default possibility
+    state = "Error"
+    message = "You don't have permissions to access this information."
+    status = HTTP_403_FORBIDDEN
+
+    if is_self(role, "client", username, email):
+        state, message = queries.get_my_life_stat(username)
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+    elif verify_authorization(role, "doctor") and is_client_doctor(username, email):
+        state, message = queries.get_my_life_stat(email)
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+
+@swagger_auto_schema(methods=["post", "delete"], request_body=doc.ExpoTokenSerializer)
+@api_view(["GET", "POST", "DELETE"])
+def expo_tokens_post_and_get(request):
+    if request.method == "POST":
+        return new_expo_token(request)
+    elif request.method == "GET":
+        return get_client_expo_tokens(request)
+    elif request.method == "DELETE":
+        return delete_client_expo_tokens(request)
+
+
+def new_expo_token(request):
+    token, username, role = who_am_i(request)
+
+    state = "Error"
+    message = "You don't have permissions to access the list of meals."
+    status = HTTP_403_FORBIDDEN
+
+    if verify_authorization(role, "client"):
+
+        data = request.data
+        if "expo_token" not in data:
+            state = "Error"
+            message = "Missing parameter: 'expo_token'"
+            status = HTTP_400_BAD_REQUEST
+            return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+        state, message = queries.new_expo_token(data, username)
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+
+def get_client_expo_tokens(request):
+    token, username, role = who_am_i(request)
+
+    state = "Error"
+    message = "You don't have permissions to access the list of meals."
+    status = HTTP_403_FORBIDDEN
+
+    if verify_authorization(role, "client"):
+        state, message = queries.get_client_expo_tokens(username)
+        state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
+
+    return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
+
+
+def delete_client_expo_tokens(request):
+    token, username, role = who_am_i(request)
+
+    state = "Error"
+    message = "You don't have permissions to access the list of meals."
+    status = HTTP_403_FORBIDDEN
+
+    if verify_authorization(role, "client"):
+        data = request.data
+        state, message = queries.delete_client_expo_tokens(data, username)
         state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)

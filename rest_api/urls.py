@@ -48,6 +48,9 @@ urlpatterns = [
     # Image Classification
     path("image-classification", classify_image, name="classify-image"),
 
+    # Barcode Classification
+    path("barcode-classification", classify_barcode, name="classify-barcode"),
+
     # Check token is valid
     path("check-token", check_token, name="check-token"),
 
@@ -56,7 +59,11 @@ urlpatterns = [
     url("^health-stats/nutrients/total/(?P<email>.+)/(?P<date>.+)", nutrients_total, name="nutrients-total"),
     url("^health-stats/nutrients/history/(?P<email>.+)", nutrients_history, name="nutrients-history"),
     url("^health-stats/body/history/(?P<email>.+)", body_history, name="body-history"),
-    url("^health-stats/body/heart-rate/(?P<email>.+)", body_avg_heart_rate, name="body-history"),
+    url("^health-stats/body/heart-rate/(?P<email>.+)", body_avg_heart_rate, name="body-avg-heart-rate"),
+    url("^health-stats/my-life/(?P<email>.+)", my_life_stat, name="stat-my-life"),
+
+    # Expo Tokens
+    path("expo-tokens", expo_tokens_post_and_get, name="expo-tokens-get-and-post"),
 
     # Reload Database
     path("reload-db", reload_db, name="reload-db"),
