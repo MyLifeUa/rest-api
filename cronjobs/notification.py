@@ -5,8 +5,9 @@ import requests
 from datetime import datetime
 from driver import PostgresDriver
 
-logging.basicConfig(level=logging.DEBUG, filename=f'{os.path.dirname(os.path.abspath(__file__))}/notification.log', filemode='a', format='%(asctime)s %(levelname)s:%(message)s')
+logging.basicConfig(level=logging.INFO, filename=f'{os.path.dirname(os.path.abspath(__file__))}/notification.log', filemode='a', format='%(asctime)s %(levelname)s:%(message)s')
 
+# Expo server parameters
 EXPO_URL = 'https://exp.host/--/api/v2/push/send'
 EXPO_HEADERS = {
     'Host': 'exp.host',
@@ -51,10 +52,9 @@ if __name__ == '__main__':
             for token in tokens:
                 logging.info(f"Sending notification to client {client_id}, device {token[1]}")
                 
-
                 payload = {
                     'to': token[1],
-                    'title': 'MyLife reminder',
+                    'title': 'Daily reminder',
                     'body': 'Do not forget to add your food logs!'
                 }
 
