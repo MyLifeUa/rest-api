@@ -20,7 +20,9 @@ EXPO_HEADERS = {
 if __name__ == '__main__':
     
     # start cronjob
+    logging.info("------------------------------")
     logging.info("Start cronjob")
+    logging.info("------------------------------")
 
     # today date
     today = datetime.today().strftime("%Y-%m-%d")
@@ -36,7 +38,7 @@ if __name__ == '__main__':
     logging.debug(f"Query result: \n{clients}")
 
     
-    notified = 0    # counter of notified users
+    notified = 0    # counter of notified devices
     for client in clients:
         client_id = int(client[0])
 
@@ -61,10 +63,13 @@ if __name__ == '__main__':
                 try:
                     response = requests.post(url=EXPO_URL, data=json.dumps(payload), headers=EXPO_HEADERS)
                     logging.info(f"User notified with success! Response: {response}")
+                    notified += 1
                 except:
                     pass
 
-            notified += 1
+            
     
-    logging.info(f"Notified {notified} users")
+    logging.info(f"Notified {notified} user devices")
+    logging.info("\n------------------------------")
     logging.info("Finish cronjob")
+    logging.info("------------------------------")
