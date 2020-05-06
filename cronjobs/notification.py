@@ -35,6 +35,9 @@ if __name__ == '__main__':
 
         # if there are no meals, send notification to client
         if not meals:
+
+            tokens = dolphin.select_all/(f"SELECT * FROM rest_api_expotoken WHERE rest_api_expotoken.client_id={client_id};")
+            print(tokens)
             logging.debug(f"Sending notification to client {client_id}")
             logging.info("Do not forget to add your food logs!")
             notified += 1
