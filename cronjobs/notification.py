@@ -17,6 +17,19 @@ EXPO_HEADERS = {
 }
 
 
+def send_notification(token):
+    payload = {
+        'to': token,
+        'title': 'Daily reminder',
+        'body': 'Do not forget to add your food logs!'
+    }
+    
+    try:
+        response = requests.post(url=EXPO_URL, data=json.dumps(payload), headers=EXPO_HEADERS)
+        logging.info(f"User notified with success! Response: {response}")
+    except e:
+        logging.warning(e)
+
 if __name__ == '__main__':
     
     # start cronjob
@@ -47,29 +60,17 @@ if __name__ == '__main__':
         meals = dolphin.select_all(f"SELECT * FROM rest_api_mealhistory WHERE rest_api_mealhistory.client_id={client_id} AND rest_api_mealhistory.day='{today}';")
         logging.debug(f"Query result: \n{meals}")
 
-        # if there are no meals, send notification to client
+        # if there are no meals, send notification to each device of the current client
         if not meals:
             tokens = dolphin.select_all(f"SELECT * FROM rest_api_expotoken WHERE rest_api_expotoken.client_id={client_id};")
             
             for token in tokens:
                 logging.info(f"Sending notification to client {client_id}, device {token[1]}")
-                
-                payload = {
-                    'to': token[1],
-                    'title': 'Daily reminder',
-                    'body': 'Do not forget to add your food logs!'
-                }
+                send_notification(token[1])
+                notified += 1
 
-                try:
-                    response = requests.post(url=EXPO_URL, data=json.dumps(payload), headers=EXPO_HEADERS)
-                    logging.info(f"User notified with success! Response: {response}")
-                    notified += 1
-                except:
-                    pass
 
-            
-    
-    logging.info(f"Notified {notified} user devices")
-    logging.info("\n------------------------------")
-    logging.info("Finish cronjob")
-    logging.info("------------------------------")
+logging.info(f"Notified {notified} user devices")
+logging.info("------------------------------")
+logging.info("Finish cronjob")
+logging.info("------------------------------")
