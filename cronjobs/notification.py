@@ -49,11 +49,11 @@ if __name__ == '__main__':
             tokens = dolphin.select_all(f"SELECT * FROM rest_api_expotoken WHERE rest_api_expotoken.client_id={client_id};")
             
             for token in tokens:
-                logging.info(f"Sending notification to client {client_id}, device {token[0][1]}")
+                logging.info(f"Sending notification to client {client_id}, device {token[1]}")
                 
 
                 payload = {
-                    'to': token[0][1],
+                    'to': token[1],
                     'title': 'MyLife reminder',
                     'body': 'Do not forget to add your food logs!'
                 }
