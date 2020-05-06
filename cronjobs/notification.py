@@ -1,9 +1,20 @@
 import os
+import json
 import logging
+import requests
 from datetime import datetime
 from driver import PostgresDriver
 
 logging.basicConfig(level=logging.DEBUG, filename=f'{os.path.dirname(os.path.abspath(__file__))}/notification.log', filemode='a', format='%(asctime)s %(levelname)s:%(message)s')
+
+EXPO_URL = 'https://exp.host/--/api/v2/push/send'
+EXPO_HEADERS = {
+    'Host': 'exp.host',
+    'Accept': 'application/json',
+    'Accept-Encoding': 'gzip, deflate',
+    'Content-Type': 'application/json'
+}
+
 
 if __name__ == '__main__':
     
@@ -35,11 +46,24 @@ if __name__ == '__main__':
 
         # if there are no meals, send notification to client
         if not meals:
+            tokens = dolphin.select_all(f"SELECT * FROM rest_api_expotoken WHERE rest_api_expotoken.client_id={client_id};")
+            
+            for token in tokens:
+                logging.info(f"Sending notification to client {client_id}, device {token[0][1]}")
+                
 
-            tokens = dolphin.select_all/(f"SELECT * FROM rest_api_expotoken WHERE rest_api_expotoken.client_id={client_id};")
-            print(tokens)
-            logging.debug(f"Sending notification to client {client_id}")
-            logging.info("Do not forget to add your food logs!")
+                payload = {
+                    'to': token[0][1],
+                    'title': 'MyLife reminder',
+                    'body': 'Do not forget to add your food logs!'
+                }
+
+                try:
+                    response = requests.post(url=EXPO_URL, data=json.dumps(payload), headers=EXPO_HEADERS)
+                    logging.info(f"User notified with success! Response: {response}")
+                except:
+                    pass
+
             notified += 1
     
     logging.info(f"Notified {notified} users")
