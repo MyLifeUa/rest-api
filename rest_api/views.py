@@ -807,7 +807,7 @@ def classify_barcode(request):
     if verify_authorization(role, "client"):
         barcode = request.GET.get("barcode", "")
 
-        state, message = queries.classify_barcode(barcode)
+        state, message = queries.classify_barcode(username, barcode)
         state, status = ("Success", HTTP_200_OK) if state else ("Error", HTTP_400_BAD_REQUEST)
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)
