@@ -708,7 +708,7 @@ def classify_image(image_b64):
     return state, message
 
 
-def classify_barcode(barcode):
+def classify_barcode(username, barcode):
     if barcode == "":
         state = False
         message = "Missing parameter: 'barcode'"
@@ -727,7 +727,9 @@ def classify_barcode(barcode):
             if product_name is not None:
 
                 try:
-                    meal = Meal.objects.get(name__iexact=product_name)
+                    client = Client.objects.get(user__auth_user__username=username)
+                    meals = Meal.objects.filter(Q(client__isnull=True) | Q(client=client))
+                    meal = meals.filter(name__iexact=product_name)[0]
                     message = MealSerializer(meal).data
                     state = True
 
