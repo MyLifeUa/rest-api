@@ -11,8 +11,8 @@ cron.remove_all(comment='afternoon_notification')
 cron.remove_all(comment='night_notification')
 
 # create new cronjobs
-job = cron.new(command=f'python3 {os.path.dirname(os.path.abspath(__file__))}/notification.py', comment="afternoon_notification")
-job2 = cron.new(command=f'python3 {os.path.dirname(os.path.abspath(__file__))}/notification.py', comment="night_notification")
+job = cron.new(command=f'docker exec compose_django_1 python3 /code/cronjobs/notification.py', comment="afternoon_notification")
+job2 = cron.new(command=f'docker exec compose_django_1 python3 /code/cronjobs/notification.py', comment="night_notification")
 
 # afternoon notification at 15:01
 job.hour.on(14)
