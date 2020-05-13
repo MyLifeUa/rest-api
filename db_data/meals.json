@@ -1,0 +1,16 @@
+[
+  {
+    "name" : "Hotdog",
+    "category" : "Fast Food",
+    "ingredients" : [
+      {
+        "name" : "Hotdog Bread",
+        "quantity" : 100
+      },
+      {
+        "name" : "Sausage",
+        "quantity": 75
+      }
+    ]
+  }
+]
