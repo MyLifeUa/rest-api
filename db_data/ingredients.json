@@ -12,5 +12,68 @@
     "fat" : 27,
     "carbs" : 42,
     "proteins" : 12
+  },
+  {
+    "name" : "Sushi Roll",
+    "calories" : 304,
+    "fat" : 8.7,
+    "carbs" : 42,
+    "proteins" : 13
+  },
+  {
+    "name" : "Chinese EggRoll",
+    "calories" : 222.5,
+    "fat" : 10.6,
+    "carbs" : 24.3,
+    "proteins" : 7.4
+  },
+  {
+    "name" : "Coca Cola Zero",
+    "calories" : 42,
+    "fat" : 0,
+    "carbs" : 10.6,
+    "proteins" : 0
+  },
+  {
+    "name" : "Ice Tea",
+    "calories" : 19,
+    "fat" : 0.5,
+    "carbs" : 4.7,
+    "proteins" : 0.5
+  },
+  {
+    "name" : "Compal Classico Pessego",
+    "calories" : 44,
+    "fat" : 0,
+    "carbs" : 11,
+    "proteins" : 0.3
+  },
+  {
+    "name" : "Iogurte Natural",
+    "calories" : 60,
+    "fat" : 3.5,
+    "carbs" : 4,
+    "proteins" : 3.2
+  },
+  {
+    "name" : "Bolacha Cacau",
+    "calories" : 482,
+    "fat" : 19,
+    "carbs" : 70,
+    "proteins" : 6
+  },
+  {
+    "name" : "Bolacha com pepitas de chocolate",
+    "calories" : 480,
+    "fat" : 22,
+    "carbs" : 63,
+    "proteins" : 2.4
+  },
+  {
+    "name" : "Batatas fritas onduladas",
+    "calories" : 533,
+    "fat" : 32,
+    "carbs" : 53,
+    "proteins" : 5.9
   }
 ]

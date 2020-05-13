@@ -50,7 +50,7 @@ class Ingredient(models.Model):
     proteins = models.FloatField(default=0)
     fat = models.FloatField(default=0)
     carbs = models.FloatField(default=0)
-    name = models.CharField(max_length=30)
+    name = models.CharField(max_length=50)
 
 
 class Meal(models.Model):
