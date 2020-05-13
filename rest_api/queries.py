@@ -594,6 +594,26 @@ def add_new_meal(data, username, role="admin"):
     state_message = "Meal created successfully!"
     return True, state_message
 
+def add_new_ingredient(data):
+    # flour = Ingredient.objects.create(name="Flour", calories=364, carbs=76.3, fat=1, proteins=10.3)
+    try:
+        name = data.get("name")
+        calories = data.get("calories")
+        carbs = data.get("carbs")
+        fat = data.get("fat")
+        proteins = data.get("proteins")
+    except Exception:
+        error_message = "Error creating new ingredient! Request incomplete."
+        return False, error_message
+
+    try:
+        ingredient = Ingredient.objects.create(name=name, calories=calories, carbs=carbs, fat=fat, proteins=proteins)
+    except Exception:
+        error_message = "Error while creating new ingredient!"
+        return False, error_message
+
+    state_message = "Ingredient created successfully!"
+    return True, state_message
 
 def get_meals(username):
     client = Client.objects.get(user__auth_user__username=username)
@@ -1364,6 +1384,11 @@ def reload_database():
                                 {"id": cheese.id, "quantity": 28}]}
         success, state = add_new_meal(meal, None)
         cur_success = cur_success and success
+
+        try:
+            load_from_files('../db_data/')
+        except Exception as e:
+            print(e)
 
         return cur_success
 
