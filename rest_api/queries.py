@@ -1389,17 +1389,21 @@ def reload_database():
 
         try:
             meals_json, ingredients_json = load_from_files('../db_data/')
-            print(meals_json)
-            print(ingredients_json)
+            # print(meals_json)
+            # print(ingredients_json)
         except Exception as e:
             print(e)
 
         for ingredient in ingredients_json:
             success, state = add_new_ingredient(ingredient)
+            if not success:
+                print(ingredient)
             cur_success = cur_success and success
 
         for meal in meals_json:
             success, state = add_new_meal(meal, None)
+            if not success:
+                print(meal)
             cur_success = cur_success and success
 
         return cur_success
