@@ -7,10 +7,10 @@
     "proteins" : 3
   },
   {
-    "name" : "Hotdog Bread",
-    "calories" : 110,
-    "fat" : 1.5,
-    "carbs" : 21,
-    "proteins" : 3
+    "name" : "Sausage",
+    "calories" : 301,
+    "fat" : 27,
+    "carbs" : 42,
+    "proteins" : 12
   }
 ]
