@@ -1391,12 +1391,12 @@ def reload_database():
         except Exception as e:
             print(e)
 
-        for meal in meals_json:
-            success, state = add_new_meal(meal, None)
-            cur_success = cur_success and success
-
         for ingredient in ingredients_json:
             success, state = add_new_ingredient(ingredient)
+            cur_success = cur_success and success
+
+        for meal in meals_json:
+            success, state = add_new_meal(meal, None)
             cur_success = cur_success and success
 
         return cur_success
