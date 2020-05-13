@@ -733,7 +733,7 @@ def classify_barcode(username, barcode):
                     message = MealSerializer(meal).data
                     state = True
 
-                except Meal.DoesNotExist:
+                except Exception:
                     message = "Item does not exist in the system!"
 
     return state, message
