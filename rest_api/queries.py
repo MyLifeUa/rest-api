@@ -595,7 +595,6 @@ def add_new_meal(data, username, role="admin"):
     return True, state_message
 
 def add_new_ingredient(data):
-    # flour = Ingredient.objects.create(name="Flour", calories=364, carbs=76.3, fat=1, proteins=10.3)
     try:
         name = data.get("name")
         calories = data.get("calories")
@@ -1386,9 +1385,19 @@ def reload_database():
         cur_success = cur_success and success
 
         try:
-            load_from_files('../db_data/')
+            meals_json, ingredients_json = load_from_files('../db_data/')
+            print(meals_json)
+            print(ingredients_json)
         except Exception as e:
             print(e)
+
+        for meal in meals_json:
+            success, state = add_new_meal(meal, None)
+            cur_success = cur_success and success
+
+        for ingredient in ingredients_json:
+            success, state = add_new_ingredient(ingredient)
+            cur_success = cur_success and success
 
         return cur_success
 
