@@ -580,7 +580,10 @@ def add_new_meal(data, username, role="admin"):
     try:
         # add ingredients quantities and nutrient values
         for ingredient_json in ingredients:
-            ingredient = Ingredient.objects.get(id=ingredient_json["id"])
+            if 'id' in ingredient_json:
+                ingredient = Ingredient.objects.get(id=ingredient_json["id"])
+            elif 'name' in ingredient_json:
+                ingredient = Ingredient.objects.get(name=ingredient_json["name"])
             quantity = ingredient_json["quantity"]
             Quantity.objects.create(meal=meal, ingredient=ingredient, quantity=quantity)
             populate_nutrient_values(Meal.objects.filter(id=meal.id), Ingredient.objects.get(id=ingredient.id),
