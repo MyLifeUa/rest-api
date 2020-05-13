@@ -547,3 +547,28 @@ def fetch(path, json_file=True):
 
     response = requests.get(path)
     return response.json()
+
+def load_from_files(data_dir):
+    ingredients = []
+    meals = []
+
+    import sys, os, json
+
+    cur_dir = os.path.abspath(os.path.dirname(__file__))
+    path = os.path.join(cur_dir, data_dir)
+
+    for f in os.listdir(path):
+        if not 'json' in f or 'test' in f:
+            continue
+        file_path = os.path.join(path, f)
+        with open(file_path, 'r', encoding='us-ascii') as ff:
+            content = ff.read()
+            contents_json = json.loads(content)
+            if 'ingredients' in f:
+                for ingredient in contents_json:
+                    ingredients.append(ingredient)
+            elif 'meals' in f:
+                for meal in contents_json:
+                    meals.append(meal)
+    
+    return meals, ingredients
