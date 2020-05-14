@@ -1,0 +1,430 @@
+[
+  {
+    "name" : "Hotdog",
+    "category" : "Fast Food",
+    "ingredients" : [
+      {
+        "name" : "Hotdog Bread",
+        "quantity" : 100
+      },
+      {
+        "name" : "Sausage",
+        "quantity": 75
+      }
+    ]
+  },
+  {
+    "name" : "Sushi",
+    "category" : "Oriental",
+    "ingredients" : [
+      {
+        "name" : "Sushi Roll",
+        "quantity" : 100
+      }
+    ]
+  },
+  {
+    "name" : "Chinese EggRoll",
+    "category" : "Oriental",
+    "ingredients" : [
+      {
+        "name" : "Chinese EggRoll",
+        "quantity" : 100
+      }
+    ]
+  },
+  {
+    "name" : "Coca Cola Zero",
+    "category" : "Drinks",
+    "ingredients" : [
+      {
+        "name" : "Coca Cola Zero",
+        "quantity" : 250
+      }
+    ]
+  },
+  {
+    "name" : "Ice tea pessego Lipton",
+    "category" : "Drinks",
+    "ingredients" : [
+      {
+        "name" : "Ice Tea",
+        "quantity" : 250
+      }
+    ]
+  },
+  {
+    "name" : "Compal Classico Pessego",
+    "category" : "Drinks",
+    "ingredients" : [
+      {
+        "name" : "Compal Classico Pessego",
+        "quantity" : 250
+      }
+    ]
+  },
+  {
+    "name" : "Milbona Natural Original",
+    "category" : "Snacks",
+    "ingredients" : [
+      {
+        "name" : "Iogurte Natural",
+        "quantity" : 125
+      }
+    ]
+  },
+  {
+    "name" : "Bolacha Cacau",
+    "category" : "Snacks",
+    "ingredients" : [
+      {
+        "name" : "Bolacha Cacau",
+        "quantity" : 100
+      }
+    ]
+  },
+  {
+    "name" : "Bolachas com pepitas de chocolate",
+    "category" : "Snacks",
+    "ingredients" : [
+      {
+        "name" : "Bolacha com pepitas de chocolate",
+        "quantity" : 100
+      }
+    ]
+  },
+  {
+    "name" : "Batatas fritas onduladas",
+    "category" : "Snacks",
+    "ingredients" : [
+      {
+        "name" : "Batatas fritas onduladas",
+        "quantity" : 200
+      }
+    ]
+  },
+  {
+    "name" : "Cerveja",
+    "category" : "Drinks",
+    "ingredients" : [
+      {
+        "name" : "Cerveja",
+        "quantity" : 333
+      }
+    ]
+  },
+  {
+    "name" : "Noodles sabor a frango",
+    "category" : "Oriental",
+    "ingredients" : [
+      {
+        "name" : "Noodles frango",
+        "quantity" : 70
+      }
+    ]
+  },
+  {
+    "name" : "Torrada",
+    "category" : "Snacks",
+    "ingredients" : [
+      {
+        "name" : "Bread Slice",
+        "quantity" : 332.5
+      },
+      {
+        "name" : "Butter",
+        "quantity" : 15
+      }
+    ]
+  },
+  {
+    "name" : "Meia Torrada",
+    "category" : "Snacks",
+    "ingredients" : [
+      {
+        "name" : "Bread Slice",
+        "quantity" : 166
+      },
+      {
+        "name" : "Butter",
+        "quantity" : 8
+      }
+    ]
+  },
+  {
+    "name" : "English Breakfast",
+    "category" : "Traditional",
+    "ingredients" : [
+      {
+        "name" : "Bacon",
+        "quantity" : 100
+      },
+      {
+        "name" : "Butter",
+        "quantity" : 30
+      },
+      {
+        "name" : "Baked Beans",
+        "quantity" : 200
+      },
+      {
+        "name" : "Champignon",
+        "quantity" : 200
+      },
+      {
+        "name" : "Egg",
+        "quantity" : 100
+      },
+      {
+        "name" : "Olive oil",
+        "quantity" : 8
+      },
+      {
+        "name" : "Salt",
+        "quantity" : 1
+      },
+      {
+        "name" : "Bread Slice",
+        "quantity" : 332.5
+      }
+    ]
+  },
+  {
+    "name" : "Folhado misto",
+    "category" : "Snacks",
+    "ingredients" : [
+      {
+        "name" : "Folhado misto",
+        "quantity" : 150
+      }
+    ]
+  },
+  {
+    "name" : "Lanche misto",
+    "category" : "Snacks",
+    "ingredients" : [
+      {
+        "name" : "Lanche misto",
+        "quantity" : 135
+      }
+    ]
+  },
+  {
+    "name" : "Tosta Mista",
+    "category" : "Snacks",
+    "ingredients" : [
+      {
+        "name" : "Bread",
+        "quantity" : 52
+      },
+      {
+        "name" : "Ham",
+        "quantity" : 56
+      },
+      {
+        "name" : "Cheese",
+        "quantity" : 56
+      }
+    ]
+  },
+  {
+    "name" : "Pastel de nata",
+    "category" : "Snacks",
+    "ingredients" : [
+      {
+        "name" : "Pastel de nata",
+        "quantity" : 136
+      }
+    ]
+  },
+  {
+    "name" : "Panquecas com Banana",
+    "category" : "Snacks",
+    "ingredients" : [
+      {
+        "name" : "Panquecas com Banana",
+        "quantity" : 120
+      }
+    ]
+  },
+  {
+    "name" : "Coffee",
+    "category" : "Drinks",
+    "ingredients" : [
+      {
+        "name" : "Coffee",
+        "quantity" : 35
+      }
+    ]
+  },
+  {
+    "name" : "Leite com Chocolate",
+    "category" : "Drinks",
+    "ingredients" : [
+      {
+        "name" : "Chocolate Milk",
+        "quantity" : 250
+      }
+    ]
+  },
+  {
+    "name" : "Meia de Leite",
+    "category" : "Drinks",
+    "ingredients" : [
+      {
+        "name" : "Meia de Leite",
+        "quantity" : 200
+      }
+    ]
+  },
+  {
+    "name" : "Galao",
+    "category" : "Drinks",
+    "ingredients" : [
+      {
+        "name" : "Galao",
+        "quantity" : 235
+      }
+    ]
+  },
+  {
+    "name" : "Sumo de Laranja Natural",
+    "category" : "Drinks",
+    "ingredients" : [
+      {
+        "name" : "Sumo de Laranja Natural",
+        "quantity" : 250
+      }
+    ]
+  },
+  {
+    "name" : "Cha de Camomila",
+    "category" : "Drinks",
+    "ingredients" : [
+      {
+        "name" : "Cha de Camomila",
+        "quantity" : 200
+      }
+    ]
+  },
+  {
+    "name" : "Bacalhau a Bras",
+    "category" : "Traditional",
+    "ingredients" : [
+      {
+        "name" : "Bacalhau a Bras",
+        "quantity" : 150
+      }
+    ]
+  },
+  {
+    "name" : "Prego",
+    "category" : "Traditional",
+    "ingredients" : [
+      {
+        "name" : "Prego",
+        "quantity" : 400
+      }
+    ]
+  },
+  {
+    "name" : "Carne de Porco a Alentejana",
+    "category" : "Traditional",
+    "ingredients" : [
+      {
+        "name" : "Carne de Porco a Alentejana",
+        "quantity" : 300
+      }
+    ]
+  },
+  {
+    "name" : "Esparguete",
+    "category" : "Traditional",
+    "ingredients" : [
+      {
+        "name" : "Esparguete",
+        "quantity" : 221
+      }
+    ]
+  },
+  {
+    "name" : "Lasanha com Carne",
+    "category" : "Traditional",
+    "ingredients" : [
+      {
+        "name" : "Lasanha com Carne",
+        "quantity" : 206
+      }
+    ]
+  },
+  {
+    "name" : "Arroz de Tomate",
+    "category" : "Traditional",
+    "ingredients" : [
+      {
+        "name" : "Arroz de Tomate",
+        "quantity" : 206
+      }
+    ]
+  },
+  {
+    "name" : "Batata Assada",
+    "category" : "Traditional",
+    "ingredients" : [
+      {
+        "name" : "Batata Assada",
+        "quantity" : 136
+      }
+    ]
+  },
+  {
+    "name" : "Arroz de marisco",
+    "category" : "Traditional",
+    "ingredients" : [
+      {
+        "name" : "Arroz de marisco",
+        "quantity" : 180
+      }
+    ]
+  },
+  {
+    "name" : "Lulas grelhadas",
+    "category" : "Traditional",
+    "ingredients" : [
+      {
+        "name" : "Lulas grelhadas",
+        "quantity" : 140
+      }
+    ]
+  },
+  {
+    "name" : "Omelete",
+    "category" : "Traditional",
+    "ingredients" : [
+      {
+        "name" : "Omelete",
+        "quantity" : 62
+      }
+    ]
+  },
+  {
+    "name" : "Ovos mexidos",
+    "category" : "Traditional",
+    "ingredients" : [
+      {
+        "name" : "Ovos mexidos",
+        "quantity" : 62
+      }
+    ]
+  },
+  {
+    "name" : "Salada de Alface com Vegetais Variados",
+    "category" : "Traditional",
+    "ingredients" : [
+      {
+        "name" : "Salada de Alface com Vegetais Variados",
+        "quantity" : 73
+      }
+    ]
+  }
+]

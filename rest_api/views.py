@@ -1025,10 +1025,10 @@ def reload_db(request):
     status = HTTP_403_FORBIDDEN
 
     if verify_authorization(role, "django-admin"):
-        state = queries.reload_database()
+        state_ = queries.reload_database()
 
-        state = "Success" if state else "Error"
-        status = HTTP_200_OK if state else HTTP_400_BAD_REQUEST
-        message = "DB reloaded with success!" if state else "Error while reloading DB!"
+        state = "Success" if state_ else "Error"
+        status = HTTP_200_OK if state_ else HTTP_400_BAD_REQUEST
+        message = "DB reloaded with success!" if state_ else "Error while reloading DB!"
 
     return Response({"role": role, "state": state, "message": message, "token": token}, status=status)

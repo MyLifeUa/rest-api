@@ -1,0 +1,303 @@
+[
+  {
+    "name" : "Hotdog Bread",
+    "calories" : 110,
+    "fat" : 1.5,
+    "carbs" : 21,
+    "proteins" : 3
+  },
+  {
+    "name" : "Sausage",
+    "calories" : 301,
+    "fat" : 27,
+    "carbs" : 42,
+    "proteins" : 12
+  },
+  {
+    "name" : "Sushi Roll",
+    "calories" : 304,
+    "fat" : 8.7,
+    "carbs" : 42,
+    "proteins" : 13
+  },
+  {
+    "name" : "Chinese EggRoll",
+    "calories" : 222.5,
+    "fat" : 10.6,
+    "carbs" : 24.3,
+    "proteins" : 7.4
+  },
+  {
+    "name" : "Coca Cola Zero",
+    "calories" : 42,
+    "fat" : 0,
+    "carbs" : 10.6,
+    "proteins" : 0
+  },
+  {
+    "name" : "Ice Tea",
+    "calories" : 19,
+    "fat" : 0.5,
+    "carbs" : 4.7,
+    "proteins" : 0.5
+  },
+  {
+    "name" : "Compal Classico Pessego",
+    "calories" : 44,
+    "fat" : 0,
+    "carbs" : 11,
+    "proteins" : 0.3
+  },
+  {
+    "name" : "Iogurte Natural",
+    "calories" : 60,
+    "fat" : 3.5,
+    "carbs" : 4,
+    "proteins" : 3.2
+  },
+  {
+    "name" : "Bolacha Cacau",
+    "calories" : 482,
+    "fat" : 19,
+    "carbs" : 70,
+    "proteins" : 6
+  },
+  {
+    "name" : "Bolacha com pepitas de chocolate",
+    "calories" : 480,
+    "fat" : 22,
+    "carbs" : 63,
+    "proteins" : 2.4
+  },
+  {
+    "name" : "Batatas fritas onduladas",
+    "calories" : 533,
+    "fat" : 32,
+    "carbs" : 53,
+    "proteins" : 5.9
+  },
+  {
+    "name" : "Cerveja",
+    "calories" : 29,
+    "fat" : 0,
+    "carbs" : 0.5,
+    "proteins" : 0.5
+  },
+  {
+    "name" : "Noodles frango",
+    "calories" : 347,
+    "fat" : 3.6,
+    "carbs" : 11,
+    "proteins" : 1.6
+  },
+  {
+    "name" : "Bread Slice",
+    "calories" : 266,
+    "fat" : 3.29,
+    "carbs" : 50.61,
+    "proteins" : 7.64
+  },
+  {
+    "name" : "Butter",
+    "calories" : 717,
+    "fat" : 81,
+    "carbs" : 0.1,
+    "proteins" : 0.9
+  },
+  {
+    "name" : "Bacon",
+    "calories" : 55,
+    "fat" : 4,
+    "carbs" : 0.3,
+    "proteins" : 0
+  },
+  {
+    "name" : "Baked Beans",
+    "calories" : 155,
+    "fat" : 5,
+    "carbs" : 22,
+    "proteins" : 6
+  },
+  {
+    "name" : "Champignon",
+    "calories" : 28,
+    "fat" : 0.5,
+    "carbs" : 5,
+    "proteins" : 2.2
+  },
+  {
+    "name" : "Olive oil",
+    "calories" : 884,
+    "fat" : 100,
+    "carbs" : 0,
+    "proteins" : 0
+  },
+  {
+    "name" : "Folhado misto",
+    "calories" : 417,
+    "fat" : 29.3,
+    "carbs" : 21,
+    "proteins" : 16.6
+  },
+  {
+    "name" : "Lanche misto",
+    "calories" : 250,
+    "fat" : 11.1,
+    "carbs" : 25,
+    "proteins" : 12
+  },
+  {
+    "name" : "Pastel de nata",
+    "calories" : 218.4,
+    "fat" : 7.3,
+    "carbs" : 33.6,
+    "proteins" : 4.5
+  },
+  {
+    "name" : "Ham",
+    "calories" : 203,
+    "fat" : 13,
+    "carbs" : 0.1,
+    "proteins" : 20
+  },
+  {
+    "name" : "Bread",
+    "calories" : 265,
+    "fat" : 3.2,
+    "carbs" : 49,
+    "proteins" : 9
+  },
+  {
+    "name" : "Panquecas com Banana",
+    "calories" : 199,
+    "fat" : 8.68,
+    "carbs" : 25.39,
+    "proteins" : 5.06
+  },
+  {
+    "name" : "Coffee",
+    "calories" : 0,
+    "fat" : 0,
+    "carbs" : 0,
+    "proteins" : 0.1
+  },
+  {
+    "name" : "Chocolate Milk",
+    "calories" : 83,
+    "fat" : 3.4,
+    "carbs" : 10,
+    "proteins" : 3.2
+  },
+  {
+    "name" : "Meia de Leite",
+    "calories" : 31,
+    "fat" : 1.64,
+    "carbs" : 2.26,
+    "proteins" : 1.67
+  },
+  {
+    "name" : "Galao",
+    "calories" : 45,
+    "fat" : 2.44,
+    "carbs" : 3.39,
+    "proteins" : 2.45
+  },
+  {
+    "name" : "Sumo de Laranja Natural",
+    "calories" : 47,
+    "fat" : 0.21,
+    "carbs" : 10.9,
+    "proteins" : 0.37
+  },
+  {
+    "name" : "Cha de Camomila",
+    "calories" : 1,
+    "fat" : 0,
+    "carbs" : 0.2,
+    "proteins" : 0
+  },
+  {
+    "name" : "Bacalhau a Bras",
+    "calories" : 157,
+    "fat" : 9.34,
+    "carbs" : 8.17,
+    "proteins" : 9.98
+  },
+  {
+    "name" : "Carne de Porco a Alentejana",
+    "calories" : 177,
+    "fat" : 9.08,
+    "carbs" : 6.82,
+    "proteins" : 15.99
+  },
+  {
+    "name" : "Prego",
+    "calories" : 200,
+    "fat" : 10.67,
+    "carbs" : 12.22,
+    "proteins" : 12.71
+  },
+  {
+    "name" : "Esparguete",
+    "calories" : 158,
+    "fat" : 0.93,
+    "carbs" : 30.86,
+    "proteins" : 5.8
+  },
+  {
+    "name" : "Lasanha com Carne",
+    "calories" : 163,
+    "fat" : 6.01,
+    "carbs" : 17.2,
+    "proteins" : 9.96
+  },
+  {
+    "name" : "Arroz de Tomate",
+    "calories" : 115,
+    "fat" : 3.81,
+    "carbs" : 18.56,
+    "proteins" : 1.98
+  },
+  {
+    "name" : "Batata Assada",
+    "calories" : 149,
+    "fat" : 7,
+    "carbs" : 20.06,
+    "proteins" : 2.32
+  },
+  {
+    "name" : "Arroz de marisco",
+    "calories" : 118,
+    "fat" : 3.33,
+    "carbs" : 13.61,
+    "proteins" : 8.08
+  },
+  {
+    "name" : "Lulas grelhadas",
+    "calories" : 120,
+    "fat" : 2.9,
+    "carbs" : 0.89,
+    "proteins" : 21.22
+  },
+  {
+    "name" : "Omelete",
+    "calories" : 158,
+    "fat" : 11.52,
+    "carbs" : 1.86,
+    "proteins" : 10.98
+  },
+  {
+    "name" : "Ovos mexidos",
+    "calories" : 158,
+    "fat" : 11.52,
+    "carbs" : 1.86,
+    "proteins" : 10.98
+  },
+  {
+    "name" : "Salada de Alface com Vegetais Variados",
+    "calories" : 17,
+    "fat" : 0.17,
+    "carbs" : 3.8,
+    "proteins" : 0.87
+  }
+]

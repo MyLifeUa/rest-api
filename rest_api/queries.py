@@ -580,7 +580,10 @@ def add_new_meal(data, username, role="admin"):
     try:
         # add ingredients quantities and nutrient values
         for ingredient_json in ingredients:
-            ingredient = Ingredient.objects.get(id=ingredient_json["id"])
+            if 'id' in ingredient_json:
+                ingredient = Ingredient.objects.get(id=ingredient_json["id"])
+            elif 'name' in ingredient_json:
+                ingredient = Ingredient.objects.get(name=ingredient_json["name"])
             quantity = ingredient_json["quantity"]
             Quantity.objects.create(meal=meal, ingredient=ingredient, quantity=quantity)
             populate_nutrient_values(Meal.objects.filter(id=meal.id), Ingredient.objects.get(id=ingredient.id),
@@ -594,6 +597,25 @@ def add_new_meal(data, username, role="admin"):
     state_message = "Meal created successfully!"
     return True, state_message
 
+def add_new_ingredient(data):
+    try:
+        name = data.get("name")
+        calories = data.get("calories")
+        carbs = data.get("carbs")
+        fat = data.get("fat")
+        proteins = data.get("proteins")
+    except Exception:
+        error_message = "Error creating new ingredient! Request incomplete."
+        return False, error_message
+
+    try:
+        ingredient = Ingredient.objects.create(name=name, calories=calories, carbs=carbs, fat=fat, proteins=proteins)
+    except Exception:
+        error_message = "Error while creating new ingredient!"
+        return False, error_message
+
+    state_message = "Ingredient created successfully!"
+    return True, state_message
 
 def get_meals(username):
     client = Client.objects.get(user__auth_user__username=username)
@@ -1364,6 +1386,25 @@ def reload_database():
                                 {"id": cheese.id, "quantity": 28}]}
         success, state = add_new_meal(meal, None)
         cur_success = cur_success and success
+
+        try:
+            meals_json, ingredients_json = load_from_files('../db_data/')
+            # print(meals_json)
+            # print(ingredients_json)
+        except Exception as e:
+            print(e)
+
+        for ingredient in ingredients_json:
+            success, state = add_new_ingredient(ingredient)
+            if not success:
+                print(ingredient)
+            cur_success = cur_success and success
+
+        for meal in meals_json:
+            success, state = add_new_meal(meal, None)
+            if not success:
+                print(meal)
+            cur_success = cur_success and success
 
         return cur_success
 
